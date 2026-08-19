@@ -1153,12 +1153,13 @@ function openModal() {
 }
 
 
-function closeModal() {
+function closeModal(){
+
+    resetCastingForm();
 
     document
         .getElementById('modal')
         .classList.remove('open');
-
 }
 
 
@@ -1243,201 +1244,264 @@ async function findActor() {
    LOAD CASTINGS
    ===================================================== */
 
-async function loadCastings() {
+async function loadCastings(){
 
-  setStatus('Загрузка кастингов...');
+    setStatus('Подключение к памяти...');
 
-  if (!actorId) {
-    const id = await findActor();
-    if (!id) return;
-  }
+    if(!actorId){
+        const id = await findActor();
+        if(!id) return;
+    }
 
-  const result = await supabaseClient
-    .from('castings')
-    .select('*')
-    .eq('actor_id', actorId)
-    .order('created_at', {
-      ascending: false
-    });
+    const result = await supabaseClient
+        .from('castings')
+        .select('*')
+        .eq('actor_id', actorId)
+        .order('created_at', { ascending: false });
 
-  if (result.error) {
+    if(result.error){
+        console.error('Supabase casting error:', result.error);
 
-    console.error('Load castings error:', result.error);
+        setStatus(
+            'Ошибка загрузки кастингов: ' + result.error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    const castings = result.data || [];
+
+    const list = document.getElementById('castingList');
+
+    if(!castings.length){
+
+        list.innerHTML = `
+            <div class="empty">
+                Пока нет кастингов.
+                <br><br>
+                Нажми <b>＋ Добавить</b>, чтобы сохранить первый.
+            </div>
+        `;
+
+    } else {
+
+        list.innerHTML = '';
+
+        castings.forEach(casting => {
+
+            const item = document.createElement('div');
+
+            item.className = 'casting';
+
+            item.innerHTML = `
+
+                <div style="flex:1">
+
+                    <h3>
+                        ${escapeHtml(casting.project_name)}
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            casting.role_name || 'Роль не указана'
+                        )}
+
+                        ${
+                            casting.deadline
+                            ? ' · дедлайн ' +
+                              escapeHtml(casting.deadline)
+                            : ''
+                        }
+                    </p>
+
+                    <span class="badge">
+                        ${getStatusLabel(casting.status)}
+                    </span>
+
+                    ${
+                        casting.applied_at
+                        ? `
+                            <p>
+                                Подана:
+                                ${escapeHtml(casting.applied_at)}
+                            </p>
+                        `
+                        : ''
+                    }
+
+                    ${
+                        casting.notes
+                        ? `
+                            <p>
+                                ${escapeHtml(casting.notes)}
+                            </p>
+                        `
+                        : ''
+                    }
+
+                    ${
+                        casting.casting_url
+                        ? `
+                            <p>
+                                <a
+                                    href="${escapeHtml(casting.casting_url)}"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    Открыть кастинг →
+                                </a>
+                            </p>
+                        `
+                        : ''
+                    }
+
+                </div>
+
+                <div style="
+                    display:flex;
+                    gap:8px;
+                    margin-left:15px;
+                    flex-wrap:wrap;
+                    justify-content:flex-end;
+                ">
+
+                    <button
+                        class="btn light"
+                        onclick="editCasting('${casting.id}')"
+                    >
+                        ✏️ Изменить
+                    </button>
+
+                    <button
+                        class="btn"
+                        style="background:#8b3a32"
+                        onclick="deleteCasting('${casting.id}')"
+                    >
+                        🗑️ Удалить
+                    </button>
+
+                </div>
+
+            `;
+
+            list.appendChild(item);
+
+        });
+
+    }
+
+    updateCounters(castings);
 
     setStatus(
-      'Ошибка загрузки кастингов: ' + result.error.message,
-      'error'
+        'Память подключена · ' + castings.length + ' кастингов',
+        'success'
     );
+}
+    
+/* =========================
+EDIT CASTING
+========================= */
 
-    return;
-  }
+async function editCasting(id){
 
-  const castings = result.data || [];
+    const result = await supabaseClient
+        .from('castings')
+        .select('*')
+        .eq('id', id)
+        .eq('actor_id', actorId)
+        .single();
 
-  const list = document.getElementById('castingList');
+    if(result.error){
 
-  if (!castings.length) {
+        alert(
+            'Не удалось загрузить кастинг:\n\n' +
+            result.error.message
+        );
 
-    list.innerHTML = `
-      <div class="empty">
-        Пока нет кастингов.
-        <br><br>
-        Нажми <b>＋ Добавить</b>, чтобы сохранить первый.
-      </div>
-    `;
+        return;
+    }
 
-  } else {
+    const casting = result.data;
 
-    list.innerHTML = '';
+    document.getElementById('projectName').value =
+        casting.project_name || '';
 
-    castings.forEach(casting => {
+    document.getElementById('roleName').value =
+        casting.role_name || '';
 
-      const item = document.createElement('div');
+    document.getElementById('deadline').value =
+        casting.deadline || '';
 
-      item.className = 'casting';
+    document.getElementById('appliedAt').value =
+        casting.applied_at || '';
 
-      item.innerHTML = `
+    document.getElementById('castingText').value =
+        casting.casting_text || '';
 
-        <div style="flex:1">
+    document.getElementById('castingUrl').value =
+        casting.casting_url || '';
 
-          <h3>
-            ${escapeHtml(casting.project_name)}
-          </h3>
+    document.getElementById('castingNotes').value =
+        casting.notes || '';
 
-          <p>
-            ${escapeHtml(
-              casting.role_name || 'Роль не указана'
-            )}
+    document.getElementById('castingStatus').value =
+        casting.status || 'new';
 
-            ${
-              casting.deadline
-              ? ' · дедлайн ' + escapeHtml(casting.deadline)
-              : ''
-            }
-          </p>
+    document.getElementById('editingCastingId').value =
+        casting.id;
 
-          ${
-            casting.applied_at
-            ? `<p>Подана: ${escapeHtml(casting.applied_at)}</p>`
-            : ''
-          }
+    document.querySelector('#modal h2').textContent =
+        'Редактировать кастинг';
 
-          ${
-            casting.notes
-            ? `<p>${escapeHtml(casting.notes)}</p>`
-            : ''
-          }
+    document.querySelector(
+        '.modal-buttons .btn:last-child'
+    ).textContent = 'Сохранить изменения';
 
-          ${
-            casting.casting_url
-            ? `
-              <p>
-                <a
-                  href="${escapeHtml(casting.casting_url)}"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  Открыть кастинг →
-                </a>
-              </p>
-            `
-            : ''
-          }
-
-          <div style="
-            display:flex;
-            gap:10px;
-            align-items:center;
-            margin-top:10px;
-            flex-wrap:wrap;
-          ">
-
-            <select
-              onchange="changeCastingStatus('${casting.id}', this.value)"
-              style="
-                width:auto;
-                margin:0;
-                padding:7px 10px;
-              "
-            >
-
-              <option value="new"
-                ${casting.status === 'new' ? 'selected' : ''}>
-                Новая подача
-              </option>
-
-              <option value="submitted"
-                ${casting.status === 'submitted' ? 'selected' : ''}>
-                Отправлена
-              </option>
-
-              <option value="audition"
-                ${casting.status === 'audition' ? 'selected' : ''}>
-                Пригласили на пробы
-              </option>
-
-              <option value="self-tape"
-                ${casting.status === 'self-tape' ? 'selected' : ''}>
-                Пробы отправлены
-              </option>
-
-              <option value="callback"
-                ${casting.status === 'callback' ? 'selected' : ''}>
-                Callback
-              </option>
-
-              <option value="approved"
-                ${casting.status === 'approved' ? 'selected' : ''}>
-                Утверждена
-              </option>
-
-              <option value="rejected"
-                ${casting.status === 'rejected' ? 'selected' : ''}>
-                Не утвердили
-              </option>
-
-              <option value="no_response"
-                ${casting.status === 'no_response' ? 'selected' : ''}>
-                Не ответили
-              </option>
-
-              <option value="cancelled"
-                ${casting.status === 'cancelled' ? 'selected' : ''}>
-                Отменён
-              </option>
-
-            </select>
-
-            <button
-              class="btn light"
-              onclick="deleteCasting('${casting.id}')"
-              style="
-                padding:7px 11px;
-                color:#9b2c2c;
-              "
-            >
-              🗑 Удалить
-            </button>
-
-          </div>
-
-        </div>
-      `;
-
-      list.appendChild(item);
-
-    });
-  }
-
-  updateCounters(castings);
-
-  setStatus(
-    'Память подключена · ' + castings.length + ' кастингов',
-    'success'
-  );
+    openModal();
 }
 
 
+/* =========================
+DELETE CASTING
+========================= */
+
+async function deleteCasting(id){
+
+    const confirmed = confirm(
+        'Удалить этот кастинг?\n\n' +
+        'Это действие нельзя отменить.'
+    );
+
+    if(!confirmed)
+        return;
+
+    const result = await supabaseClient
+        .from('castings')
+        .delete()
+        .eq('id', id)
+        .eq('actor_id', actorId);
+
+    if(result.error){
+
+        console.error(
+            'Delete casting error:',
+            result.error
+        );
+
+        alert(
+            'Ошибка удаления:\n\n' +
+            result.error.message
+        );
+
+        return;
+    }
+
+    await loadCastings();
+
+}
+
+    
 /* =====================================================
    STATUS LABEL
    ===================================================== */
@@ -1552,80 +1616,47 @@ async function changeCastingStatus(castingId, newStatus) {
    SAVE CASTING
    ===================================================== */
 
-async function saveCasting() {
+async function saveCasting(){
 
     const projectName =
-        document
-            .getElementById('projectName')
-            .value
-            .trim();
-
+        document.getElementById('projectName').value.trim();
 
     const roleName =
-        document
-            .getElementById('roleName')
-            .value
-            .trim();
-
+        document.getElementById('roleName').value.trim();
 
     const deadline =
-        document
-            .getElementById('deadline')
-            .value ||
-        null;
-
+        document.getElementById('deadline').value || null;
 
     const appliedAt =
-        document
-            .getElementById('appliedAt')
-            .value ||
-        null;
-
+        document.getElementById('appliedAt').value || null;
 
     const castingText =
-        document
-            .getElementById('castingText')
-            .value
-            .trim();
-
+        document.getElementById('castingText').value.trim();
 
     const castingStatus =
-        document
-            .getElementById('castingStatus')
-            .value;
-
+        document.getElementById('castingStatus').value;
 
     const castingUrl =
-        document
-            .getElementById('castingUrl')
-            .value
-            .trim();
-
+        document.getElementById('castingUrl').value.trim();
 
     const castingNotes =
-        document
-            .getElementById('castingNotes')
-            .value
-            .trim();
+        document.getElementById('castingNotes').value.trim();
 
+    const editingId =
+        document.getElementById('editingCastingId').value;
 
-    if (!projectName) {
+    if(!projectName){
 
-        alert(
-            'Введите название проекта.'
-        );
+        alert('Введите название проекта.');
 
         return;
     }
 
+    if(!actorId){
 
-    if (!actorId) {
+        const id = await findActor();
 
-        const id =
-            await findActor();
-
-
-        if (!id) {
+        if(!id){
 
             alert(
                 'Профиль Марины не найден.'
@@ -1635,6 +1666,164 @@ async function saveCasting() {
         }
     }
 
+
+    /* =========================
+       UPDATE
+    ========================= */
+
+    if(editingId){
+
+        const result = await supabaseClient
+            .from('castings')
+            .update({
+
+                project_name: projectName,
+
+                role_name:
+                    roleName || null,
+
+                deadline:
+                    deadline,
+
+                applied_at:
+                    appliedAt,
+
+                casting_text:
+                    castingText || null,
+
+                casting_url:
+                    castingUrl || null,
+
+                notes:
+                    castingNotes || null,
+
+                status:
+                    castingStatus,
+
+                updated_at:
+                    new Date().toISOString()
+
+            })
+            .eq('id', editingId)
+            .eq('actor_id', actorId);
+
+
+        if(result.error){
+
+            console.error(
+                'Update casting error:',
+                result.error
+            );
+
+            alert(
+                'Ошибка изменения:\n\n' +
+                result.error.message
+            );
+
+            return;
+        }
+
+
+        resetCastingForm();
+
+        closeModal();
+
+        await loadCastings();
+
+        return;
+    }
+
+
+    /* =========================
+       INSERT
+    ========================= */
+
+    const result = await supabaseClient
+        .from('castings')
+        .insert({
+
+            actor_id:
+                actorId,
+
+            project_name:
+                projectName,
+
+            role_name:
+                roleName || null,
+
+            deadline:
+                deadline,
+
+            applied_at:
+                appliedAt,
+
+            casting_text:
+                castingText || null,
+
+            casting_url:
+                castingUrl || null,
+
+            notes:
+                castingNotes || null,
+
+            status:
+                castingStatus
+
+        });
+
+
+    if(result.error){
+
+        console.error(
+            'Save casting error:',
+            result.error
+        );
+
+        alert(
+            'Ошибка сохранения:\n\n' +
+            result.error.message
+        );
+
+        return;
+    }
+
+
+    resetCastingForm();
+
+    closeModal();
+
+    await loadCastings();
+
+}
+
+
+    function resetCastingForm(){
+
+    document.getElementById('projectName').value = '';
+
+    document.getElementById('roleName').value = '';
+
+    document.getElementById('deadline').value = '';
+
+    document.getElementById('appliedAt').value = '';
+
+    document.getElementById('castingText').value = '';
+
+    document.getElementById('castingUrl').value = '';
+
+    document.getElementById('castingNotes').value = '';
+
+    document.getElementById('castingStatus').value = 'new';
+
+    document.getElementById('editingCastingId').value = '';
+
+    document.querySelector('#modal h2').textContent =
+        'Новый кастинг';
+
+    document.querySelector(
+        '.modal-buttons .btn:last-child'
+    ).textContent = 'Сохранить';
+}
 
     /* =================================================
        INSERT
