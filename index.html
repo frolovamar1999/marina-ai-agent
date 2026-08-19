@@ -1,26 +1,27 @@
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
+\<!DOCTYPE html>
+\<html lang="ru">
 
-<meta charset="UTF-8">
+\<head>
 
-<meta name="viewport"
+\<meta charset="UTF-8">
+
+\<meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Marina AI Agent</title>
+\<title>Marina AI Agent\</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+\<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)">\</script>
 
-<style>
+\<style>
 
-*{
-box-sizing:border-box;
+\*{
+box-sizing\:border-box;
 }
 
 body{
 margin:0;
-font-family:Arial,Helvetica,sans-serif;
+font-family\:Arial,Helvetica,sans-serif;
 background:#f5f3ef;
 color:#252321;
 }
@@ -28,20 +29,20 @@ color:#252321;
 button,
 input,
 textarea{
-font:inherit;
+font\:inherit;
 }
 
 .app{
-display:flex;
+display\:flex;
 min-height:100vh;
 }
 
 .sidebar{
 width:240px;
 background:#252321;
-color:white;
+color\:white;
 padding:25px 15px;
-position:fixed;
+position\:fixed;
 left:0;
 top:0;
 bottom:0;
@@ -49,56 +50,56 @@ bottom:0;
 
 .logo{
 font-size:21px;
-font-weight:bold;
+font-weight\:bold;
 padding:0 12px 30px;
 }
 
 .logo span{
-display:block;
+display\:block;
 font-size:12px;
 color:#aaa;
-font-weight:normal;
+font-weight\:normal;
 margin-top:4px;
 }
 
 .nav button{
-display:block;
+display\:block;
 width:100%;
 border:0;
-background:transparent;
+background\:transparent;
 color:#ccc;
-text-align:left;
+text-align\:left;
 padding:12px;
 border-radius:8px;
 margin-bottom:4px;
-cursor:pointer;
+cursor\:pointer;
 }
 
-.nav button:hover,
+.nav button\:hover,
 .nav button.active{
 background:#3b3936;
-color:white;
+color\:white;
 }
 
 .content{
 margin-left:240px;
 padding:30px;
-width:calc(100% - 240px);
+width\:calc(100% - 240px);
 max-width:1400px;
 }
 
 .page{
-display:none;
+display\:none;
 }
 
 .page.active{
-display:block;
+display\:block;
 }
 
 .header{
-display:flex;
-justify-content:space-between;
-align-items:center;
+display\:flex;
+justify-content\:space-between;
+align-items\:center;
 margin-bottom:25px;
 }
 
@@ -115,13 +116,13 @@ margin-top:5px;
 .btn{
 border:0;
 background:#252321;
-color:white;
+color\:white;
 padding:11px 17px;
 border-radius:8px;
-cursor:pointer;
+cursor\:pointer;
 }
 
-.btn:hover{
+.btn\:hover{
 opacity:.9;
 }
 
@@ -131,20 +132,20 @@ color:#222;
 }
 
 .cards{
-display:grid;
-grid-template-columns:repeat(4,1fr);
+display\:grid;
+grid-template-columns\:repeat(4,1fr);
 gap:15px;
 }
 
 .card{
-background:white;
+background\:white;
 border:1px solid #e5e1db;
 border-radius:14px;
 padding:20px;
 }
 
 .metric strong{
-display:block;
+display\:block;
 font-size:30px;
 margin-bottom:5px;
 }
@@ -154,16 +155,16 @@ color:#777;
 }
 
 .two{
-display:grid;
+display\:grid;
 grid-template-columns:1.4fr .6fr;
 gap:15px;
 margin-top:15px;
 }
 
 .section-title{
-display:flex;
-justify-content:space-between;
-align-items:center;
+display\:flex;
+justify-content\:space-between;
+align-items\:center;
 margin-bottom:15px;
 }
 
@@ -173,14 +174,14 @@ margin:0;
 }
 
 .casting{
-display:flex;
-justify-content:space-between;
-align-items:center;
+display\:flex;
+justify-content\:space-between;
+align-items\:center;
 padding:15px 0;
 border-top:1px solid #eee;
 }
 
-.casting:first-child{
+.casting\:first-child{
 border-top:0;
 }
 
@@ -195,7 +196,7 @@ color:#777;
 }
 
 .badge{
-display:inline-block;
+display\:inline-block;
 padding:5px 9px;
 border-radius:20px;
 background:#eee;
@@ -212,14 +213,14 @@ background:#f8eed3;
 }
 
 .profile{
-display:flex;
+display\:flex;
 gap:20px;
 }
 
 .profile img{
 width:120px;
 height:155px;
-object-fit:cover;
+object-fit\:cover;
 border-radius:10px;
 }
 
@@ -232,13 +233,13 @@ margin-top:0;
 }
 
 .info{
-display:grid;
+display\:grid;
 grid-template-columns:160px 1fr;
 gap:8px;
 margin-top:15px;
 }
 
-.info div:nth-child(odd){
+.info div\:nth-child(odd){
 color:#777;
 }
 
@@ -247,7 +248,7 @@ margin-top:15px;
 }
 
 .tag{
-display:inline-block;
+display\:inline-block;
 padding:7px 10px;
 border:1px solid #ddd;
 border-radius:8px;
@@ -281,21 +282,21 @@ color:#7a3027;
 }
 
 .modal{
-position:fixed;
+position\:fixed;
 inset:0;
-background:rgba(0,0,0,.55);
-display:none;
-align-items:center;
-justify-content:center;
+background\:rgba(0,0,0,.55);
+display\:none;
+align-items\:center;
+justify-content\:center;
 padding:20px;
 }
 
 .modal.open{
-display:flex;
+display\:flex;
 }
 
 .modal-box{
-background:white;
+background\:white;
 width:100%;
 max-width:650px;
 border-radius:15px;
@@ -307,7 +308,7 @@ margin-top:0;
 }
 
 label{
-display:block;
+display\:block;
 margin-top:13px;
 font-size:14px;
 }
@@ -319,15 +320,15 @@ border:1px solid #ddd;
 border-radius:8px;
 padding:11px;
 margin-top:6px;
-outline:none;
+outline\:none;
 }
 
 textarea{
-resize:vertical;
+resize\:vertical;
 }
 
 .modal-buttons{
-display:flex;
+display\:flex;
 gap:10px;
 margin-top:20px;
 }
@@ -338,7 +339,7 @@ flex:1;
 
 .empty{
 padding:35px 10px;
-text-align:center;
+text-align\:center;
 color:#777;
 }
 
@@ -353,22 +354,22 @@ font-size:0;
 }
 
 .logo span{
-display:none;
+display\:none;
 }
 
 .nav button{
 font-size:0;
-text-align:center;
+text-align\:center;
 }
 
 .content{
 margin-left:70px;
-width:calc(100% - 70px);
+width\:calc(100% - 70px);
 padding:18px;
 }
 
 .cards{
-grid-template-columns:repeat(2,1fr);
+grid-template-columns\:repeat(2,1fr);
 }
 
 .two{
@@ -377,326 +378,326 @@ grid-template-columns:1fr;
 
 }
 
-</style>
+\</style>
 
-</head>
-
-
-<body>
+\</head>
 
 
-<div class="app">
+\<body>
 
 
-<aside class="sidebar">
+\<div class="app">
 
-<div class="logo">
+
+\<aside class="sidebar">
+
+\<div class="logo">
 
 MARINA AI
 
-<span>личный агент</span>
+\<span>личный агент\</span>
 
-</div>
+\</div>
 
 
-<div class="nav">
+\<div class="nav">
 
-<button class="active"
+\<button class="active"
 onclick="showPage('home',this)">
 🏠 Главная
-</button>
+\</button>
 
-<button
+\<button
 onclick="showPage('profile',this)">
 👩 Профиль
-</button>
+\</button>
 
-<button
+\<button
 onclick="showPage('castings',this)">
 🎬 Кастинги
-</button>
+\</button>
 
-<button
+\<button
 onclick="showPage('materials',this)">
 📸 Материалы
-</button>
+\</button>
 
-<button
+\<button
 onclick="showPage('career',this)">
 📊 Карьера
-</button>
+\</button>
 
-<button
+\<button
 onclick="showPage('agent',this)">
 🧠 Агент
-</button>
+\</button>
 
-</div>
+\</div>
 
-</aside>
-
-
-<main class="content">
+\</aside>
 
 
-<!-- HOME -->
+\<main class="content">
 
-<section id="home"
+
+\<!-- HOME -->
+
+\<section id="home"
 class="page active">
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 Добрый день, Марина
-</h1>
+\</h1>
 
-<p>
+\<p>
 Твой личный AI-агент
-</p>
+\</p>
 
-</div>
+\</div>
 
-<button class="btn"
+\<button class="btn"
 onclick="openModal()">
 
 ＋ Новый кастинг
 
-</button>
+\</button>
 
-</div>
+\</div>
 
 
-<div class="cards">
+\<div class="cards">
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong id="activeCount">
+\<strong id="activeCount">
 0
-</strong>
+\</strong>
 
-<span>
+\<span>
 активных кастингов
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong id="auditionCount">
+\<strong id="auditionCount">
 0
-</strong>
+\</strong>
 
-<span>
+\<span>
 проб
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong id="waitingCount">
+\<strong id="waitingCount">
 0
-</strong>
+\</strong>
 
-<span>
+\<span>
 без ответа
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong id="actionCount">
+\<strong id="actionCount">
 0
-</strong>
+\</strong>
 
-<span>
+\<span>
 требуют действия
-</span>
+\</span>
 
-</div>
+\</div>
 
-</div>
-
-
-<div class="two">
+\</div>
 
 
-<div class="card">
+\<div class="two">
 
-<div class="section-title">
 
-<h2>
+\<div class="card">
+
+\<div class="section-title">
+
+\<h2>
 🎯 Следующее действие
-</h2>
+\</h2>
 
-<span class="badge green">
+\<span class="badge green">
 AI
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="notice">
+\<div class="notice">
 
-<b>
+\<b>
 Добавь первый реальный кастинг
-</b>
+\</b>
 
-<p>
+\<p>
 Агент сохранит его в твою память,
 а позже сможет проанализировать
 соответствие роли твоему типажу.
-</p>
+\</p>
 
-<button
+\<button
 class="btn light"
 onclick="openModal()">
 
 Добавить кастинг
 
-</button>
+\</button>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<h2 style="font-size:18px">
+\<h2 style="font-size:18px">
 🧠 Память
-</h2>
+\</h2>
 
-<p>
+\<p>
 Твоя база будет постепенно собирать:
-</p>
+\</p>
 
-<ul>
+\<ul>
 
-<li>кастинги</li>
+\<li>кастинги\</li>
 
-<li>подачи</li>
+\<li>подачи\</li>
 
-<li>пробы</li>
+\<li>пробы\</li>
 
-<li>результаты</li>
+\<li>результаты\</li>
 
-<li>материалы</li>
+\<li>материалы\</li>
 
-<li>карьерную статистику</li>
+\<li>карьерную статистику\</li>
 
-</ul>
+\</ul>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</section>
+\</section>
 
 
 
-<!-- PROFILE -->
+\<!-- PROFILE -->
 
-<section id="profile"
+\<section id="profile"
 class="page">
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 👩 Профиль
-</h1>
+\</h1>
 
-<p>
+\<p>
 Фролова Марина Сергеевна
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
-
-
-<div class="card profile">
+\</div>
 
 
-<img
-src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
+\<div class="card profile">
+
+
+\<img
+src="[https://trailers.filmtoolz.ru/images/photos\_people/hq/1112811.jpg](https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg)"
 alt="Марина Фролова"
->
+\>
 
 
-<div class="profile-info">
+\<div class="profile-info">
 
-<h2>
+\<h2>
 Фролова Марина Сергеевна
-</h2>
+\</h2>
 
-<p>
+\<p>
 Актриса · Москва · самозанятая
-</p>
+\</p>
 
 
-<div class="info">
+\<div class="info">
 
-<div>Возраст</div>
-<div>27 лет</div>
+\<div>Возраст\</div>
+\<div>27 лет\</div>
 
-<div>Рост</div>
-<div>157 см</div>
+\<div>Рост\</div>
+\<div>157 см\</div>
 
-<div>Вес</div>
-<div>45 кг</div>
+\<div>Вес\</div>
+\<div>45 кг\</div>
 
-<div>Тип внешности</div>
-<div>Европейский, славянский</div>
+\<div>Тип внешности\</div>
+\<div>Европейский, славянский\</div>
 
-<div>Волосы</div>
-<div>Шатен</div>
+\<div>Волосы\</div>
+\<div>Шатен\</div>
 
-<div>Глаза</div>
-<div>Серо-голубые</div>
+\<div>Глаза\</div>
+\<div>Серо-голубые\</div>
 
-<div>Образование</div>
-<div>
+\<div>Образование\</div>
+\<div>
 Институт театрального искусства им. И. Кобзона;
 Студия Иваны Чаббак;
 GOGOL SCHOOL;
 Актёрская мастерская О. Жирицкого
-</div>
+\</div>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</div>
-
-
-<div class="two">
+\</div>
 
 
-<div class="card">
+\<div class="two">
 
-<div class="section-title">
 
-<h2>
+\<div class="card">
+
+\<div class="section-title">
+
+\<h2>
 🎭 Типаж
-</h2>
+\</h2>
 
-<span class="badge yellow">
+\<span class="badge yellow">
 AI
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<p>
+\<p>
 
 Предварительная гипотеза:
 
@@ -704,676 +705,646 @@ AI
 сочетающая эмоциональную уязвимость,
 внутреннюю силу и романтическую природу.
 
-</p>
+\</p>
 
 
-<div class="tags">
+\<div class="tags">
 
-<span class="tag">
+\<span class="tag">
 dramatic heroine
-</span>
+\</span>
 
-<span class="tag">
+\<span class="tag">
 romantic
-</span>
+\</span>
 
-<span class="tag">
+\<span class="tag">
 vulnerable
-</span>
+\</span>
 
-<span class="tag">
+\<span class="tag">
 strong
-</span>
+\</span>
 
-<span class="tag">
+\<span class="tag">
 psychological
-</span>
+\</span>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<h2 style="font-size:18px">
+\<h2 style="font-size:18px">
 🎬 Роли
-</h2>
+\</h2>
 
 
-<div class="casting">
+\<div class="casting">
 
-<div>
+\<div>
 
-<h3>
+\<h3>
 Открытое сердце
-</h3>
+\</h3>
 
-<p>
+\<p>
 Алевтина · главная роль
-</p>
+\</p>
 
-</div>
+\</div>
 
-<span class="badge green">
+\<span class="badge green">
 2025
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="casting">
+\<div class="casting">
 
-<div>
+\<div>
 
-<h3>
+\<h3>
 Невыполненное обещание
-</h3>
+\</h3>
 
-<p>
+\<p>
 Нона · главная роль
-</p>
+\</p>
 
-</div>
+\</div>
 
-<span class="badge green">
+\<span class="badge green">
 2026
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="casting">
+\<div class="casting">
 
-<div>
+\<div>
 
-<h3>
+\<h3>
 Врачебные истории
-</h3>
+\</h3>
 
-<p>
+\<p>
 Русалка · эпизод
-</p>
+\</p>
 
-</div>
+\</div>
 
-<span class="badge">
+\<span class="badge">
 2026
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="casting">
+\<div class="casting">
 
-<div>
+\<div>
 
-<h3>
+\<h3>
 СашаТаня
-</h3>
+\</h3>
 
-<p>
+\<p>
 Соседка
-</p>
+\</p>
 
-</div>
+\</div>
 
-<span class="badge">
+\<span class="badge">
 2025
-</span>
+\</span>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</section>
+\</section>
 
 
 
-<!-- CASTINGS -->
+\<!-- CASTINGS -->
 
-<section id="castings"
+\<section id="castings"
 class="page">
 
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 🎬 Кастинги
-</h1>
+\</h1>
 
-<p>
+\<p>
 Твоя профессиональная память
-</p>
+\</p>
 
-</div>
+\</div>
 
 
-<button
+\<button
 class="btn"
 onclick="openModal()">
 
 ＋ Добавить
 
-</button>
+\</button>
 
-</div>
+\</div>
 
 
-<div id="dbStatus"
+\<div id="dbStatus"
 class="status">
 
 Подключение к Supabase...
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<div id="castingList">
+\<div id="castingList">
 
-<div class="empty">
+\<div class="empty">
 Загрузка...
-</div>
+\</div>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</section>
+\</section>
 
 
 
-<!-- MATERIALS -->
+\<!-- MATERIALS -->
 
-<section id="materials"
+\<section id="materials"
 class="page">
 
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 📸 Материалы
-</h1>
+\</h1>
 
-<p>
+\<p>
 Фото, видео и будущий Materials Director
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
-
-
-<div class="cards">
+\</div>
 
 
-<div class="card">
+\<div class="cards">
 
-<h2 style="font-size:18px">
+
+\<div class="card">
+
+\<h2 style="font-size:18px">
 Главное фото
-</h2>
+\</h2>
 
-<img
-src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
-style="width:120px;height:155px;object-fit:cover;border-radius:10px"
->
+\<img
+src="[https://trailers.filmtoolz.ru/images/photos\_people/hq/1112811.jpg](https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg)"
+style="width:120px;height:155px;object-fit\:cover;border-radius:10px"
+\>
 
-<p>
+\<p>
 
 Главное фото профиля.
 
-</p>
+\</p>
 
-<span class="badge green">
+\<span class="badge green">
 Основное
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<h2 style="font-size:18px">
+\<h2 style="font-size:18px">
 Фотографии
-</h2>
+\</h2>
 
-<strong style="font-size:30px">
+\<strong style="font-size:30px">
 24
-</strong>
+\</strong>
 
-<p>
+\<p>
 фотографии в профиле
-</p>
+\</p>
 
-<span class="badge yellow">
+\<span class="badge yellow">
 AI-аудит
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<h2 style="font-size:18px">
+\<h2 style="font-size:18px">
 Видео
-</h2>
+\</h2>
 
-<strong style="font-size:30px">
+\<strong style="font-size:30px">
 1+
-</strong>
+\</strong>
 
-<p>
+\<p>
 видео
-</p>
+\</p>
 
-<span class="badge yellow">
+\<span class="badge yellow">
 AI-анализ
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<h2 style="font-size:18px">
+\<h2 style="font-size:18px">
 Что снять
-</h2>
+\</h2>
 
-<p>
+\<p>
 
 AI позже предложит фотографии,
 монологи и сцены, которые лучше
 раскрывают твой кастинговый диапазон.
 
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</section>
+\</section>
 
 
 
-<!-- CAREER -->
+\<!-- CAREER -->
 
-<section id="career"
+\<section id="career"
 class="page">
 
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 📊 Карьера
-</h1>
+\</h1>
 
-<p>
+\<p>
 Weekly Agent и карьерная аналитика
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div class="cards">
+\<div class="cards">
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong>
+\<strong>
 4
-</strong>
+\</strong>
 
-<span>
+\<span>
 экранных проекта
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong>
+\<strong>
 2
-</strong>
+\</strong>
 
-<span>
+\<span>
 главные роли
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong>
+\<strong>
 2026
-</strong>
+\</strong>
 
-<span>
+\<span>
 новые главные роли
-</span>
+\</span>
 
-</div>
+\</div>
 
 
-<div class="card metric">
+\<div class="card metric">
 
-<strong>
+\<strong>
 AI
-</strong>
+\</strong>
 
-<span>
+\<span>
 анализ карьеры
-</span>
+\</span>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div class="card"
+\<div class="card"
 style="margin-top:15px">
 
-<h2>
+\<h2>
 Weekly Agent
-</h2>
+\</h2>
 
-<p>
+\<p>
 Будущий агент будет раз в неделю анализировать:
-</p>
+\</p>
 
-<ul>
+\<ul>
 
-<li>
+\<li>
 какие кастинги появились;
-</li>
+\</li>
 
-<li>
+\<li>
 куда ты подавалась;
-</li>
+\</li>
 
-<li>
+\<li>
 где были пробы;
-</li>
+\</li>
 
-<li>
+\<li>
 какие заявки получили ответ;
-</li>
+\</li>
 
-<li>
+\<li>
 какие роли приводят к пробам;
-</li>
+\</li>
 
-<li>
+\<li>
 какие материалы работают;
-</li>
+\</li>
 
-<li>
+\<li>
 что делать на следующей неделе.
-</li>
+\</li>
 
-</ul>
+\</ul>
 
-</div>
+\</div>
 
-</section>
+\</section>
 
 
 
-<!-- AGENT -->
+\<!-- AGENT -->
 
-<section id="agent"
+\<section id="agent"
 class="page">
 
 
-<div class="header">
+\<div class="header">
 
-<div>
+\<div>
 
-<h1>
+\<h1>
 🧠 AI-агент
-</h1>
+\</h1>
 
-<p>
+\<p>
 Центр управления карьерой
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div class="card">
+\<div class="card">
 
-<div id="chat">
+\<div id="chat">
 
-<div class="notice">
+\<div class="notice">
 
-<b>
+\<b>
 Агент:
-</b>
+\</b>
 
-<p>
+\<p>
 
 Я уже вижу твой профиль.
 Следующий этап — подключить
 реальный AI-анализ.
 
-</p>
+\</p>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
 
-<div style="display:flex;gap:10px">
+\<div style="display\:flex;gap:10px">
 
-<input
+\<input
 id="chatInput"
 placeholder="Например: стоит ли мне подаваться?"
->
+\>
 
-<button
+\<button
 class="btn"
 onclick="sendMessage()">
 
 Отправить
 
-</button>
+\</button>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</section>
-
-
-</main>
-
-</div>
+\</section>
 
 
+\</main>
 
-<!-- MODAL -->
+\</div>
 
-<div id="modal"
+
+
+\<!-- MODAL -->
+
+\<div id="modal"
 class="modal">
 
 
-<div class="modal-box">
+\<div class="modal-box">
 
 
-<h2>
+\<h2>
 Новый кастинг
-</h2>
+\</h2>
 
 
-<label>
+\<label>
 
 Название проекта
 
-<input
+\<input
 id="projectName"
 placeholder="Например: Новый сериал"
->
+\>
 
-</label>
+\</label>
 
-<label>
+\<label>
 Ссылка на кастинг
 
-<input
+\<input
 id="castingUrl"
 type="url"
-placeholder="https://..."
->
-</label>
+placeholder="https\://..."
+\>
+\</label>
 
-  
-<label>
+ &#x20;
+\<label>
 
 Роль
 
-<input
+\<input
 id="roleName"
 placeholder="Например: главная роль"
->
+\>
 
-</label>
+\</label>
 
 
-<label>
+\<label>
 
 Дедлайн
 
-<input
+\<input
 id="deadline"
 type="date"
->
+\>
 
-</label>
-  
-<label>
+\</label>
+ &#x20;
+\<label>
 Дата подачи
 
-<input
+\<input
 id="appliedAt"
 type="date"
->
-</label>
+\>
+\</label>
 
-<label>
+\<label>
 
 Текст или ссылка кастинга
 
-<textarea
+\<textarea
 id="castingText"
 rows="7"
 placeholder="Вставь сюда текст кастинга..."
-></textarea>
+\>\</textarea>
 
-</label>
-<label>
+\</label>
+\<label>
 Статус
 
-<select id="castingStatus">
-    <option value="new">Новая подача</option>
-    <option value="submitted">Отправлена</option>
-    <option value="audition">Пригласили на пробы</option>
-    <option value="self-tape">Пробы отправлены</option>
-    <option value="callback">Callback</option>
-    <option value="approved">Утверждена</option>
-    <option value="rejected">Не утвердили</option>
-    <option value="no_response">Не ответили</option>
-    <option value="cancelled">Отменён</option>
-</select>
-</label>
+\<select id="castingStatus">
+    \<option value="new">Новая подача\</option>
+    \<option value="submitted">Отправлена\</option>
+    \<option value="audition">Пригласили на пробы\</option>
+    \<option value="self-tape">Пробы отправлены\</option>
+    \<option value="callback">Callback\</option>
+    \<option value="approved">Утверждена\</option>
+    \<option value="rejected">Не утвердили\</option>
+    \<option value="no\_response">Не ответили\</option>
+    \<option value="cancelled">Отменён\</option>
+\</select>
+\</label>
+
+  \<label>
+Ссылка на кастинг
+
+\<input
+id="castingUrl"
+type="url"
+placeholder="https\://..."
+\>
+\</label>
 
 
-
-<label>
+\<label>
 Заметки
 
-<textarea
+\<textarea
 id="castingNotes"
 rows="4"
 placeholder="Что важно помнить об этом кастинге..."
-></textarea>
+\>\</textarea>
 
-  
-<div class="modal-buttons">
+ &#x20;
+\<div class="modal-buttons">
 
-<button
+\<button
 class="btn light"
 onclick="closeModal()">
 
 Отмена
 
-</button>
+\</button>
 
 
-<button
+\<button
 class="btn"
 onclick="saveCasting()">
 
 Сохранить
 
-</button>
+\</button>
 
-</div>
+\</div>
 
-</div>
+\</div>
 
-</div>
-
-
-
-<script>
-
-
-/* =========================
-SUPABASE
-========================= */
-
-
-const SUPABASE_URL =
-'https://kavepxugysumhpcftzqy.supabase.co/';
-
-
-/*
-ВАЖНО:
-
-ВСТАВЬ СЮДА СВОЙ
-PUBLISHABLE KEY
-
-Он начинается с:
-
-sb_publishable_
-*/
-
-
-const SUPABASE_KEY =
-'sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd';
-
-
-const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-
-let actorId = null;
+\</div>
 
 
 
@@ -2067,7 +2038,6 @@ await loadCastings();
 
 </script>
 
+\</body>
 
-</body>
-
-</html>
+\</html>
