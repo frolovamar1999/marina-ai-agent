@@ -1229,6 +1229,15 @@ placeholder="Например: Новый сериал"
 
 </label>
 
+  <label>
+Ссылка на кастинг
+
+<input
+id="castingUrl"
+type="url"
+placeholder="https://..."
+>
+</label>
 
 <label>
 
@@ -1253,7 +1262,15 @@ type="date"
 
 </label>
 
+<label>
+Дата подачи
 
+<input
+id="appliedAt"
+type="date"
+>
+</label>
+  
 <label>
 
 Текст или ссылка кастинга
@@ -1266,7 +1283,15 @@ placeholder="Вставь сюда текст кастинга..."
 
 </label>
 
+<label>
+Заметки
 
+<textarea
+id="castingNotes"
+rows="4"
+placeholder="Что важно помнить об этом кастинге..."
+></textarea>
+  
 <div class="modal-buttons">
 
 <button
@@ -1745,21 +1770,36 @@ await supabaseClient
 
 actor_id:
 actorId,
+{
+actor_id: actorId,
+
+project_name: projectName,
+
+role_name: roleName || null,
 
 project_name:
 projectName,
+deadline: deadline,
 
 role_name:
 roleName || null,
+casting_url:
+document.getElementById('castingUrl').value.trim() || null,
 
 deadline:
 deadline,
+applied_at:
+document.getElementById('appliedAt').value || null,
 
 casting_text:
 castingText || null,
 
+notes:
+document.getElementById('castingNotes').value.trim() || null,
+
 status:
 'new'
+}
 
 });
 
