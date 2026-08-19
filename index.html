@@ -1579,36 +1579,6 @@ async function changeCastingStatus(castingId, newStatus) {
 }
 
 
-    async function deleteCasting(castingId) {
-
-  const confirmed = confirm(
-    'Удалить этот кастинг?\n\nЭто действие нельзя отменить.'
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  const result = await supabaseClient
-    .from('castings')
-    .delete()
-    .eq('id', castingId)
-    .eq('actor_id', actorId);
-
-  if (result.error) {
-
-    console.error(
-      'Delete casting error:',
-      result.error
-    );
-
-    alert(
-      'Не удалось удалить кастинг:\n\n' +
-      result.error.message
-    );
-
-    return;
-  }
 
   await loadCastings();
 }
