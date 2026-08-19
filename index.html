@@ -2,8 +2,11 @@
 <html lang="ru">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>Marina AI Agent</title>
 
@@ -33,6 +36,10 @@ select {
     display: flex;
     min-height: 100vh;
 }
+
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar {
     width: 240px;
@@ -78,6 +85,10 @@ select {
     color: white;
 }
 
+/* =========================
+   CONTENT
+========================= */
+
 .content {
     margin-left: 240px;
     padding: 30px;
@@ -110,6 +121,10 @@ select {
     margin-top: 5px;
 }
 
+/* =========================
+   BUTTONS
+========================= */
+
 .btn {
     border: 0;
     background: #252321;
@@ -127,6 +142,19 @@ select {
     background: #ebe8e2;
     color: #222;
 }
+
+.btn.danger {
+    background: #8b3a32;
+}
+
+.btn.small {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* =========================
+   CARDS
+========================= */
 
 .cards {
     display: grid;
@@ -158,6 +186,10 @@ select {
     margin-top: 15px;
 }
 
+/* =========================
+   SECTIONS
+========================= */
+
 .section-title {
     display: flex;
     justify-content: space-between;
@@ -173,9 +205,10 @@ select {
 .casting {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
+    align-items: flex-start;
+    padding: 18px 0;
     border-top: 1px solid #eee;
+    gap: 20px;
 }
 
 .casting:first-child {
@@ -183,14 +216,25 @@ select {
 }
 
 .casting h3 {
-    margin: 0 0 5px;
-    font-size: 16px;
+    margin: 0 0 7px;
+    font-size: 17px;
 }
 
 .casting p {
     margin: 5px 0;
     color: #777;
 }
+
+.casting-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* =========================
+   BADGES
+========================= */
 
 .badge {
     display: inline-block;
@@ -208,6 +252,14 @@ select {
 .badge.yellow {
     background: #f8eed3;
 }
+
+.badge.red {
+    background: #f7e1de;
+}
+
+/* =========================
+   PROFILE
+========================= */
 
 .profile {
     display: flex;
@@ -253,6 +305,10 @@ select {
     font-size: 13px;
 }
 
+/* =========================
+   NOTICE / STATUS
+========================= */
+
 .notice {
     background: #f1efeb;
     border-radius: 9px;
@@ -277,6 +333,10 @@ select {
     background: #f7e1de;
     color: #7a3027;
 }
+
+/* =========================
+   MODAL
+========================= */
 
 .modal {
     position: fixed;
@@ -339,11 +399,19 @@ textarea {
     flex: 1;
 }
 
+/* =========================
+   EMPTY
+========================= */
+
 .empty {
     padding: 35px 10px;
     text-align: center;
     color: #777;
 }
+
+/* =========================
+   LINKS
+========================= */
 
 .castings-link {
     margin-top: 8px;
@@ -352,6 +420,10 @@ textarea {
 .castings-link a {
     color: #333;
 }
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 800px) {
 
@@ -390,45 +462,90 @@ textarea {
         flex-direction: column;
     }
 
+    .header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .casting {
+        flex-direction: column;
+    }
+
+    .casting-actions {
+        justify-content: flex-start;
+    }
 }
 
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app">
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
 
 <aside class="sidebar">
 
     <div class="logo">
+
         MARINA AI
-        <span>личный агент</span>
+
+        <span>
+            личный агент
+        </span>
+
     </div>
+
 
     <div class="nav">
 
-        <button class="active" onclick="showPage('home', this)">
+        <button
+            class="active"
+            onclick="showPage('home', this)"
+        >
             🏠 Главная
         </button>
 
-        <button onclick="showPage('profile', this)">
+
+        <button
+            onclick="showPage('profile', this)"
+        >
             👩 Профиль
         </button>
 
-        <button onclick="showPage('castings', this)">
+
+        <button
+            onclick="showPage('castings', this)"
+        >
             🎬 Кастинги
         </button>
 
-        <button onclick="showPage('materials', this)">
+
+        <button
+            onclick="showPage('materials', this)"
+        >
             📸 Материалы
         </button>
 
-        <button onclick="showPage('career', this)">
+
+        <button
+            onclick="showPage('career', this)"
+        >
             📊 Карьера
         </button>
 
-        <button onclick="showPage('agent', this)">
+
+        <button
+            onclick="showPage('agent', this)"
+        >
             🧠 Агент
         </button>
 
@@ -436,56 +553,110 @@ textarea {
 
 </aside>
 
+
 <main class="content">
 
-<!-- HOME -->
 
-<section id="home" class="page active">
+<!-- =========================
+     HOME
+========================= -->
+
+<section
+    id="home"
+    class="page active"
+>
 
     <div class="header">
 
         <div>
-            <h1>Добрый день, Марина</h1>
-            <p>Твой личный AI-агент</p>
+
+            <h1>
+                Добрый день, Марина
+            </h1>
+
+            <p>
+                Твой личный AI-агент
+            </p>
+
         </div>
 
-        <button class="btn" onclick="openModal()">
+
+        <button
+            class="btn"
+            onclick="openNewCastingModal()"
+        >
             ＋ Новый кастинг
         </button>
 
     </div>
 
+
     <div class="cards">
 
         <div class="card metric">
-            <strong id="activeCount">0</strong>
-            <span>активных кастингов</span>
+
+            <strong id="activeCount">
+                0
+            </strong>
+
+            <span>
+                активных кастингов
+            </span>
+
         </div>
 
-        <div class="card metric">
-            <strong id="auditionCount">0</strong>
-            <span>проб</span>
-        </div>
 
         <div class="card metric">
-            <strong id="waitingCount">0</strong>
-            <span>без ответа</span>
+
+            <strong id="auditionCount">
+                0
+            </strong>
+
+            <span>
+                проб
+            </span>
+
         </div>
 
+
         <div class="card metric">
-            <strong id="actionCount">0</strong>
-            <span>требуют действия</span>
+
+            <strong id="waitingCount">
+                0
+            </strong>
+
+            <span>
+                без ответа
+            </span>
+
+        </div>
+
+
+        <div class="card metric">
+
+            <strong id="actionCount">
+                0
+            </strong>
+
+            <span>
+                требуют действия
+            </span>
+
         </div>
 
     </div>
 
+
     <div class="two">
+
 
         <div class="card">
 
             <div class="section-title">
 
-                <h2>🎯 Следующее действие</h2>
+                <h2>
+                    🎯 Следующее действие
+                </h2>
 
                 <span class="badge green">
                     AI
@@ -493,9 +664,12 @@ textarea {
 
             </div>
 
+
             <div class="notice">
 
-                <b>Добавь первый реальный кастинг</b>
+                <b>
+                    Добавь первый реальный кастинг
+                </b>
 
                 <p>
                     Агент сохранит его в твою память,
@@ -503,13 +677,18 @@ textarea {
                     соответствие роли твоему типажу.
                 </p>
 
-                <button class="btn light" onclick="openModal()">
+
+                <button
+                    class="btn light"
+                    onclick="openNewCastingModal()"
+                >
                     Добавить кастинг
                 </button>
 
             </div>
 
         </div>
+
 
         <div class="card">
 
@@ -522,12 +701,19 @@ textarea {
             </p>
 
             <ul>
+
                 <li>кастинги</li>
+
                 <li>подачи</li>
+
                 <li>пробы</li>
+
                 <li>результаты</li>
+
                 <li>материалы</li>
+
                 <li>карьерную статистику</li>
+
             </ul>
 
         </div>
@@ -537,18 +723,31 @@ textarea {
 </section>
 
 
-<!-- PROFILE -->
+<!-- =========================
+     PROFILE
+========================= -->
 
-<section id="profile" class="page">
+<section
+    id="profile"
+    class="page"
+>
 
     <div class="header">
 
         <div>
-            <h1>👩 Профиль</h1>
-            <p>Фролова Марина Сергеевна</p>
+
+            <h1>
+                👩 Профиль
+            </h1>
+
+            <p>
+                Фролова Марина Сергеевна
+            </p>
+
         </div>
 
     </div>
+
 
     <div class="card profile">
 
@@ -556,6 +755,7 @@ textarea {
             src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
             alt="Марина Фролова"
         >
+
 
         <div class="profile-info">
 
@@ -567,27 +767,66 @@ textarea {
                 Актриса · Москва · самозанятая
             </p>
 
+
             <div class="info">
 
-                <div>Возраст</div>
-                <div>27 лет</div>
+                <div>
+                    Возраст
+                </div>
 
-                <div>Рост</div>
-                <div>157 см</div>
+                <div>
+                    27 лет
+                </div>
 
-                <div>Вес</div>
-                <div>45 кг</div>
 
-                <div>Тип внешности</div>
-                <div>Европейский, славянский</div>
+                <div>
+                    Рост
+                </div>
 
-                <div>Волосы</div>
-                <div>Шатен</div>
+                <div>
+                    157 см
+                </div>
 
-                <div>Глаза</div>
-                <div>Серо-голубые</div>
 
-                <div>Образование</div>
+                <div>
+                    Вес
+                </div>
+
+                <div>
+                    45 кг
+                </div>
+
+
+                <div>
+                    Тип внешности
+                </div>
+
+                <div>
+                    Европейский, славянский
+                </div>
+
+
+                <div>
+                    Волосы
+                </div>
+
+                <div>
+                    Шатен
+                </div>
+
+
+                <div>
+                    Глаза
+                </div>
+
+                <div>
+                    Серо-голубые
+                </div>
+
+
+                <div>
+                    Образование
+                </div>
 
                 <div>
                     Институт театрального искусства им. И. Кобзона;
@@ -602,13 +841,17 @@ textarea {
 
     </div>
 
+
     <div class="two">
+
 
         <div class="card">
 
             <div class="section-title">
 
-                <h2>🎭 Типаж</h2>
+                <h2>
+                    🎭 Типаж
+                </h2>
 
                 <span class="badge yellow">
                     AI
@@ -616,24 +859,43 @@ textarea {
 
             </div>
 
+
             <p>
+
                 Предварительная гипотеза:
                 молодая драматическая героиня,
                 сочетающая эмоциональную уязвимость,
                 внутреннюю силу и романтическую природу.
+
             </p>
+
 
             <div class="tags">
 
-                <span class="tag">dramatic heroine</span>
-                <span class="tag">romantic</span>
-                <span class="tag">vulnerable</span>
-                <span class="tag">strong</span>
-                <span class="tag">psychological</span>
+                <span class="tag">
+                    dramatic heroine
+                </span>
+
+                <span class="tag">
+                    romantic
+                </span>
+
+                <span class="tag">
+                    vulnerable
+                </span>
+
+                <span class="tag">
+                    strong
+                </span>
+
+                <span class="tag">
+                    psychological
+                </span>
 
             </div>
 
         </div>
+
 
         <div class="card">
 
@@ -641,47 +903,87 @@ textarea {
                 🎬 Роли
             </h2>
 
+
             <div class="casting">
 
                 <div>
-                    <h3>Открытое сердце</h3>
-                    <p>Алевтина · главная роль</p>
+
+                    <h3>
+                        Открытое сердце
+                    </h3>
+
+                    <p>
+                        Алевтина · главная роль
+                    </p>
+
                 </div>
 
-                <span class="badge green">2025</span>
+                <span class="badge green">
+                    2025
+                </span>
 
             </div>
 
+
             <div class="casting">
 
                 <div>
-                    <h3>Невыполненное обещание</h3>
-                    <p>Нона · главная роль</p>
+
+                    <h3>
+                        Невыполненное обещание
+                    </h3>
+
+                    <p>
+                        Нона · главная роль
+                    </p>
+
                 </div>
 
-                <span class="badge green">2026</span>
+                <span class="badge green">
+                    2026
+                </span>
 
             </div>
 
+
             <div class="casting">
 
                 <div>
-                    <h3>Врачебные истории</h3>
-                    <p>Русалка · эпизод</p>
+
+                    <h3>
+                        Врачебные истории
+                    </h3>
+
+                    <p>
+                        Русалка · эпизод
+                    </p>
+
                 </div>
 
-                <span class="badge">2026</span>
+                <span class="badge">
+                    2026
+                </span>
 
             </div>
 
+
             <div class="casting">
 
                 <div>
-                    <h3>СашаТаня</h3>
-                    <p>Соседка</p>
+
+                    <h3>
+                        СашаТаня
+                    </h3>
+
+                    <p>
+                        Соседка
+                    </p>
+
                 </div>
 
-                <span class="badge">2025</span>
+                <span class="badge">
+                    2025
+                </span>
 
             </div>
 
@@ -692,26 +994,47 @@ textarea {
 </section>
 
 
-<!-- CASTINGS -->
+<!-- =========================
+     CASTINGS
+========================= -->
 
-<section id="castings" class="page">
+<section
+    id="castings"
+    class="page"
+>
 
     <div class="header">
 
         <div>
-            <h1>🎬 Кастинги</h1>
-            <p>Твоя профессиональная память</p>
+
+            <h1>
+                🎬 Кастинги
+            </h1>
+
+            <p>
+                Твоя профессиональная память
+            </p>
+
         </div>
 
-        <button class="btn" onclick="openModal()">
+
+        <button
+            class="btn"
+            onclick="openNewCastingModal()"
+        >
             ＋ Добавить
         </button>
 
     </div>
 
-    <div id="dbStatus" class="status">
+
+    <div
+        id="dbStatus"
+        class="status"
+    >
         Подключение к Supabase...
     </div>
+
 
     <div class="card">
 
@@ -728,20 +1051,34 @@ textarea {
 </section>
 
 
-<!-- MATERIALS -->
+<!-- =========================
+     MATERIALS
+========================= -->
 
-<section id="materials" class="page">
+<section
+    id="materials"
+    class="page"
+>
 
     <div class="header">
 
         <div>
-            <h1>📸 Материалы</h1>
-            <p>Фото, видео и будущий Materials Director</p>
+
+            <h1>
+                📸 Материалы
+            </h1>
+
+            <p>
+                Фото, видео и будущий Materials Director
+            </p>
+
         </div>
 
     </div>
 
+
     <div class="cards">
+
 
         <div class="card">
 
@@ -749,20 +1086,29 @@ textarea {
                 Главное фото
             </h2>
 
+
             <img
                 src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
-                style="width:120px;height:155px;object-fit:cover;border-radius:10px"
+                style="
+                    width:120px;
+                    height:155px;
+                    object-fit:cover;
+                    border-radius:10px;
+                "
             >
+
 
             <p>
                 Главное фото профиля.
             </p>
+
 
             <span class="badge green">
                 Основное
             </span>
 
         </div>
+
 
         <div class="card">
 
@@ -784,6 +1130,7 @@ textarea {
 
         </div>
 
+
         <div class="card">
 
             <h2 style="font-size:18px">
@@ -804,6 +1151,7 @@ textarea {
 
         </div>
 
+
         <div class="card">
 
             <h2 style="font-size:18px">
@@ -811,9 +1159,11 @@ textarea {
             </h2>
 
             <p>
+
                 AI позже предложит фотографии,
                 монологи и сцены, которые лучше
                 раскрывают твой кастинговый диапазон.
+
             </p>
 
         </div>
@@ -823,46 +1173,97 @@ textarea {
 </section>
 
 
-<!-- CAREER -->
+<!-- =========================
+     CAREER
+========================= -->
 
-<section id="career" class="page">
+<section
+    id="career"
+    class="page"
+>
 
     <div class="header">
 
         <div>
-            <h1>📊 Карьера</h1>
-            <p>Weekly Agent и карьерная аналитика</p>
+
+            <h1>
+                📊 Карьера
+            </h1>
+
+            <p>
+                Weekly Agent и карьерная аналитика
+            </p>
+
         </div>
 
     </div>
+
 
     <div class="cards">
 
-        <div class="card metric">
-            <strong>4</strong>
-            <span>экранных проекта</span>
-        </div>
 
         <div class="card metric">
-            <strong>2</strong>
-            <span>главные роли</span>
+
+            <strong>
+                4
+            </strong>
+
+            <span>
+                экранных проекта
+            </span>
+
         </div>
 
-        <div class="card metric">
-            <strong>2026</strong>
-            <span>новые главные роли</span>
-        </div>
 
         <div class="card metric">
-            <strong>AI</strong>
-            <span>анализ карьеры</span>
+
+            <strong>
+                2
+            </strong>
+
+            <span>
+                главные роли
+            </span>
+
+        </div>
+
+
+        <div class="card metric">
+
+            <strong>
+                2026
+            </strong>
+
+            <span>
+                новые главные роли
+            </span>
+
+        </div>
+
+
+        <div class="card metric">
+
+            <strong>
+                AI
+            </strong>
+
+            <span>
+                анализ карьеры
+            </span>
+
         </div>
 
     </div>
 
-    <div class="card" style="margin-top:15px">
 
-        <h2>Weekly Agent</h2>
+    <div
+        class="card"
+        style="margin-top:15px"
+    >
+
+        <h2>
+            Weekly Agent
+        </h2>
 
         <p>
             Будущий агент будет раз в неделю анализировать:
@@ -870,13 +1271,33 @@ textarea {
 
         <ul>
 
-            <li>какие кастинги появились;</li>
-            <li>куда ты подавалась;</li>
-            <li>где были пробы;</li>
-            <li>какие заявки получили ответ;</li>
-            <li>какие роли приводят к пробам;</li>
-            <li>какие материалы работают;</li>
-            <li>что делать на следующей неделе.</li>
+            <li>
+                какие кастинги появились;
+            </li>
+
+            <li>
+                куда ты подавалась;
+            </li>
+
+            <li>
+                где были пробы;
+            </li>
+
+            <li>
+                какие заявки получили ответ;
+            </li>
+
+            <li>
+                какие роли приводят к пробам;
+            </li>
+
+            <li>
+                какие материалы работают;
+            </li>
+
+            <li>
+                что делать на следующей неделе.
+            </li>
 
         </ul>
 
@@ -885,18 +1306,31 @@ textarea {
 </section>
 
 
-<!-- AGENT -->
+<!-- =========================
+     AGENT
+========================= -->
 
-<section id="agent" class="page">
+<section
+    id="agent"
+    class="page"
+>
 
     <div class="header">
 
         <div>
-            <h1>🧠 AI-агент</h1>
-            <p>Центр управления карьерой</p>
+
+            <h1>
+                🧠 AI-агент
+            </h1>
+
+            <p>
+                Центр управления карьерой
+            </p>
+
         </div>
 
     </div>
+
 
     <div class="card">
 
@@ -904,26 +1338,40 @@ textarea {
 
             <div class="notice">
 
-                <b>Агент:</b>
+                <b>
+                    Агент:
+                </b>
 
                 <p>
+
                     Я уже вижу твой профиль.
                     Следующий этап — подключить
                     реальный AI-анализ.
+
                 </p>
 
             </div>
 
         </div>
 
-        <div style="display:flex;gap:10px">
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+            "
+        >
 
             <input
                 id="chatInput"
                 placeholder="Например: стоит ли мне подаваться?"
             >
 
-            <button class="btn" onclick="sendMessage()">
+
+            <button
+                class="btn"
+                onclick="sendMessage()"
+            >
                 Отправить
             </button>
 
@@ -934,29 +1382,51 @@ textarea {
 </section>
 
 </main>
+
 </div>
 
 
-<!-- MODAL -->
+<!-- =========================
+     MODAL
+========================= -->
 
-<div id="modal" class="modal">
+<div
+    id="modal"
+    class="modal"
+>
 
     <div class="modal-box">
 
-        <h2>
+        <!-- ВАЖНО:
+             ID хранит редактируемый кастинг.
+             При новом кастинге он пустой.
+        -->
+
+        <input
+            type="hidden"
+            id="editingCastingId"
+        >
+
+
+        <h2 id="modalTitle">
             Новый кастинг
         </h2>
 
+
         <label>
+
             Название проекта
 
             <input
                 id="projectName"
                 placeholder="Например: Новый сериал"
             >
+
         </label>
 
+
         <label>
+
             Ссылка на кастинг
 
             <input
@@ -964,36 +1434,48 @@ textarea {
                 type="url"
                 placeholder="https://..."
             >
+
         </label>
 
+
         <label>
+
             Роль
 
             <input
                 id="roleName"
                 placeholder="Например: главная роль"
             >
+
         </label>
 
+
         <label>
+
             Дедлайн
 
             <input
                 id="deadline"
                 type="date"
             >
+
         </label>
 
+
         <label>
+
             Дата подачи
 
             <input
                 id="appliedAt"
                 type="date"
             >
+
         </label>
 
+
         <label>
+
             Текст или описание кастинга
 
             <textarea
@@ -1001,9 +1483,12 @@ textarea {
                 rows="7"
                 placeholder="Вставь сюда текст кастинга..."
             ></textarea>
+
         </label>
 
+
         <label>
+
             Статус
 
             <select id="castingStatus">
@@ -1048,7 +1533,9 @@ textarea {
 
         </label>
 
+
         <label>
+
             Заметки
 
             <textarea
@@ -1059,6 +1546,7 @@ textarea {
 
         </label>
 
+
         <div class="modal-buttons">
 
             <button
@@ -1068,7 +1556,9 @@ textarea {
                 Отмена
             </button>
 
+
             <button
+                id="saveCastingButton"
                 class="btn"
                 onclick="saveCasting()"
             >
@@ -1086,7 +1576,7 @@ textarea {
 
 /* =====================================================
    SUPABASE
-   ===================================================== */
+===================================================== */
 
 const SUPABASE_URL =
     'https://kavepxugysumhpcftzqy.supabase.co';
@@ -1107,88 +1597,89 @@ let actorId = null;
 
 /* =====================================================
    NAVIGATION
-   ===================================================== */
+===================================================== */
 
 function showPage(id, button) {
 
     document
         .querySelectorAll('.page')
         .forEach(page => {
+
             page.classList.remove('active');
+
         });
+
 
     const page =
         document.getElementById(id);
 
+
     if (page) {
+
         page.classList.add('active');
+
     }
+
 
     document
         .querySelectorAll('.nav button')
         .forEach(btn => {
+
             btn.classList.remove('active');
+
         });
 
+
     if (button) {
+
         button.classList.add('active');
+
     }
+
 
     if (id === 'castings') {
+
         loadCastings();
+
     }
+
 }
 
 
 /* =====================================================
-   MODAL
-   ===================================================== */
-
-function openModal() {
-
-    document
-        .getElementById('modal')
-        .classList.add('open');
-
-}
-
-
-function closeModal(){
-
-    resetCastingForm();
-
-    document
-        .getElementById('modal')
-        .classList.remove('open');
-}
-
-
-/* =====================================================
-   STATUS
-   ===================================================== */
+   STATUS MESSAGE
+===================================================== */
 
 function setStatus(text, type = '') {
 
     const el =
         document.getElementById('dbStatus');
 
+
     if (!el) {
+
         return;
+
     }
+
 
     el.textContent = text;
 
     el.className = 'status';
 
+
     if (type) {
+
         el.classList.add(type);
+
     }
+
 }
 
 
 /* =====================================================
    FIND ACTOR
-   ===================================================== */
+===================================================== */
 
 async function findActor() {
 
@@ -1211,13 +1702,16 @@ async function findActor() {
             result.error
         );
 
+
         setStatus(
             'Ошибка подключения к базе: ' +
             result.error.message,
             'error'
         );
 
+
         return null;
+
     }
 
 
@@ -1228,7 +1722,9 @@ async function findActor() {
             'error'
         );
 
+
         return null;
+
     }
 
 
@@ -1237,274 +1733,386 @@ async function findActor() {
 
 
     return actorId;
+
+}
+
+
+/* =====================================================
+   OPEN NEW CASTING MODAL
+===================================================== */
+
+function openNewCastingModal() {
+
+    resetCastingForm();
+
+
+    document
+        .getElementById('modalTitle')
+        .textContent =
+        'Новый кастинг';
+
+
+    document
+        .getElementById('saveCastingButton')
+        .textContent =
+        'Сохранить';
+
+
+    document
+        .getElementById('modal')
+        .classList.add('open');
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeModal() {
+
+    document
+        .getElementById('modal')
+        .classList.remove('open');
+
+}
+
+
+/* =====================================================
+   RESET FORM
+===================================================== */
+
+function resetCastingForm() {
+
+    document
+        .getElementById('editingCastingId')
+        .value = '';
+
+
+    document
+        .getElementById('projectName')
+        .value = '';
+
+
+    document
+        .getElementById('castingUrl')
+        .value = '';
+
+
+    document
+        .getElementById('roleName')
+        .value = '';
+
+
+    document
+        .getElementById('deadline')
+        .value = '';
+
+
+    document
+        .getElementById('appliedAt')
+        .value = '';
+
+
+    document
+        .getElementById('castingText')
+        .value = '';
+
+
+    document
+        .getElementById('castingStatus')
+        .value = 'new';
+
+
+    document
+        .getElementById('castingNotes')
+        .value = '';
+
+
+    document
+        .getElementById('modalTitle')
+        .textContent =
+        'Новый кастинг';
+
+
+    document
+        .getElementById('saveCastingButton')
+        .textContent =
+        'Сохранить';
+
 }
 
 
 /* =====================================================
    LOAD CASTINGS
-   ===================================================== */
+===================================================== */
 
-async function loadCastings(){
-
-    setStatus('Подключение к памяти...');
-
-    if(!actorId){
-        const id = await findActor();
-        if(!id) return;
-    }
-
-    const result = await supabaseClient
-        .from('castings')
-        .select('*')
-        .eq('actor_id', actorId)
-        .order('created_at', { ascending: false });
-
-    if(result.error){
-        console.error('Supabase casting error:', result.error);
-
-        setStatus(
-            'Ошибка загрузки кастингов: ' + result.error.message,
-            'error'
-        );
-
-        return;
-    }
-
-    const castings = result.data || [];
-
-    const list = document.getElementById('castingList');
-
-    if(!castings.length){
-
-        list.innerHTML = `
-            <div class="empty">
-                Пока нет кастингов.
-                <br><br>
-                Нажми <b>＋ Добавить</b>, чтобы сохранить первый.
-            </div>
-        `;
-
-    } else {
-
-        list.innerHTML = '';
-
-        castings.forEach(casting => {
-
-            const item = document.createElement('div');
-
-            item.className = 'casting';
-
-            item.innerHTML = `
-
-                <div style="flex:1">
-
-                    <h3>
-                        ${escapeHtml(casting.project_name)}
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            casting.role_name || 'Роль не указана'
-                        )}
-
-                        ${
-                            casting.deadline
-                            ? ' · дедлайн ' +
-                              escapeHtml(casting.deadline)
-                            : ''
-                        }
-                    </p>
-
-                    <span class="badge">
-                        ${getStatusLabel(casting.status)}
-                    </span>
-
-                    ${
-                        casting.applied_at
-                        ? `
-                            <p>
-                                Подана:
-                                ${escapeHtml(casting.applied_at)}
-                            </p>
-                        `
-                        : ''
-                    }
-
-                    ${
-                        casting.notes
-                        ? `
-                            <p>
-                                ${escapeHtml(casting.notes)}
-                            </p>
-                        `
-                        : ''
-                    }
-
-                    ${
-                        casting.casting_url
-                        ? `
-                            <p>
-                                <a
-                                    href="${escapeHtml(casting.casting_url)}"
-                                    target="_blank"
-                                    rel="noopener"
-                                >
-                                    Открыть кастинг →
-                                </a>
-                            </p>
-                        `
-                        : ''
-                    }
-
-                </div>
-
-                <div style="
-                    display:flex;
-                    gap:8px;
-                    margin-left:15px;
-                    flex-wrap:wrap;
-                    justify-content:flex-end;
-                ">
-
-                    <button
-                        class="btn light"
-                        onclick="editCasting('${casting.id}')"
-                    >
-                        ✏️ Изменить
-                    </button>
-
-                    <button
-                        class="btn"
-                        style="background:#8b3a32"
-                        onclick="deleteCasting('${casting.id}')"
-                    >
-                        🗑️ Удалить
-                    </button>
-
-                </div>
-
-            `;
-
-            list.appendChild(item);
-
-        });
-
-    }
-
-    updateCounters(castings);
+async function loadCastings() {
 
     setStatus(
-        'Память подключена · ' + castings.length + ' кастингов',
-        'success'
+        'Подключение к памяти...'
     );
-}
-    
-/* =========================
-EDIT CASTING
-========================= */
 
-async function editCasting(id){
 
-    const result = await supabaseClient
-        .from('castings')
-        .select('*')
-        .eq('id', id)
-        .eq('actor_id', actorId)
-        .single();
+    if (!actorId) {
 
-    if(result.error){
+        const id =
+            await findActor();
 
-        alert(
-            'Не удалось загрузить кастинг:\n\n' +
-            result.error.message
-        );
 
-        return;
+        if (!id) {
+
+            return;
+
+        }
+
     }
 
-    const casting = result.data;
 
-    document.getElementById('projectName').value =
-        casting.project_name || '';
-
-    document.getElementById('roleName').value =
-        casting.role_name || '';
-
-    document.getElementById('deadline').value =
-        casting.deadline || '';
-
-    document.getElementById('appliedAt').value =
-        casting.applied_at || '';
-
-    document.getElementById('castingText').value =
-        casting.casting_text || '';
-
-    document.getElementById('castingUrl').value =
-        casting.casting_url || '';
-
-    document.getElementById('castingNotes').value =
-        casting.notes || '';
-
-    document.getElementById('castingStatus').value =
-        casting.status || 'new';
-
-    document.getElementById('editingCastingId').value =
-        casting.id;
-
-    document.querySelector('#modal h2').textContent =
-        'Редактировать кастинг';
-
-    document.querySelector(
-        '.modal-buttons .btn:last-child'
-    ).textContent = 'Сохранить изменения';
-
-    openModal();
-}
+    const result =
+        await supabaseClient
+            .from('castings')
+            .select('*')
+            .eq(
+                'actor_id',
+                actorId
+            )
+            .order(
+                'created_at',
+                {
+                    ascending: false
+                }
+            );
 
 
-/* =========================
-DELETE CASTING
-========================= */
-
-async function deleteCasting(id){
-
-    const confirmed = confirm(
-        'Удалить этот кастинг?\n\n' +
-        'Это действие нельзя отменить.'
-    );
-
-    if(!confirmed)
-        return;
-
-    const result = await supabaseClient
-        .from('castings')
-        .delete()
-        .eq('id', id)
-        .eq('actor_id', actorId);
-
-    if(result.error){
+    if (result.error) {
 
         console.error(
-            'Delete casting error:',
+            'Supabase casting error:',
             result.error
         );
 
-        alert(
-            'Ошибка удаления:\n\n' +
-            result.error.message
+
+        setStatus(
+            'Ошибка загрузки кастингов: ' +
+            result.error.message,
+            'error'
         );
 
+
         return;
+
     }
 
-    await loadCastings();
+
+    const castings =
+        result.data || [];
+
+
+    renderCastings(
+        castings
+    );
+
+
+    updateCounters(
+        castings
+    );
+
+
+    setStatus(
+        'Память подключена · ' +
+        castings.length +
+        ' кастингов',
+        'success'
+    );
 
 }
 
-    
+
 /* =====================================================
-   STATUS LABEL
-   ===================================================== */
+   RENDER CASTINGS
+===================================================== */
+
+function renderCastings(castings) {
+
+    const list =
+        document.getElementById(
+            'castingList'
+        );
+
+
+    if (!castings.length) {
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                Пока нет кастингов.
+
+                <br><br>
+
+                Нажми
+                <b>＋ Добавить</b>,
+                чтобы сохранить первый.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    list.innerHTML = '';
+
+
+    castings.forEach(casting => {
+
+        const item =
+            document.createElement('div');
+
+
+        item.className =
+            'casting';
+
+
+        const statusClass =
+            getStatusClass(
+                casting.status
+            );
+
+
+        item.innerHTML = `
+
+            <div style="flex:1;">
+
+                <h3>
+                    ${escapeHtml(
+                        casting.project_name
+                    )}
+                </h3>
+
+
+                <p>
+
+                    ${escapeHtml(
+                        casting.role_name ||
+                        'Роль не указана'
+                    )}
+
+                    ${
+                        casting.deadline
+                        ? `
+                            · дедлайн
+                            ${escapeHtml(
+                                casting.deadline
+                            )}
+                          `
+                        : ''
+                    }
+
+                </p>
+
+
+                <span class="
+                    badge
+                    ${statusClass}
+                ">
+
+                    ${escapeHtml(
+                        getStatusLabel(
+                            casting.status
+                        )
+                    )}
+
+                </span>
+
+
+                ${
+                    casting.applied_at
+                    ? `
+                        <p>
+                            📅 Подана:
+                            ${escapeHtml(
+                                casting.applied_at
+                            )}
+                        </p>
+                      `
+                    : ''
+                }
+
+
+                ${
+                    casting.notes
+                    ? `
+                        <p>
+                            📝
+                            ${escapeHtml(
+                                casting.notes
+                            )}
+                        </p>
+                      `
+                    : ''
+                }
+
+
+                ${
+                    casting.casting_url
+                    ? `
+                        <p class="castings-link">
+
+                            <a
+                                href="${escapeHtml(
+                                    casting.casting_url
+                                )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Открыть кастинг →
+                            </a>
+
+                        </p>
+                      `
+                    : ''
+                }
+
+            </div>
+
+
+            <div class="casting-actions">
+
+                <button
+                    class="btn light small"
+                    onclick="editCasting('${casting.id}')"
+                >
+                    ✏️ Изменить
+                </button>
+
+
+                <button
+                    class="btn danger small"
+                    onclick="deleteCasting('${casting.id}')"
+                >
+                    🗑️ Удалить
+                </button>
+
+            </div>
+
+        `;
+
+
+        list.appendChild(item);
+
+    });
+
+}
+
+
+/* =====================================================
+   GET STATUS LABEL
+===================================================== */
 
 function getStatusLabel(status) {
 
@@ -1545,95 +2153,310 @@ function getStatusLabel(status) {
         status ||
         'Новая подача'
     );
-}
 
-async function changeCastingStatus(castingId, newStatus) {
-
-  const result = await supabaseClient
-    .from('castings')
-    .update({
-      status: newStatus,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', castingId)
-    .eq('actor_id', actorId);
-
-  if (result.error) {
-
-    console.error(
-      'Update status error:',
-      result.error
-    );
-
-    alert(
-      'Не удалось изменить статус:\n\n' +
-      result.error.message
-    );
-
-    await loadCastings();
-
-    return;
-  }
-
-  await loadCastings();
 }
 
 
-
-  await loadCastings();
-}
 /* =====================================================
-   SAVE CASTING
-   ===================================================== */
+   STATUS CLASS
+===================================================== */
 
-async function saveCasting(){
+function getStatusClass(status) {
 
-    const projectName =
-        document.getElementById('projectName').value.trim();
+    if (
+        status === 'approved'
+    ) {
 
-    const roleName =
-        document.getElementById('roleName').value.trim();
+        return 'green';
 
-    const deadline =
-        document.getElementById('deadline').value || null;
-
-    const appliedAt =
-        document.getElementById('appliedAt').value || null;
-
-    const castingText =
-        document.getElementById('castingText').value.trim();
-
-    const castingStatus =
-        document.getElementById('castingStatus').value;
-
-    const castingUrl =
-        document.getElementById('castingUrl').value.trim();
-
-    const castingNotes =
-        document.getElementById('castingNotes').value.trim();
-
-    const editingId =
-        document.getElementById('editingCastingId').value;
-
-    if(!projectName){
-
-        alert('Введите название проекта.');
-
-        return;
     }
 
-    if(!actorId){
 
-        const id = await findActor();
+    if (
+        status === 'audition' ||
+        status === 'self-tape' ||
+        status === 'callback'
+    ) {
 
-        if(!id){
+        return 'yellow';
+
+    }
+
+
+    if (
+        status === 'rejected' ||
+        status === 'cancelled'
+    ) {
+
+        return 'red';
+
+    }
+
+
+    return '';
+
+}
+
+
+/* =====================================================
+   EDIT CASTING
+===================================================== */
+
+async function editCasting(id) {
+
+    if (!actorId) {
+
+        const actor =
+            await findActor();
+
+
+        if (!actor) {
 
             alert(
                 'Профиль Марины не найден.'
             );
 
+
             return;
+
         }
+
+    }
+
+
+    const result =
+        await supabaseClient
+            .from('castings')
+            .select('*')
+            .eq(
+                'id',
+                id
+            )
+            .eq(
+                'actor_id',
+                actorId
+            )
+            .single();
+
+
+    if (result.error) {
+
+        console.error(
+            'Load casting for edit error:',
+            result.error
+        );
+
+
+        alert(
+            'Не удалось загрузить кастинг:\n\n' +
+            result.error.message
+        );
+
+
+        return;
+
+    }
+
+
+    const casting =
+        result.data;
+
+
+    document
+        .getElementById('editingCastingId')
+        .value =
+        casting.id || '';
+
+
+    document
+        .getElementById('projectName')
+        .value =
+        casting.project_name || '';
+
+
+    document
+        .getElementById('castingUrl')
+        .value =
+        casting.casting_url || '';
+
+
+    document
+        .getElementById('roleName')
+        .value =
+        casting.role_name || '';
+
+
+    document
+        .getElementById('deadline')
+        .value =
+        casting.deadline || '';
+
+
+    document
+        .getElementById('appliedAt')
+        .value =
+        casting.applied_at || '';
+
+
+    document
+        .getElementById('castingText')
+        .value =
+        casting.casting_text || '';
+
+
+    document
+        .getElementById('castingStatus')
+        .value =
+        casting.status || 'new';
+
+
+    document
+        .getElementById('castingNotes')
+        .value =
+        casting.notes || '';
+
+
+    document
+        .getElementById('modalTitle')
+        .textContent =
+        'Редактировать кастинг';
+
+
+    document
+        .getElementById('saveCastingButton')
+        .textContent =
+        'Сохранить изменения';
+
+
+    document
+        .getElementById('modal')
+        .classList.add('open');
+
+}
+
+
+/* =====================================================
+   SAVE CASTING
+===================================================== */
+
+async function saveCasting() {
+
+    const projectName =
+        document
+            .getElementById(
+                'projectName'
+            )
+            .value
+            .trim();
+
+
+    const castingUrl =
+        document
+            .getElementById(
+                'castingUrl'
+            )
+            .value
+            .trim();
+
+
+    const roleName =
+        document
+            .getElementById(
+                'roleName'
+            )
+            .value
+            .trim();
+
+
+    const deadline =
+        document
+            .getElementById(
+                'deadline'
+            )
+            .value ||
+        null;
+
+
+    const appliedAt =
+        document
+            .getElementById(
+                'appliedAt'
+            )
+            .value ||
+        null;
+
+
+    const castingText =
+        document
+            .getElementById(
+                'castingText'
+            )
+            .value
+            .trim();
+
+
+    const castingStatus =
+        document
+            .getElementById(
+                'castingStatus'
+            )
+            .value;
+
+
+    const castingNotes =
+        document
+            .getElementById(
+                'castingNotes'
+            )
+            .value
+            .trim();
+
+
+    const editingId =
+        document
+            .getElementById(
+                'editingCastingId'
+            )
+            .value;
+
+
+    /* =========================
+       VALIDATION
+    ========================= */
+
+    if (!projectName) {
+
+        alert(
+            'Введите название проекта.'
+        );
+
+
+        return;
+
+    }
+
+
+    /* =========================
+       ACTOR
+    ========================= */
+
+    if (!actorId) {
+
+        const id =
+            await findActor();
+
+
+        if (!id) {
+
+            alert(
+                'Профиль Марины не найден.'
+            );
+
+
+            return;
+
+        }
+
     }
 
 
@@ -1641,163 +2464,90 @@ async function saveCasting(){
        UPDATE
     ========================= */
 
-    if(editingId){
+    if (editingId) {
 
-        const result = await supabaseClient
-            .from('castings')
-            .update({
+        const result =
+            await supabaseClient
+                .from('castings')
+                .update({
 
-                project_name: projectName,
+                    project_name:
+                        projectName,
 
-                role_name:
-                    roleName || null,
+                    casting_url:
+                        castingUrl ||
+                        null,
 
-                deadline:
-                    deadline,
+                    role_name:
+                        roleName ||
+                        null,
 
-                applied_at:
-                    appliedAt,
+                    deadline:
+                        deadline,
 
-                casting_text:
-                    castingText || null,
+                    applied_at:
+                        appliedAt,
 
-                casting_url:
-                    castingUrl || null,
+                    casting_text:
+                        castingText ||
+                        null,
 
-                notes:
-                    castingNotes || null,
+                    status:
+                        castingStatus,
 
-                status:
-                    castingStatus,
+                    notes:
+                        castingNotes ||
+                        null,
 
-                updated_at:
-                    new Date().toISOString()
+                    updated_at:
+                        new Date()
+                            .toISOString()
 
-            })
-            .eq('id', editingId)
-            .eq('actor_id', actorId);
+                })
+                .eq(
+                    'id',
+                    editingId
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                );
 
 
-        if(result.error){
+        if (result.error) {
 
             console.error(
                 'Update casting error:',
                 result.error
             );
 
+
             alert(
                 'Ошибка изменения:\n\n' +
                 result.error.message
             );
 
+
             return;
+
         }
 
 
-        resetCastingForm();
-
         closeModal();
+
+        resetCastingForm();
 
         await loadCastings();
 
+
         return;
+
     }
 
 
     /* =========================
        INSERT
     ========================= */
-
-    const result = await supabaseClient
-        .from('castings')
-        .insert({
-
-            actor_id:
-                actorId,
-
-            project_name:
-                projectName,
-
-            role_name:
-                roleName || null,
-
-            deadline:
-                deadline,
-
-            applied_at:
-                appliedAt,
-
-            casting_text:
-                castingText || null,
-
-            casting_url:
-                castingUrl || null,
-
-            notes:
-                castingNotes || null,
-
-            status:
-                castingStatus
-
-        });
-
-
-    if(result.error){
-
-        console.error(
-            'Save casting error:',
-            result.error
-        );
-
-        alert(
-            'Ошибка сохранения:\n\n' +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    resetCastingForm();
-
-    closeModal();
-
-    await loadCastings();
-
-}
-
-
-    function resetCastingForm(){
-
-    document.getElementById('projectName').value = '';
-
-    document.getElementById('roleName').value = '';
-
-    document.getElementById('deadline').value = '';
-
-    document.getElementById('appliedAt').value = '';
-
-    document.getElementById('castingText').value = '';
-
-    document.getElementById('castingUrl').value = '';
-
-    document.getElementById('castingNotes').value = '';
-
-    document.getElementById('castingStatus').value = 'new';
-
-    document.getElementById('editingCastingId').value = '';
-
-    document.querySelector('#modal h2').textContent =
-        'Новый кастинг';
-
-    document.querySelector(
-        '.modal-buttons .btn:last-child'
-    ).textContent = 'Сохранить';
-}
-
-    /* =================================================
-       INSERT
-       ================================================= */
 
     const result =
         await supabaseClient
@@ -1809,6 +2559,10 @@ async function saveCasting(){
 
                 project_name:
                     projectName,
+
+                casting_url:
+                    castingUrl ||
+                    null,
 
                 role_name:
                     roleName ||
@@ -1824,16 +2578,12 @@ async function saveCasting(){
                     castingText ||
                     null,
 
-                casting_url:
-                    castingUrl ||
-                    null,
+                status:
+                    castingStatus,
 
                 notes:
                     castingNotes ||
-                    null,
-
-                status:
-                    castingStatus
+                    null
 
             });
 
@@ -1841,146 +2591,213 @@ async function saveCasting(){
     if (result.error) {
 
         console.error(
-            'Save casting error:',
+            'Insert casting error:',
             result.error
         );
+
 
         alert(
             'Ошибка сохранения:\n\n' +
             result.error.message
         );
 
+
         return;
+
     }
-
-
-    /* =================================================
-       CLEAR FORM
-       ================================================= */
-
-    document
-        .getElementById('projectName')
-        .value = '';
-
-
-    document
-        .getElementById('roleName')
-        .value = '';
-
-
-    document
-        .getElementById('deadline')
-        .value = '';
-
-
-    document
-        .getElementById('appliedAt')
-        .value = '';
-
-
-    document
-        .getElementById('castingText')
-        .value = '';
-
-
-    document
-        .getElementById('castingUrl')
-        .value = '';
-
-
-    document
-        .getElementById('castingNotes')
-        .value = '';
-
-
-    document
-        .getElementById('castingStatus')
-        .value = 'new';
 
 
     closeModal();
 
+    resetCastingForm();
 
     await loadCastings();
 
-
-    showPage(
-        'castings'
-    );
 }
 
 
 /* =====================================================
-   COUNTERS
-   ===================================================== */
+   DELETE CASTING
+===================================================== */
+
+async function deleteCasting(id) {
+
+    const confirmed =
+        confirm(
+            'Удалить этот кастинг?\n\n' +
+            'Это действие нельзя отменить.'
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    if (!actorId) {
+
+        const actor =
+            await findActor();
+
+
+        if (!actor) {
+
+            alert(
+                'Профиль Марины не найден.'
+            );
+
+
+            return;
+
+        }
+
+    }
+
+
+    const result =
+        await supabaseClient
+            .from('castings')
+            .delete()
+            .eq(
+                'id',
+                id
+            )
+            .eq(
+                'actor_id',
+                actorId
+            );
+
+
+    if (result.error) {
+
+        console.error(
+            'Delete casting error:',
+            result.error
+        );
+
+
+        alert(
+            'Ошибка удаления:\n\n' +
+            result.error.message
+        );
+
+
+        return;
+
+    }
+
+
+    await loadCastings();
+
+}
+
+
+/* =====================================================
+   UPDATE COUNTERS
+===================================================== */
 
 function updateCounters(castings) {
 
     const active =
-        castings.filter(c =>
-            ![
-                'rejected',
-                'cancelled',
-                'approved'
-            ].includes(c.status)
+        castings.filter(
+            casting => {
+
+                return ![
+                    'rejected',
+                    'cancelled',
+                    'approved'
+                ].includes(
+                    casting.status
+                );
+
+            }
         ).length;
 
 
     const auditions =
-        castings.filter(c =>
-            [
-                'audition',
-                'self-tape',
-                'callback'
-            ].includes(c.status)
+        castings.filter(
+            casting => {
+
+                return [
+                    'audition',
+                    'self-tape',
+                    'callback'
+                ].includes(
+                    casting.status
+                );
+
+            }
         ).length;
 
 
     const waiting =
-        castings.filter(c =>
-            c.status ===
-            'no_response'
+        castings.filter(
+            casting => {
+
+                return (
+                    casting.status ===
+                    'no_response'
+                );
+
+            }
         ).length;
 
 
     const actions =
-        castings.filter(c =>
-            [
-                'audition',
-                'self-tape',
-                'callback'
-            ].includes(c.status)
+        castings.filter(
+            casting => {
+
+                return [
+                    'audition',
+                    'self-tape',
+                    'callback'
+                ].includes(
+                    casting.status
+                );
+
+            }
         ).length;
 
 
     document
-        .getElementById('activeCount')
+        .getElementById(
+            'activeCount'
+        )
         .textContent =
         active;
 
 
     document
-        .getElementById('auditionCount')
+        .getElementById(
+            'auditionCount'
+        )
         .textContent =
         auditions;
 
 
     document
-        .getElementById('waitingCount')
+        .getElementById(
+            'waitingCount'
+        )
         .textContent =
         waiting;
 
 
     document
-        .getElementById('actionCount')
+        .getElementById(
+            'actionCount'
+        )
         .textContent =
         actions;
+
 }
 
 
 /* =====================================================
    CHAT
-   ===================================================== */
+===================================================== */
 
 function sendMessage() {
 
@@ -1995,7 +2812,9 @@ function sendMessage() {
 
 
     if (!text) {
+
         return;
+
     }
 
 
@@ -2009,7 +2828,9 @@ function sendMessage() {
 
         <div class="notice">
 
-            <b>Ты:</b>
+            <b>
+                Ты:
+            </b>
 
             <p>
                 ${escapeHtml(text)}
@@ -2017,9 +2838,12 @@ function sendMessage() {
 
         </div>
 
+
         <div class="notice">
 
-            <b>Агент:</b>
+            <b>
+                Агент:
+            </b>
 
             <p>
 
@@ -2035,12 +2859,13 @@ function sendMessage() {
 
 
     input.value = '';
+
 }
 
 
 /* =====================================================
    HTML ESCAPE
-   ===================================================== */
+===================================================== */
 
 function escapeHtml(value) {
 
@@ -2070,16 +2895,40 @@ function escapeHtml(value) {
             "'",
             '&#039;'
         );
+
 }
 
 
 /* =====================================================
+   MODAL CLICK OUTSIDE
+===================================================== */
+
+document
+    .getElementById('modal')
+    .addEventListener(
+        'click',
+        function(event) {
+
+            if (
+                event.target ===
+                this
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
    START
-   ===================================================== */
+===================================================== */
 
 window.addEventListener(
     'DOMContentLoaded',
-    async () => {
+    async function() {
 
         await findActor();
 
@@ -2091,4 +2940,5 @@ window.addEventListener(
 </script>
 
 </body>
+
 </html>
