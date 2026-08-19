@@ -1245,230 +1245,196 @@ async function findActor() {
 
 async function loadCastings() {
 
-    setStatus(
-        'Подключение к памяти...'
-    );
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-        if (!id) {
-            return;
-        }
-    }
-
-
-    const result =
-        await supabaseClient
-            .from('castings')
-            .select('*')
-            .eq(
-                'actor_id',
-                actorId
-            )
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (result.error) {
-
-        console.error(
-            'Supabase casting error:',
-            result.error
-        );
-
-        setStatus(
-            'Ошибка загрузки кастингов: ' +
-            result.error.message,
-            'error'
-        );
-
-        return;
-    }
-
-
-    const castings =
-        result.data || [];
-
-
-    const list =
-        document.getElementById(
-            'castingList'
-        );
-
-
-    if (!castings.length) {
-
-        list.innerHTML = `
-
-            <div class="empty">
-
-                Пока нет кастингов.
-
-                <br><br>
-
-                Нажми
-                <b>＋ Добавить</b>,
-                чтобы сохранить первый.
-
-            </div>
-
-        `;
-
-    } else {
-
-        list.innerHTML = '';
-
-
-        castings.forEach(casting => {
-
-            const item =
-                document.createElement('div');
-
-
-            item.className =
-                'casting';
-
-
-            let html = `
-
-                <div>
-
-                    <h3>
-                        ${escapeHtml(
-                            casting.project_name
-                        )}
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            casting.role_name ||
-                            'Роль не указана'
-                        )}
-                    </p>
-
-            `;
-
-
-            if (casting.deadline) {
-
-                html += `
-
-                    <p>
-                        Дедлайн:
-                        ${escapeHtml(
-                            casting.deadline
-                        )}
-                    </p>
-
-                `;
-            }
-
-
-            if (casting.applied_at) {
-
-                html += `
-
-                    <p>
-                        Подана:
-                        ${escapeHtml(
-                            casting.applied_at
-                        )}
-                    </p>
-
-                `;
-            }
-
-
-            html += `
-
-                <span class="badge">
-                    ${escapeHtml(
-                        getStatusLabel(
-                            casting.status
-                        )
-                    )}
-                </span>
-
-            `;
-
-
-            if (casting.casting_url) {
-
-                const safeUrl =
-                    escapeHtml(
-                        casting.casting_url
-                    );
-
-                html += `
-
-                    <div class="castings-link">
-
-                        <a
-                            href="${safeUrl}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Открыть кастинг →
-                        </a>
-
-                    </div>
-
-                `;
-            }
-
-
-            if (casting.notes) {
-
-                html += `
-
-                    <p>
-                        ${escapeHtml(
-                            casting.notes
-                        )}
-                    </p>
-
-                `;
-            }
-
-
-            html += `
-
-                </div>
-
-            `;
-
-
-            item.innerHTML =
-                html;
-
-
-            list.appendChild(item);
-
-        });
-
-    }
-
-
-    updateCounters(
-        castings
-    );
-
+  setStatus('Загрузка кастингов...');
+
+  if (!actorId) {
+    const id = await findActor();
+    if (!id) return;
+  }
+
+  const result = await supabaseClient
+    .from('castings')
+    .select('*')
+    .eq('actor_id', actorId)
+    .order('created_at', {
+      ascending: false
+    });
+
+  if (result.error) {
+
+    console.error('Load castings error:', result.error);
 
     setStatus(
-        'Память подключена · ' +
-        castings.length +
-        ' кастингов',
-        'success'
+      'Ошибка загрузки кастингов: ' + result.error.message,
+      'error'
     );
 
+    return;
+  }
+
+  const castings = result.data || [];
+
+  const list = document.getElementById('castingList');
+
+  if (!castings.length) {
+
+    list.innerHTML = `
+      <div class="empty">
+        Пока нет кастингов.
+        <br><br>
+        Нажми <b>＋ Добавить</b>, чтобы сохранить первый.
+      </div>
+    `;
+
+  } else {
+
+    list.innerHTML = '';
+
+    castings.forEach(casting => {
+
+      const item = document.createElement('div');
+
+      item.className = 'casting';
+
+      item.innerHTML = `
+
+        <div style="flex:1">
+
+          <h3>
+            ${escapeHtml(casting.project_name)}
+          </h3>
+
+          <p>
+            ${escapeHtml(
+              casting.role_name || 'Роль не указана'
+            )}
+
+            ${
+              casting.deadline
+              ? ' · дедлайн ' + escapeHtml(casting.deadline)
+              : ''
+            }
+          </p>
+
+          ${
+            casting.applied_at
+            ? `<p>Подана: ${escapeHtml(casting.applied_at)}</p>`
+            : ''
+          }
+
+          ${
+            casting.notes
+            ? `<p>${escapeHtml(casting.notes)}</p>`
+            : ''
+          }
+
+          ${
+            casting.casting_url
+            ? `
+              <p>
+                <a
+                  href="${escapeHtml(casting.casting_url)}"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Открыть кастинг →
+                </a>
+              </p>
+            `
+            : ''
+          }
+
+          <div style="
+            display:flex;
+            gap:10px;
+            align-items:center;
+            margin-top:10px;
+            flex-wrap:wrap;
+          ">
+
+            <select
+              onchange="changeCastingStatus('${casting.id}', this.value)"
+              style="
+                width:auto;
+                margin:0;
+                padding:7px 10px;
+              "
+            >
+
+              <option value="new"
+                ${casting.status === 'new' ? 'selected' : ''}>
+                Новая подача
+              </option>
+
+              <option value="submitted"
+                ${casting.status === 'submitted' ? 'selected' : ''}>
+                Отправлена
+              </option>
+
+              <option value="audition"
+                ${casting.status === 'audition' ? 'selected' : ''}>
+                Пригласили на пробы
+              </option>
+
+              <option value="self-tape"
+                ${casting.status === 'self-tape' ? 'selected' : ''}>
+                Пробы отправлены
+              </option>
+
+              <option value="callback"
+                ${casting.status === 'callback' ? 'selected' : ''}>
+                Callback
+              </option>
+
+              <option value="approved"
+                ${casting.status === 'approved' ? 'selected' : ''}>
+                Утверждена
+              </option>
+
+              <option value="rejected"
+                ${casting.status === 'rejected' ? 'selected' : ''}>
+                Не утвердили
+              </option>
+
+              <option value="no_response"
+                ${casting.status === 'no_response' ? 'selected' : ''}>
+                Не ответили
+              </option>
+
+              <option value="cancelled"
+                ${casting.status === 'cancelled' ? 'selected' : ''}>
+                Отменён
+              </option>
+
+            </select>
+
+            <button
+              class="btn light"
+              onclick="deleteCasting('${casting.id}')"
+              style="
+                padding:7px 11px;
+                color:#9b2c2c;
+              "
+            >
+              🗑 Удалить
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+      list.appendChild(item);
+
+    });
+  }
+
+  updateCounters(castings);
+
+  setStatus(
+    'Память подключена · ' + castings.length + ' кастингов',
+    'success'
+  );
 }
 
 
@@ -1517,7 +1483,71 @@ function getStatusLabel(status) {
     );
 }
 
+async function changeCastingStatus(castingId, newStatus) {
 
+  const result = await supabaseClient
+    .from('castings')
+    .update({
+      status: newStatus,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', castingId)
+    .eq('actor_id', actorId);
+
+  if (result.error) {
+
+    console.error(
+      'Update status error:',
+      result.error
+    );
+
+    alert(
+      'Не удалось изменить статус:\n\n' +
+      result.error.message
+    );
+
+    await loadCastings();
+
+    return;
+  }
+
+  await loadCastings();
+}
+
+
+    async function deleteCasting(castingId) {
+
+  const confirmed = confirm(
+    'Удалить этот кастинг?\n\nЭто действие нельзя отменить.'
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const result = await supabaseClient
+    .from('castings')
+    .delete()
+    .eq('id', castingId)
+    .eq('actor_id', actorId);
+
+  if (result.error) {
+
+    console.error(
+      'Delete casting error:',
+      result.error
+    );
+
+    alert(
+      'Не удалось удалить кастинг:\n\n' +
+      result.error.message
+    );
+
+    return;
+  }
+
+  await loadCastings();
+}
 /* =====================================================
    SAVE CASTING
    ===================================================== */
