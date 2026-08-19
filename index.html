@@ -1299,15 +1299,6 @@ placeholder="Вставь сюда текст кастинга..."
 </select>
 </label>
 
-  <label>
-Ссылка на кастинг
-
-<input
-id="castingUrl"
-type="url"
-placeholder="https://..."
->
-</label>
 
 
 <label>
@@ -1386,12 +1377,32 @@ let actorId = null;
 
 
 
+<script>
+
+/* =========================
+SUPABASE
+========================= */
+
+const SUPABASE_URL =
+'https://kavepxugysumhpcftzqy.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd';
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let actorId = null;
+
+
 /* =========================
 NAVIGATION
 ========================= */
 
-
-function showPage(id,button){
+function showPage(id, button){
 
 document
 .querySelectorAll('.page')
@@ -1399,11 +1410,9 @@ document
 page.classList.remove('active')
 );
 
-
 document
 .getElementById(id)
 .classList.add('active');
-
 
 document
 .querySelectorAll('.nav button')
@@ -1411,25 +1420,19 @@ document
 btn.classList.remove('active')
 );
 
-
 if(button)
 button.classList.add('active');
 
-
 if(id === 'castings'){
-
 loadCastings();
-
 }
 
 }
-
 
 
 /* =========================
 MODAL
 ========================= */
-
 
 function openModal(){
 
@@ -1438,7 +1441,6 @@ document
 .classList.add('open');
 
 }
-
 
 function closeModal(){
 
@@ -1449,34 +1451,21 @@ document
 }
 
 
-
 /* =========================
 STATUS
 ========================= */
 
-
-function setStatus(
-text,
-type=''
-){
+function setStatus(text, type=''){
 
 const el =
-document.getElementById(
-'dbStatus'
-);
-
+document.getElementById('dbStatus');
 
 if(!el)
 return;
 
+el.textContent = text;
 
-el.textContent =
-text;
-
-
-el.className =
-'status';
-
+el.className = 'status';
 
 if(type)
 el.classList.add(type);
@@ -1484,11 +1473,9 @@ el.classList.add(type);
 }
 
 
-
 /* =========================
 FIND ACTOR
 ========================= */
-
 
 async function findActor(){
 
@@ -1503,7 +1490,6 @@ await supabaseClient
 .limit(1)
 .maybeSingle();
 
-
 if(result.error){
 
 console.error(
@@ -1511,18 +1497,15 @@ console.error(
 result.error
 );
 
-
 setStatus(
 'Ошибка подключения к базе: ' +
 result.error.message,
 'error'
 );
 
-
 return null;
 
 }
-
 
 if(!result.data){
 
@@ -1531,26 +1514,20 @@ setStatus(
 'error'
 );
 
-
 return null;
 
 }
 
-
-actorId =
-result.data.id;
-
+actorId = result.data.id;
 
 return actorId;
 
 }
 
 
-
 /* =========================
 LOAD CASTINGS
 ========================= */
-
 
 async function loadCastings(){
 
@@ -1558,18 +1535,15 @@ setStatus(
 'Подключение к памяти...'
 );
 
-
 if(!actorId){
 
 const id =
 await findActor();
 
-
 if(!id)
 return;
 
 }
-
 
 const result =
 await supabaseClient
@@ -1586,7 +1560,6 @@ ascending:false
 }
 );
 
-
 if(result.error){
 
 console.error(
@@ -1594,28 +1567,23 @@ console.error(
 result.error
 );
 
-
 setStatus(
 'Ошибка загрузки кастингов: ' +
 result.error.message,
 'error'
 );
 
-
 return;
 
 }
 
-
 const castings =
 result.data || [];
-
 
 const list =
 document.getElementById(
 'castingList'
 );
-
 
 if(!castings.length){
 
@@ -1640,19 +1608,12 @@ else{
 
 list.innerHTML = '';
 
-
-castings.forEach(
-casting => {
+castings.forEach(casting => {
 
 const item =
-document.createElement(
-'div'
-);
+document.createElement('div');
 
-
-item.className =
-'casting';
-
+item.className = 'casting';
 
 item.innerHTML = `
 
@@ -1674,9 +1635,7 @@ casting.role_name ||
 ${casting.deadline
 ?
 ' · дедлайн ' +
-escapeHtml(
-casting.deadline
-)
+escapeHtml(casting.deadline)
 :
 ''}
 
@@ -1684,12 +1643,37 @@ casting.deadline
 
 <span class="badge">
 
-${escapeHtml(
-casting.status ||
-'new'
+${getStatusLabel(
+casting.status
 )}
 
 </span>
+
+${casting.casting_url
+?
+`<p>
+<a
+href="${escapeHtml(casting.casting_url)}"
+target="_blank"
+rel="noopener"
+>
+Открыть кастинг →
+</a>
+</p>`
+:
+''}
+
+${casting.applied_at
+?
+`<p>Подана: ${escapeHtml(casting.applied_at)}</p>`
+:
+''}
+
+${casting.notes
+?
+`<p>${escapeHtml(casting.notes)}</p>`
+:
+''}
 
 </div>
 
@@ -1701,11 +1685,7 @@ list.appendChild(item);
 
 }
 
-
-updateCounters(
-castings
-);
-
+updateCounters(castings);
 
 setStatus(
 'Память подключена · ' +
@@ -1717,63 +1697,91 @@ castings.length +
 }
 
 
+/* =========================
+STATUS LABEL
+========================= */
+
+function getStatusLabel(status){
+
+const labels = {
+
+new: 'Новая подача',
+
+submitted: 'Отправлена',
+
+audition: 'Пригласили на пробы',
+
+'self-tape': 'Пробы отправлены',
+
+callback: 'Callback',
+
+approved: 'Утверждена',
+
+rejected: 'Не утвердили',
+
+no_response: 'Не ответили',
+
+cancelled: 'Отменён'
+
+};
+
+return labels[status] || status || 'Новая подача';
+
+}
+
 
 /* =========================
 SAVE CASTING
 ========================= */
 
-
 async function saveCasting(){
 
 const projectName =
 document
-.getElementById(
-'projectName'
-)
+.getElementById('projectName')
 .value
 .trim();
-
 
 const roleName =
 document
-.getElementById(
-'roleName'
-)
+.getElementById('roleName')
 .value
 .trim();
 
-
 const deadline =
 document
-.getElementById(
-'deadline'
-)
+.getElementById('deadline')
 .value ||
 null;
 
+const appliedAt =
+document
+.getElementById('appliedAt')
+.value ||
+null;
 
 const castingText =
 document
-.getElementById(
-'castingText'
-)
+.getElementById('castingText')
 .value
 .trim();
 
 const castingStatus =
 document
-.getElementById(
-'castingStatus'
-)
+.getElementById('castingStatus')
 .value;
 
 const castingUrl =
 document
-.getElementById(
-'castingUrl'
-)
+.getElementById('castingUrl')
 .value
-.trim();  
+.trim();
+
+const castingNotes =
+document
+.getElementById('castingNotes')
+.value
+.trim();
 
 if(!projectName){
 
@@ -1785,12 +1793,10 @@ return;
 
 }
 
-
 if(!actorId){
 
 const id =
 await findActor();
-
 
 if(!id){
 
@@ -1805,38 +1811,41 @@ return;
 }
 
 
+/* =========================
+INSERT
+========================= */
+
 const result =
 await supabaseClient
 .from('castings')
 .insert({
 
-{
-actor_id: actorId,
+actor_id:
+actorId,
 
-project_name: projectName,
+project_name:
+projectName,
 
-role_name: roleName || null,
+role_name:
+roleName || null,
 
-deadline: deadline,
-
-casting_url:
-document.getElementById('castingUrl').value.trim() || null,
+deadline:
+deadline,
 
 applied_at:
-document.getElementById('appliedAt').value || null,
+appliedAt,
 
 casting_text:
 castingText || null,
 
+casting_url:
+castingUrl || null,
+
 notes:
-document.getElementById('castingNotes').value.trim() || null,
+castingNotes || null,
 
 status:
-castingStatus,
-
-casting_url:
-castingUrl || null
-}
+castingStatus
 
 });
 
@@ -1848,7 +1857,6 @@ console.error(
 result.error
 );
 
-
 alert(
 'Ошибка сохранения:\n\n' +
 result.error.message
@@ -1859,41 +1867,46 @@ return;
 }
 
 
-/* очистить форму */
+/* =========================
+CLEAR FORM
+========================= */
 
 document
-.getElementById(
-'projectName'
-)
+.getElementById('projectName')
 .value = '';
-
 
 document
-.getElementById(
-'roleName'
-)
+.getElementById('roleName')
 .value = '';
-
 
 document
-.getElementById(
-'deadline'
-)
+.getElementById('deadline')
 .value = '';
-
 
 document
-.getElementById(
-'castingText'
-)
+.getElementById('appliedAt')
 .value = '';
+
+document
+.getElementById('castingText')
+.value = '';
+
+document
+.getElementById('castingUrl')
+.value = '';
+
+document
+.getElementById('castingNotes')
+.value = '';
+
+document
+.getElementById('castingStatus')
+.value = 'new';
 
 
 closeModal();
 
-
 await loadCastings();
-
 
 showPage(
 'castings'
@@ -1902,28 +1915,21 @@ showPage(
 }
 
 
-
 /* =========================
 COUNTERS
 ========================= */
 
-
-function updateCounters(
-castings
-){
+function updateCounters(castings){
 
 const active =
 castings.filter(
 c =>
 ![
 'rejected',
-'closed',
-'booked'
-].includes(
-c.status
-)
+'cancelled',
+'approved'
+].includes(c.status)
 ).length;
-
 
 const auditions =
 castings.filter(
@@ -1932,51 +1938,47 @@ c =>
 'audition',
 'self-tape',
 'callback'
-].includes(
-c.status
-)
+].includes(c.status)
 ).length;
-
 
 const waiting =
 castings.filter(
 c =>
-c.status ===
-'no_response'
+c.status === 'no_response'
 ).length;
 
+const actions =
+castings.filter(
+c =>
+[
+'audition',
+'self-tape',
+'callback'
+].includes(c.status)
+).length;
 
 document
-.getElementById(
-'activeCount'
-)
-.textContent =
-active;
-
+.getElementById('activeCount')
+.textContent = active;
 
 document
-.getElementById(
-'auditionCount'
-)
-.textContent =
-auditions;
-
+.getElementById('auditionCount')
+.textContent = auditions;
 
 document
-.getElementById(
-'waitingCount'
-)
-.textContent =
-waiting;
+.getElementById('waitingCount')
+.textContent = waiting;
+
+document
+.getElementById('actionCount')
+.textContent = actions;
 
 }
-
 
 
 /* =========================
 CHAT
 ========================= */
-
 
 function sendMessage(){
 
@@ -1985,28 +1987,20 @@ document.getElementById(
 'chatInput'
 );
 
-
 const text =
 input.value.trim();
-
 
 if(!text)
 return;
 
-
 const chat =
-document.getElementById(
-'chat'
-);
-
+document.getElementById('chat');
 
 chat.innerHTML += `
 
 <div class="notice">
 
-<b>
-Ты:
-</b>
+<b>Ты:</b>
 
 <p>
 ${escapeHtml(text)}
@@ -2014,18 +2008,15 @@ ${escapeHtml(text)}
 
 </div>
 
-
 <div class="notice">
 
-<b>
-Агент:
-</b>
+<b>Агент:</b>
 
 <p>
 
-Память подключается.
-Настоящий AI-мозг мы подключим
-следующим этапом.
+Я пока сохраняю твою карьерную память.
+Следующим этапом подключим настоящий
+AI-анализ кастингов и твоего соответствия роли.
 
 </p>
 
@@ -2033,57 +2024,35 @@ ${escapeHtml(text)}
 
 `;
 
-
 input.value = '';
 
 }
-
 
 
 /* =========================
 HTML ESCAPE
 ========================= */
 
-
-function escapeHtml(
-value
-){
+function escapeHtml(value){
 
 return String(value)
 
-.replaceAll(
-'&',
-'&amp;'
-)
+.replaceAll('&','&amp;')
 
-.replaceAll(
-'<',
-'&lt;'
-)
+.replaceAll('<','&lt;')
 
-.replaceAll(
-'>',
-'&gt;'
-)
+.replaceAll('>','&gt;')
 
-.replaceAll(
-'"',
-'&quot;'
-)
+.replaceAll('"','&quot;')
 
-.replaceAll(
-"'",
-'&#039;'
-);
+.replaceAll("'","&#039;");
 
 }
-
 
 
 /* =========================
 START
 ========================= */
-
 
 window.addEventListener(
 'DOMContentLoaded',
@@ -2096,8 +2065,8 @@ await loadCastings();
 }
 );
 
-
 </script>
+
 
 </body>
 
