@@ -1,508 +1,527 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Marina AI Agent</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-    box-sizing: border-box;
+
+*{
+box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f3ef;
-    color: #252321;
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#f5f3ef;
+color:#252321;
 }
 
 button,
 input,
 textarea,
-select {
-    font: inherit;
+select{
+font:inherit;
 }
 
-button {
-    cursor: pointer;
+button{
+cursor:pointer;
 }
 
-.app {
-    display: flex;
-    min-height: 100vh;
+.app{
+display:flex;
+min-height:100vh;
 }
 
-.sidebar {
-    width: 240px;
-    background: #252321;
-    color: white;
-    padding: 25px 15px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
+.sidebar{
+width:240px;
+background:#252321;
+color:white;
+padding:25px 15px;
+position:fixed;
+left:0;
+top:0;
+bottom:0;
 }
 
-.logo {
-    font-size: 21px;
-    font-weight: bold;
-    padding: 0 12px 30px;
+.logo{
+font-size:21px;
+font-weight:bold;
+padding:0 12px 30px;
 }
 
-.logo span {
-    display: block;
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-    margin-top: 4px;
+.logo span{
+display:block;
+font-size:12px;
+color:#aaa;
+font-weight:normal;
+margin-top:4px;
 }
 
-.nav button {
-    display: block;
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: #ccc;
-    text-align: left;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 4px;
+.nav button{
+display:block;
+width:100%;
+border:0;
+background:transparent;
+color:#ccc;
+text-align:left;
+padding:12px;
+border-radius:8px;
+margin-bottom:4px;
 }
 
 .nav button:hover,
-.nav button.active {
-    background: #3b3936;
-    color: white;
+.nav button.active{
+background:#3b3936;
+color:white;
 }
 
-.content {
-    margin-left: 240px;
-    padding: 30px;
-    width: calc(100% - 240px);
-    max-width: 1450px;
+.content{
+margin-left:240px;
+padding:30px;
+width:calc(100% - 240px);
+max-width:1450px;
 }
 
-.page {
-    display: none;
+.page{
+display:none;
 }
 
-.page.active {
-    display: block;
+.page.active{
+display:block;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    gap: 20px;
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+gap:20px;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 30px;
+.header h1{
+margin:0;
+font-size:30px;
 }
 
-.header p {
-    color: #777;
-    margin-top: 5px;
+.header p{
+color:#777;
+margin-top:5px;
 }
 
-.btn {
-    border: 0;
-    background: #252321;
-    color: white;
-    padding: 11px 17px;
-    border-radius: 8px;
+.btn{
+border:0;
+background:#252321;
+color:white;
+padding:11px 17px;
+border-radius:8px;
 }
 
-.btn:hover {
-    opacity: .9;
+.btn:hover{
+opacity:.9;
 }
 
-.btn.light {
-    background: #ebe8e2;
-    color: #222;
+.btn.light{
+background:#ebe8e2;
+color:#222;
 }
 
-.btn.danger {
-    background: #8b3028;
+.btn.danger{
+background:#8b3028;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+.cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
 }
 
-.card {
-    background: white;
-    border: 1px solid #e5e1db;
-    border-radius: 14px;
-    padding: 20px;
+.card{
+background:white;
+border:1px solid #e5e1db;
+border-radius:14px;
+padding:20px;
 }
 
-.metric strong {
-    display: block;
-    font-size: 30px;
-    margin-bottom: 5px;
+.metric strong{
+display:block;
+font-size:30px;
+margin-bottom:5px;
 }
 
-.metric span {
-    color: #777;
+.metric span{
+color:#777;
 }
 
-.two {
-    display: grid;
-    grid-template-columns: 1.4fr .6fr;
-    gap: 15px;
-    margin-top: 15px;
+.two{
+display:grid;
+grid-template-columns:1.4fr .6fr;
+gap:15px;
+margin-top:15px;
 }
 
-.section-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+.section-title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
 }
 
-.section-title h2 {
-    font-size: 18px;
-    margin: 0;
+.section-title h2{
+font-size:18px;
+margin:0;
 }
 
-.casting {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 17px 0;
-    border-top: 1px solid #eee;
-    gap: 20px;
+.casting{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:17px 0;
+border-top:1px solid #eee;
+gap:20px;
 }
 
-.casting:first-child {
-    border-top: 0;
+.casting:first-child{
+border-top:0;
 }
 
-.casting h3 {
-    margin: 0 0 5px;
-    font-size: 16px;
+.casting h3{
+margin:0 0 5px;
+font-size:16px;
 }
 
-.casting p {
-    margin: 0;
-    color: #777;
+.casting p{
+margin:4px 0;
+color:#777;
 }
 
-.casting-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+.casting-actions{
+display:flex;
+align-items:center;
+gap:8px;
+flex-shrink:0;
 }
 
-.badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    background: #eee;
-    font-size: 12px;
+.badge{
+display:inline-block;
+padding:5px 9px;
+border-radius:20px;
+background:#eee;
+font-size:12px;
+margin-top:8px;
 }
 
-.badge.green {
-    background: #e5f2e8;
+.badge.green{
+background:#e5f2e8;
 }
 
-.badge.yellow {
-    background: #f8eed3;
+.badge.yellow{
+background:#f8eed3;
 }
 
-.badge.red {
-    background: #f5dfdc;
+.badge.red{
+background:#f5dfdc;
 }
 
-.notice {
-    background: #f1efeb;
-    border-radius: 9px;
-    padding: 14px;
-    margin: 10px 0;
+.profile{
+display:flex;
+gap:20px;
 }
 
-.status {
-    margin-bottom: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    background: #eee;
-    color: #555;
+.profile img{
+width:150px;
+height:195px;
+object-fit:cover;
+border-radius:10px;
 }
 
-.status.success {
-    background: #e5f2e8;
-    color: #285c35;
+.profile-info{
+flex:1;
 }
 
-.status.error {
-    background: #f7e1de;
-    color: #7a3027;
+.profile-info h2{
+margin-top:0;
 }
 
-.profile {
-    display: flex;
-    gap: 20px;
+.info{
+display:grid;
+grid-template-columns:160px 1fr;
+gap:9px;
+margin-top:15px;
 }
 
-.profile img {
-    width: 150px;
-    height: 195px;
-    object-fit: cover;
-    border-radius: 10px;
+.info div:nth-child(odd){
+color:#777;
 }
 
-.profile-info {
-    flex: 1;
+.tags{
+margin-top:15px;
 }
 
-.profile-info h2 {
-    margin-top: 0;
+.tag{
+display:inline-block;
+padding:7px 10px;
+border:1px solid #ddd;
+border-radius:8px;
+margin:3px;
+font-size:13px;
 }
 
-.info {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 9px;
-    margin-top: 15px;
+.notice{
+background:#f1efeb;
+border-radius:9px;
+padding:14px;
+margin:10px 0;
 }
 
-.info div:nth-child(odd) {
-    color: #777;
+.status{
+margin-bottom:15px;
+padding:11px;
+border-radius:9px;
+background:#eee;
+color:#555;
 }
 
-.tags {
-    margin-top: 15px;
+.status.success{
+background:#e5f2e8;
+color:#285c35;
 }
 
-.tag {
-    display: inline-block;
-    padding: 7px 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 3px;
-    font-size: 13px;
+.status.error{
+background:#f7e1de;
+color:#7a3027;
 }
 
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:100;
 }
 
-.modal.open {
-    display: flex;
+.modal.open{
+display:flex;
 }
 
-.modal-box {
-    background: white;
-    width: 100%;
-    max-width: 700px;
-    max-height: 92vh;
-    overflow-y: auto;
-    border-radius: 15px;
-    padding: 25px;
+.modal-box{
+background:white;
+width:100%;
+max-width:700px;
+max-height:92vh;
+overflow-y:auto;
+border-radius:15px;
+padding:25px;
 }
 
-.modal-box h2 {
-    margin-top: 0;
+.modal-box h2{
+margin-top:0;
 }
 
-label {
-    display: block;
-    margin-top: 13px;
-    font-size: 14px;
-    font-weight: 500;
+label{
+display:block;
+margin-top:13px;
+font-size:14px;
+font-weight:500;
 }
 
 input,
 textarea,
-select {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 11px;
-    margin-top: 6px;
-    outline: none;
-    background: white;
+select{
+width:100%;
+border:1px solid #ddd;
+border-radius:8px;
+padding:11px;
+margin-top:6px;
+outline:none;
+background:white;
 }
 
 input:focus,
 textarea:focus,
-select:focus {
-    border-color: #888;
+select:focus{
+border-color:#888;
 }
 
-textarea {
-    resize: vertical;
+textarea{
+resize:vertical;
 }
 
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
+.modal-buttons{
+display:flex;
+gap:10px;
+margin-top:20px;
 }
 
-.modal-buttons button {
-    flex: 1;
+.modal-buttons button{
+flex:1;
 }
 
-.detail-box {
-    margin-top: 12px;
-    padding: 14px;
-    background: #faf9f7;
-    border-radius: 10px;
+.empty{
+padding:35px 10px;
+text-align:center;
+color:#777;
 }
 
-.detail-row {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 10px;
-    margin: 8px 0;
+.detail-box{
+margin-top:15px;
+padding:15px;
+background:#faf9f7;
+border-radius:10px;
 }
 
-.detail-row span:first-child {
-    color: #777;
+.detail-row{
+display:grid;
+grid-template-columns:160px 1fr;
+gap:10px;
+margin:9px 0;
 }
 
-.empty {
-    padding: 35px 10px;
-    text-align: center;
-    color: #777;
+.detail-row span:first-child{
+color:#777;
 }
 
-.link {
-    color: #555;
-    text-decoration: underline;
+.ai-box{
+background:#f1efeb;
+border-radius:12px;
+padding:18px;
+margin-top:15px;
 }
 
-.ai-score {
-    font-size: 36px;
-    font-weight: bold;
+.ai-score{
+font-size:34px;
+font-weight:bold;
+margin:8px 0;
 }
 
-.ai-placeholder {
-    border: 1px dashed #bbb;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 15px;
+.link{
+color:#555;
+text-decoration:underline;
 }
 
-.material-photo {
-    width: 120px;
-    height: 155px;
-    object-fit: cover;
-    border-radius: 10px;
+@media(max-width:900px){
+
+.cards{
+grid-template-columns:repeat(2,1fr);
 }
 
-@media(max-width: 900px) {
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .two {
-        grid-template-columns: 1fr;
-    }
+.two{
+grid-template-columns:1fr;
 }
 
-@media(max-width: 700px) {
-    .sidebar {
-        width: 70px;
-    }
-
-    .logo {
-        font-size: 0;
-    }
-
-    .logo span {
-        display: none;
-    }
-
-    .nav button {
-        font-size: 0;
-        text-align: center;
-    }
-
-    .content {
-        margin-left: 70px;
-        width: calc(100% - 70px);
-        padding: 18px;
-    }
-
-    .cards {
-        grid-template-columns: 1fr;
-    }
-
-    .profile {
-        flex-direction: column;
-    }
-
-    .info,
-    .detail-row {
-        grid-template-columns: 1fr;
-    }
-
-    .casting {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .casting-actions {
-        width: 100%;
-    }
 }
+
+@media(max-width:700px){
+
+.sidebar{
+width:70px;
+}
+
+.logo{
+font-size:0;
+}
+
+.logo span{
+display:none;
+}
+
+.nav button{
+font-size:0;
+text-align:center;
+}
+
+.content{
+margin-left:70px;
+width:calc(100% - 70px);
+padding:18px;
+}
+
+.cards{
+grid-template-columns:1fr;
+}
+
+.profile{
+flex-direction:column;
+}
+
+.info,
+.detail-row{
+grid-template-columns:1fr;
+}
+
+.casting{
+flex-direction:column;
+align-items:flex-start;
+}
+
+.casting-actions{
+width:100%;
+}
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app">
+
 
 <aside class="sidebar">
 
 <div class="logo">
+
 MARINA AI
+
 <span>личный агент</span>
+
 </div>
+
 
 <div class="nav">
 
-<button class="active" onclick="showPage('home', this)">
+<button class="active"
+onclick="showPage('home',this)">
 🏠 Главная
 </button>
 
-<button onclick="showPage('profile', this)">
+<button
+onclick="showPage('profile',this)">
 👩 Профиль
 </button>
 
-<button onclick="showPage('castings', this)">
+<button
+onclick="showPage('castings',this)">
 🎬 Кастинги
 </button>
 
-<button onclick="showPage('materials', this)">
+<button
+onclick="showPage('materials',this)">
 📸 Материалы
 </button>
 
-<button onclick="showPage('career', this)">
+<button
+onclick="showPage('career',this)">
 📊 Карьера
 </button>
 
-<button onclick="showPage('agent', this)">
+<button
+onclick="showPage('agent',this)">
 🧠 Агент
 </button>
 
@@ -516,17 +535,28 @@ MARINA AI
 
 <!-- ================= HOME ================= -->
 
-<section id="home" class="page active">
+<section id="home"
+class="page active">
 
 <div class="header">
 
 <div>
-<h1>Добрый день, Марина</h1>
-<p>Твой личный AI-агент</p>
+
+<h1>
+Добрый день, Марина
+</h1>
+
+<p>
+Твой личный AI-агент
+</p>
+
 </div>
 
-<button class="btn" onclick="openModal()">
+<button class="btn"
+onclick="openModal()">
+
 ＋ Новый кастинг
+
 </button>
 
 </div>
@@ -534,24 +564,56 @@ MARINA AI
 
 <div class="cards">
 
-<div class="card metric">
-<strong id="activeCount">0</strong>
-<span>активных кастингов</span>
-</div>
 
 <div class="card metric">
-<strong id="auditionCount">0</strong>
-<span>проб</span>
+
+<strong id="activeCount">
+0
+</strong>
+
+<span>
+активных кастингов
+</span>
+
 </div>
 
-<div class="card metric">
-<strong id="waitingCount">0</strong>
-<span>без ответа</span>
-</div>
 
 <div class="card metric">
-<strong id="actionCount">0</strong>
-<span>требуют действия</span>
+
+<strong id="auditionCount">
+0
+</strong>
+
+<span>
+проб
+</span>
+
+</div>
+
+
+<div class="card metric">
+
+<strong id="waitingCount">
+0
+</strong>
+
+<span>
+без ответа
+</span>
+
+</div>
+
+
+<div class="card metric">
+
+<strong id="actionCount">
+0
+</strong>
+
+<span>
+требуют действия
+</span>
+
 </div>
 
 </div>
@@ -559,25 +621,39 @@ MARINA AI
 
 <div class="two">
 
+
 <div class="card">
 
 <div class="section-title">
-<h2>🎯 Следующее действие</h2>
-<span class="badge green">AI</span>
+
+<h2>
+🎯 Следующее действие
+</h2>
+
+<span class="badge green">
+AI
+</span>
+
 </div>
+
 
 <div class="notice">
 
-<b>Добавь первый реальный кастинг</b>
+<b>
+Твоя карьерная память
+</b>
 
 <p>
-Агент сохранит его в твою профессиональную память.
-Позже он сможет анализировать соответствие роли,
-готовить письмо и отслеживать результат.
+Каждый кастинг, подача, проба и результат
+будут сохраняться в системе.
 </p>
 
-<button class="btn light" onclick="openModal()">
+<button
+class="btn light"
+onclick="openModal()">
+
 Добавить кастинг
+
 </button>
 
 </div>
@@ -587,18 +663,30 @@ MARINA AI
 
 <div class="card">
 
-<h2 style="font-size:18px">🧠 Память</h2>
+<h2 style="font-size:18px">
+🧠 Память
+</h2>
 
-<p>Агент будет помнить:</p>
+<p>
+Агент будет помнить:
+</p>
 
 <ul>
+
 <li>кастинги</li>
+
 <li>подачи</li>
+
 <li>пробы</li>
+
 <li>callback</li>
-<li>утверждения и отказы</li>
+
+<li>утверждения</li>
+
+<li>отказы</li>
+
 <li>материалы</li>
-<li>результаты</li>
+
 </ul>
 
 </div>
@@ -611,13 +699,21 @@ MARINA AI
 
 <!-- ================= PROFILE ================= -->
 
-<section id="profile" class="page">
+<section id="profile"
+class="page">
 
 <div class="header">
 
 <div>
-<h1>👩 Профиль</h1>
-<p>Фролова Марина Сергеевна</p>
+
+<h1>
+👩 Профиль
+</h1>
+
+<p>
+Фролова Марина Сергеевна
+</p>
+
 </div>
 
 </div>
@@ -625,18 +721,23 @@ MARINA AI
 
 <div class="card profile">
 
+
 <img
 src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
 alt="Марина Фролова"
 >
 
+
 <div class="profile-info">
 
-<h2>Фролова Марина Сергеевна</h2>
+<h2>
+Фролова Марина Сергеевна
+</h2>
 
 <p>
 Актриса · Москва · самозанятая
 </p>
+
 
 <div class="info">
 
@@ -667,15 +768,24 @@ alt="Марина Фролова"
 <div>Глаза</div>
 <div>Серо-голубые</div>
 
-<div>Языки</div>
-<div>Английский</div>
+<div>Образование</div>
+
+<div>
+Институт театрального искусства
+им. И. Кобзона;
+Студия Иваны Чаббак;
+GOGOL SCHOOL;
+Актёрская мастерская О. Жирицкого
+</div>
 
 <div>Навыки</div>
+
 <div>
-Балет, контемп, народные танцы,
-исторические танцы, восточные танцы,
-сценическое фехтование, сценический бой,
-пение, водительские права B
+Балет, контемп, народные,
+исторические и восточные танцы,
+сценическое фехтование,
+сценический бой, пение,
+водительские права B
 </div>
 
 </div>
@@ -687,42 +797,71 @@ alt="Марина Фролова"
 
 <div class="two">
 
+
 <div class="card">
 
 <div class="section-title">
 
-<h2>🎭 Типаж</h2>
+<h2>
+🎭 Типаж
+</h2>
 
-<span class="badge yellow">AI</span>
+<span class="badge yellow">
+AI
+</span>
 
 </div>
 
+
 <p>
-Предварительная гипотеза типажа:
+
+Предварительная гипотеза:
+
 молодая драматическая героиня,
-романтическая и эмоциональная,
-с внутренней силой и потенциалом
-для психологически сложных персонажей.
+романтическая, эмоциональная,
+уязвимая, но с внутренней силой.
+
 </p>
+
 
 <div class="tags">
 
-<span class="tag">dramatic heroine</span>
-<span class="tag">romantic</span>
-<span class="tag">vulnerable</span>
-<span class="tag">strong</span>
-<span class="tag">psychological</span>
+<span class="tag">
+dramatic heroine
+</span>
+
+<span class="tag">
+romantic
+</span>
+
+<span class="tag">
+vulnerable
+</span>
+
+<span class="tag">
+strong
+</span>
+
+<span class="tag">
+psychological
+</span>
 
 </div>
 
-<div class="ai-placeholder">
 
-<b>Следующий этап:</b>
+<div class="ai-box">
+
+<b>
+AI-позиционирование
+</b>
 
 <p>
-AI проведёт полноценный анализ типажа,
-диапазона ролей и того, как именно
-продавать Марину кастинг-директорам.
+
+Здесь в следующем этапе агент проведёт
+полный профессиональный анализ типажа
+и определит, какие роли и проекты
+лучше всего подходят Марине.
+
 </p>
 
 </div>
@@ -740,18 +879,15 @@ AI проведёт полноценный анализ типажа,
 <div class="casting">
 
 <div>
-<h3>Невыполненное обещание</h3>
-<p>Нона · главная роль · 2026</p>
-</div>
 
-</div>
+<h3>
+Открытое сердце
+</h3>
 
+<p>
+Алевтина · главная роль · 2025
+</p>
 
-<div class="casting">
-
-<div>
-<h3>Открытое сердце</h3>
-<p>Алевтина · главная роль · 2025</p>
 </div>
 
 </div>
@@ -760,18 +896,15 @@ AI проведёт полноценный анализ типажа,
 <div class="casting">
 
 <div>
-<h3>Врачебные истории</h3>
-<p>Русалка · эпизод · 2026</p>
-</div>
 
-</div>
+<h3>
+Невыполненное обещание
+</h3>
 
+<p>
+Нона · главная роль · 2026
+</p>
 
-<div class="casting">
-
-<div>
-<h3>СашаТаня</h3>
-<p>Соседка · 2025</p>
 </div>
 
 </div>
@@ -780,8 +913,49 @@ AI проведёт полноценный анализ типажа,
 <div class="casting">
 
 <div>
-<h3>Выпьем за любовь</h3>
-<p>Алиса · короткометражный фильм · 2021</p>
+
+<h3>
+Врачебные истории
+</h3>
+
+<p>
+Русалка · эпизод · 2026
+</p>
+
+</div>
+
+</div>
+
+
+<div class="casting">
+
+<div>
+
+<h3>
+СашаТаня
+</h3>
+
+<p>
+Соседка · 2025
+</p>
+
+</div>
+
+</div>
+
+
+<div class="casting">
+
+<div>
+
+<h3>
+Выпьем за любовь
+</h3>
+
+<p>
+Алиса · короткометражный фильм · 2021
+</p>
+
 </div>
 
 </div>
@@ -796,24 +970,41 @@ AI проведёт полноценный анализ типажа,
 
 <!-- ================= CASTINGS ================= -->
 
-<section id="castings" class="page">
+<section id="castings"
+class="page">
+
 
 <div class="header">
 
 <div>
-<h1>🎬 Кастинги</h1>
-<p>Твоя профессиональная память</p>
+
+<h1>
+🎬 Кастинги
+</h1>
+
+<p>
+Твоя профессиональная память
+</p>
+
 </div>
 
-<button class="btn" onclick="openModal()">
+
+<button
+class="btn"
+onclick="openModal()">
+
 ＋ Добавить
+
 </button>
 
 </div>
 
 
-<div id="dbStatus" class="status">
+<div id="dbStatus"
+class="status">
+
 Подключение к Supabase...
+
 </div>
 
 
@@ -835,19 +1026,29 @@ AI проведёт полноценный анализ типажа,
 
 <!-- ================= MATERIALS ================= -->
 
-<section id="materials" class="page">
+<section id="materials"
+class="page">
+
 
 <div class="header">
 
 <div>
-<h1>📸 Материалы</h1>
-<p>AI-помощник по созданию актёрских материалов</p>
+
+<h1>
+📸 Материалы
+</h1>
+
+<p>
+Помощник по созданию актёрских материалов
+</p>
+
 </div>
 
 </div>
 
 
 <div class="cards">
+
 
 <div class="card">
 
@@ -857,12 +1058,11 @@ AI проведёт полноценный анализ типажа,
 
 <img
 src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
-class="material-photo"
-alt="Главное фото"
+style="width:120px;height:155px;object-fit:cover;border-radius:10px"
 >
 
 <p>
-Текущее главное фото профиля.
+Текущее главное фото.
 </p>
 
 <span class="badge green">
@@ -887,7 +1087,7 @@ alt="Главное фото"
 </p>
 
 <span class="badge yellow">
-AI-анализ
+AI-аудит
 </span>
 
 </div>
@@ -921,33 +1121,36 @@ AI-анализ
 </h2>
 
 <p>
-AI предложит:
+
+AI сможет определить,
+какие фотографии, монологи
+и сцены лучше раскрывают
+твой рабочий диапазон.
+
 </p>
 
-<ul>
-<li>какие фотографии сделать;</li>
-<li>какие типажи раскрыть;</li>
-<li>какой монолог записать;</li>
-<li>какую сцену добавить;</li>
-<li>какие материалы отправлять на конкретный кастинг.</li>
-</ul>
-
 </div>
 
 </div>
 
 
-<div class="card" style="margin-top:15px">
+<div class="card"
+style="margin-top:15px">
 
 <h2>
 Materials Director
 </h2>
 
 <p>
-После загрузки фотографий и видео агент
-сможет выбирать не просто «самые красивые»,
-а те материалы, которые лучше продают
-Марину под конкретные роли.
+
+После подключения AI агент будет
+не просто выбирать самые красивые
+фотографии.
+
+Он будет искать материалы,
+которые лучше продают тебя
+под конкретный тип ролей.
+
 </p>
 
 </div>
@@ -958,13 +1161,22 @@ Materials Director
 
 <!-- ================= CAREER ================= -->
 
-<section id="career" class="page">
+<section id="career"
+class="page">
+
 
 <div class="header">
 
 <div>
-<h1>📊 Карьера</h1>
-<p>Weekly Agent и карьерная аналитика</p>
+
+<h1>
+📊 Карьера
+</h1>
+
+<p>
+Weekly Agent и карьерная аналитика
+</p>
+
 </div>
 
 </div>
@@ -972,67 +1184,120 @@ Materials Director
 
 <div class="cards">
 
-<div class="card metric">
-<strong id="careerProjects">5</strong>
-<span>проектов</span>
-</div>
 
 <div class="card metric">
-<strong>2</strong>
-<span>главные роли</span>
+
+<strong id="careerProjects">
+5
+</strong>
+
+<span>
+проекта
+</span>
+
 </div>
+
 
 <div class="card metric">
-<strong>2026</strong>
-<span>новые главные роли</span>
+
+<strong>
+2
+</strong>
+
+<span>
+главные роли
+</span>
+
 </div>
+
 
 <div class="card metric">
-<strong>AI</strong>
-<span>карьерная аналитика</span>
+
+<strong>
+2026
+</strong>
+
+<span>
+новые главные роли
+</span>
+
+</div>
+
+
+<div class="card metric">
+
+<strong>
+AI
+</strong>
+
+<span>
+карьерная аналитика
+</span>
+
 </div>
 
 </div>
 
 
-<div class="card" style="margin-top:15px">
+<div class="card"
+style="margin-top:15px">
 
-<h2>🗓 Weekly Agent</h2>
+<h2>
+🗓 Weekly Agent
+</h2>
 
 <p>
+
 Раз в неделю агент будет анализировать:
+
 </p>
 
 <ul>
 
-<li>куда ты подавалась;</li>
+<li>
+куда ты подавалась;
+</li>
 
-<li>какие кастинги пропустила;</li>
+<li>
+какие ответы получила;
+</li>
 
-<li>где были пробы;</li>
+<li>
+где были пробы;
+</li>
 
-<li>где был callback;</li>
+<li>
+где был callback;
+</li>
 
-<li>какие заявки остались без ответа;</li>
+<li>
+какие роли приводят к следующим этапам;
+</li>
 
-<li>какие типы ролей дают лучшие результаты;</li>
+<li>
+какие материалы работают;
+</li>
 
-<li>какие материалы работают;</li>
-
-<li>какие следующие действия стоит сделать.</li>
+<li>
+что делать на следующей неделе.
+</li>
 
 </ul>
+
 
 <div class="notice">
 
 <b>
-Будущая рекомендация агента
+Будущий отчёт
 </b>
 
 <p>
+
 «Марина, на этой неделе стоит усилить
-подачи на драматические роли 25–32 лет
-и обновить один из материалов».
+подачи на определённый тип ролей,
+обновить материалы и проверить
+несколько старых заявок без ответа».
+
 </p>
 
 </div>
@@ -1045,13 +1310,17 @@ Materials Director
 
 <!-- ================= AGENT ================= -->
 
-<section id="agent" class="page">
+<section id="agent"
+class="page">
+
 
 <div class="header">
 
 <div>
 
-<h1>🧠 AI-агент</h1>
+<h1>
+🧠 AI-агент
+</h1>
 
 <p>
 Центр управления актёрской карьерой
@@ -1068,13 +1337,17 @@ Materials Director
 
 <div class="notice">
 
-<b>Агент:</b>
+<b>
+Агент:
+</b>
 
 <p>
+
 Я храню твою профессиональную память.
-Следующий этап — подключение полноценного
-AI-мозга к анализу кастингов, типажа,
-материалов и договоров.
+
+Следующий этап —
+подключение настоящего AI-мозга.
+
 </p>
 
 </div>
@@ -1089,8 +1362,12 @@ id="chatInput"
 placeholder="Например: стоит ли мне подаваться?"
 >
 
-<button class="btn" onclick="sendMessage()">
+<button
+class="btn"
+onclick="sendMessage()">
+
 Отправить
+
 </button>
 
 </div>
@@ -1106,11 +1383,14 @@ placeholder="Например: стоит ли мне подаваться?"
 
 
 
-<!-- ================= MODAL ================= -->
+<!-- ================= CASTING MODAL ================= -->
 
-<div id="modal" class="modal">
+<div id="modal"
+class="modal">
+
 
 <div class="modal-box">
+
 
 <h2>
 🎬 Новый кастинг
@@ -1118,26 +1398,31 @@ placeholder="Например: стоит ли мне подаваться?"
 
 
 <label>
+
 Название проекта
 
 <input
 id="projectName"
 placeholder="Например: Новый сериал"
 >
+
 </label>
 
 
 <label>
+
 Роль
 
 <input
 id="roleName"
 placeholder="Например: главная роль"
 >
+
 </label>
 
 
 <label>
+
 Ссылка на кастинг
 
 <input
@@ -1145,30 +1430,36 @@ id="castingUrl"
 type="url"
 placeholder="https://..."
 >
+
 </label>
 
 
 <label>
+
 Дедлайн
 
 <input
 id="deadline"
 type="date"
 >
+
 </label>
 
 
 <label>
+
 Дата подачи
 
 <input
 id="appliedAt"
 type="date"
 >
+
 </label>
 
 
 <label>
+
 Статус
 
 <select id="castingStatus">
@@ -1214,10 +1505,12 @@ Callback
 </option>
 
 </select>
+
 </label>
 
 
 <label>
+
 Текст кастинга
 
 <textarea
@@ -1225,30 +1518,36 @@ id="castingText"
 rows="7"
 placeholder="Вставь сюда текст кастинга..."
 ></textarea>
+
 </label>
 
 
 <label>
+
 Результат
 
 <input
 id="castingResult"
 placeholder="Например: ждём ответ"
 >
+
 </label>
 
 
 <label>
+
 Следующее действие
 
 <input
 id="nextAction"
 placeholder="Например: отправить пробу до 25 августа"
 >
+
 </label>
 
 
 <label>
+
 Заметки
 
 <textarea
@@ -1256,6 +1555,7 @@ id="castingNotes"
 rows="4"
 placeholder="Что важно помнить об этом кастинге..."
 ></textarea>
+
 </label>
 
 
@@ -1264,13 +1564,50 @@ placeholder="Что важно помнить об этом кастинге..."
 <button
 class="btn light"
 onclick="closeModal()">
+
 Отмена
+
 </button>
+
 
 <button
 class="btn"
 onclick="saveCasting()">
+
 Сохранить
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- ================= DETAIL MODAL ================= -->
+
+<div id="detailModal"
+class="modal">
+
+<div class="modal-box">
+
+<h2>
+🎬 Кастинг
+</h2>
+
+<div id="detailContent">
+</div>
+
+<div class="modal-buttons">
+
+<button
+class="btn light"
+onclick="closeDetailModal()">
+
+Закрыть
+
 </button>
 
 </div>
@@ -1284,21 +1621,22 @@ onclick="saveCasting()">
 <script>
 
 
-/* =====================================
+/* =========================
 SUPABASE
-===================================== */
+========================= */
+
+
+/*
+ВАЖНО:
+
+Здесь оставляем именно твой
+РАБОТАЮЩИЙ URL и ключ.
+
+*/
 
 const SUPABASE_URL =
 'https://kavepxugysumhpcftzqy.supabase.co/rest/v1/';
 
-
-/*
-НЕ МЕНЯЙ НИЧЕГО В ЭТОЙ СТРОКЕ,
-КРОМЕ САМОГО КЛЮЧА.
-
-ВСТАВЬ СЮДА ТОТ PUBLISHABLE KEY,
-С КОТОРЫМ У ТЕБЯ УЖЕ ЗАРАБОТАЛ САЙТ.
-*/
 
 const SUPABASE_KEY =
 'sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd';
@@ -1314,1026 +1652,1282 @@ SUPABASE_KEY
 let actorId = null;
 
 
-/* =====================================
+
+/* =========================
 NAVIGATION
-===================================== */
+========================= */
 
-function showPage(id, button) {
+function showPage(id,button){
 
-    document
-        .querySelectorAll('.page')
-        .forEach(page => {
-            page.classList.remove('active');
-        });
+document
+.querySelectorAll('.page')
+.forEach(page =>
+page.classList.remove('active')
+);
 
-    document
-        .getElementById(id)
-        .classList.add('active');
 
-    document
-        .querySelectorAll('.nav button')
-        .forEach(btn => {
-            btn.classList.remove('active');
-        });
+document
+.getElementById(id)
+.classList.add('active');
 
-    if (button) {
-        button.classList.add('active');
-    }
 
-    if (id === 'castings') {
-        loadCastings();
-    }
+document
+.querySelectorAll('.nav button')
+.forEach(btn =>
+btn.classList.remove('active')
+);
+
+
+if(button)
+button.classList.add('active');
+
+
+if(id === 'castings'){
+loadCastings();
+}
+
 }
 
 
-/* =====================================
+
+/* =========================
 MODAL
-===================================== */
+========================= */
 
-function openModal() {
+function openModal(){
 
-    document
-        .getElementById('modal')
-        .classList.add('open');
-
-}
-
-
-function closeModal() {
-
-    document
-        .getElementById('modal')
-        .classList.remove('open');
+document
+.getElementById('modal')
+.classList.add('open');
 
 }
 
 
-/* =====================================
+function closeModal(){
+
+document
+.getElementById('modal')
+.classList.remove('open');
+
+}
+
+
+function openDetailModal(){
+
+document
+.getElementById('detailModal')
+.classList.add('open');
+
+}
+
+
+function closeDetailModal(){
+
+document
+.getElementById('detailModal')
+.classList.remove('open');
+
+}
+
+
+
+/* =========================
 STATUS
-===================================== */
+========================= */
 
-function setStatus(text, type = '') {
+function setStatus(text,type=''){
 
-    const el =
-        document.getElementById('dbStatus');
+const el =
+document.getElementById(
+'dbStatus'
+);
 
-    if (!el) return;
 
-    el.textContent = text;
+if(!el)
+return;
 
-    el.className = 'status';
 
-    if (type) {
-        el.classList.add(type);
-    }
+el.textContent =
+text;
+
+
+el.className =
+'status';
+
+
+if(type)
+el.classList.add(type);
+
 }
 
 
-/* =====================================
+
+/* =========================
 FIND ACTOR
-===================================== */
+========================= */
 
-async function findActor() {
+async function findActor(){
 
-    const result =
-        await supabaseClient
-            .from('actors')
-            .select('id,full_name')
-            .eq(
-                'full_name',
-                'Фролова Марина Сергеевна'
-            )
-            .limit(1)
-            .maybeSingle();
-
-
-    if (result.error) {
-
-        console.error(
-            'Supabase actor error:',
-            result.error
-        );
-
-        setStatus(
-            'Ошибка подключения к базе: ' +
-            result.error.message,
-            'error'
-        );
-
-        return null;
-    }
+const result =
+await supabaseClient
+.from('actors')
+.select('id,full_name')
+.eq(
+'full_name',
+'Фролова Марина Сергеевна'
+)
+.limit(1)
+.maybeSingle();
 
 
-    if (!result.data) {
+if(result.error){
 
-        setStatus(
-            'Профиль Марины не найден.',
-            'error'
-        );
-
-        return null;
-    }
+console.error(
+'Supabase actor error:',
+result.error
+);
 
 
-    actorId =
-        result.data.id;
+setStatus(
+'Ошибка подключения к базе: ' +
+result.error.message,
+'error'
+);
 
 
-    return actorId;
+return null;
+
 }
 
 
-/* =====================================
+if(!result.data){
+
+setStatus(
+'Профиль Марины не найден.',
+'error'
+);
+
+
+return null;
+
+}
+
+
+actorId =
+result.data.id;
+
+
+return actorId;
+
+}
+
+
+
+/* =========================
 LOAD CASTINGS
-===================================== */
+========================= */
 
-async function loadCastings() {
+async function loadCastings(){
 
-    setStatus(
-        'Загрузка памяти...'
-    );
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-        if (!id) return;
-    }
+setStatus(
+'Подключение к памяти...'
+);
 
 
-    const result =
-        await supabaseClient
-            .from('castings')
-            .select('*')
-            .eq(
-                'actor_id',
-                actorId
-            )
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            );
+if(!actorId){
+
+const id =
+await findActor();
 
 
-    if (result.error) {
-
-        console.error(
-            'Supabase casting error:',
-            result.error
-        );
-
-        setStatus(
-            'Ошибка загрузки: ' +
-            result.error.message,
-            'error'
-        );
-
-        return;
-    }
-
-
-    const castings =
-        result.data || [];
-
-
-    const list =
-        document.getElementById(
-            'castingList'
-        );
-
-
-    if (!castings.length) {
-
-        list.innerHTML = `
-
-        <div class="empty">
-
-        Пока нет кастингов.
-
-        <br><br>
-
-        Нажми
-        <b>＋ Добавить</b>,
-        чтобы сохранить первый.
-
-        </div>
-
-        `;
-
-    } else {
-
-        list.innerHTML = '';
-
-        castings.forEach(
-            casting => {
-
-                const item =
-                    document.createElement(
-                        'div'
-                    );
-
-                item.className =
-                    'casting';
-
-
-                const statusLabel =
-                    getStatusLabel(
-                        casting.status
-                    );
-
-
-                const statusClass =
-                    getStatusClass(
-                        casting.status
-                    );
-
-
-                item.innerHTML = `
-
-                <div>
-
-                    <h3>
-                    ${escapeHtml(
-                        casting.project_name
-                    )}
-                    </h3>
-
-                    <p>
-                    ${escapeHtml(
-                        casting.role_name ||
-                        'Роль не указана'
-                    )}
-                    </p>
-
-                    ${
-                        casting.deadline
-                        ?
-                        `<p>
-                        Дедлайн:
-                        ${escapeHtml(
-                            formatDate(
-                                casting.deadline
-                            )
-                        )}
-                        </p>`
-                        :
-                        ''
-                    }
-
-                    ${
-                        casting.applied_at
-                        ?
-                        `<p>
-                        Подача:
-                        ${escapeHtml(
-                            formatDate(
-                                casting.applied_at
-                            )
-                        )}
-                        </p>`
-                        :
-                        ''
-                    }
-
-                    <span class="badge ${statusClass}">
-                    ${escapeHtml(
-                        statusLabel
-                    )}
-                    </span>
-
-                </div>
-
-
-                <div class="casting-actions">
-
-                    ${
-                        casting.casting_url
-                        ?
-                        `<a
-                        class="btn light"
-                        href="${escapeAttribute(
-                            casting.casting_url
-                        )}"
-                        target="_blank">
-                        Открыть
-                        </a>`
-                        :
-                        ''
-                    }
-
-                    <button
-                    class="btn light"
-                    onclick="showCastingDetails(${casting.id})">
-                    Подробнее
-                    </button>
-
-                </div>
-
-                `;
-
-
-                list.appendChild(item);
-
-            }
-        );
-
-    }
-
-
-    updateCounters(
-        castings
-    );
-
-
-    setStatus(
-        'Память подключена · ' +
-        castings.length +
-        ' кастингов',
-        'success'
-    );
+if(!id)
+return;
 
 }
 
 
-/* =====================================
-SAVE CASTING
-===================================== */
-
-async function saveCasting() {
-
-    const projectName =
-        document
-            .getElementById(
-                'projectName'
-            )
-            .value
-            .trim();
-
-
-    const roleName =
-        document
-            .getElementById(
-                'roleName'
-            )
-            .value
-            .trim();
+const result =
+await supabaseClient
+.from('castings')
+.select('*')
+.eq(
+'actor_id',
+actorId
+)
+.order(
+'created_at',
+{
+ascending:false
+}
+);
 
 
-    const castingUrl =
-        document
-            .getElementById(
-                'castingUrl'
-            )
-            .value
-            .trim();
+if(result.error){
+
+console.error(
+'Supabase casting error:',
+result.error
+);
 
 
-    const deadline =
-        document
-            .getElementById(
-                'deadline'
-            )
-            .value ||
-        null;
+setStatus(
+'Ошибка загрузки кастингов: ' +
+result.error.message,
+'error'
+);
 
 
-    const appliedAt =
-        document
-            .getElementById(
-                'appliedAt'
-            )
-            .value ||
-        null;
+return;
 
-
-    const status =
-        document
-            .getElementById(
-                'castingStatus'
-            )
-            .value;
-
-
-    const castingText =
-        document
-            .getElementById(
-                'castingText'
-            )
-            .value
-            .trim();
-
-
-    const resultText =
-        document
-            .getElementById(
-                'castingResult'
-            )
-            .value
-            .trim();
-
-
-    const nextAction =
-        document
-            .getElementById(
-                'nextAction'
-            )
-            .value
-            .trim();
-
-
-    const notes =
-        document
-            .getElementById(
-                'castingNotes'
-            )
-            .value
-            .trim();
-
-
-    if (!projectName) {
-
-        alert(
-            'Введите название проекта.'
-        );
-
-        return;
-    }
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-        if (!id) {
-
-            alert(
-                'Профиль Марины не найден.'
-            );
-
-            return;
-        }
-    }
-
-
-    const insertData = {
-
-        actor_id:
-            actorId,
-
-        project_name:
-            projectName,
-
-        role_name:
-            roleName ||
-            null,
-
-        deadline:
-            deadline,
-
-        casting_url:
-            castingUrl ||
-            null,
-
-        applied_at:
-            appliedAt,
-
-        status:
-            status,
-
-        casting_text:
-            castingText ||
-            null,
-
-        result:
-            resultText ||
-            null,
-
-        next_action:
-            nextAction ||
-            null,
-
-        notes:
-            notes ||
-            null
-    };
-
-
-    const response =
-        await supabaseClient
-            .from('castings')
-            .insert(
-                insertData
-            );
-
-
-    if (response.error) {
-
-        console.error(
-            'Save casting error:',
-            response.error
-        );
-
-        alert(
-            'Ошибка сохранения:\n\n' +
-            response.error.message
-        );
-
-        return;
-    }
-
-
-    clearCastingForm();
-
-    closeModal();
-
-    await loadCastings();
-
-    showPage(
-        'castings'
-    );
 }
 
 
-/* =====================================
-CLEAR FORM
-===================================== */
-
-function clearCastingForm() {
-
-    document
-        .getElementById(
-            'projectName'
-        )
-        .value = '';
+const castings =
+result.data || [];
 
 
-    document
-        .getElementById(
-            'roleName'
-        )
-        .value = '';
+const list =
+document.getElementById(
+'castingList'
+);
 
 
-    document
-        .getElementById(
-            'castingUrl'
-        )
-        .value = '';
+if(!castings.length){
+
+list.innerHTML = `
+
+<div class="empty">
+
+Пока нет кастингов.
+
+<br><br>
+
+Нажми
+<b>＋ Добавить</b>,
+чтобы сохранить первый.
+
+</div>
+
+`;
+
+}
+else{
+
+list.innerHTML = '';
 
 
-    document
-        .getElementById(
-            'deadline'
-        )
-        .value = '';
+castings.forEach(
+casting => {
+
+const item =
+document.createElement(
+'div'
+);
 
 
-    document
-        .getElementById(
-            'appliedAt'
-        )
-        .value = '';
+item.className =
+'casting';
 
 
-    document
-        .getElementById(
-            'castingStatus'
-        )
-        .value = 'new';
+const statusLabel =
+getStatusLabel(
+casting.status
+);
 
 
-    document
-        .getElementById(
-            'castingText'
-        )
-        .value = '';
+const statusClass =
+getStatusClass(
+casting.status
+);
 
 
-    document
-        .getElementById(
-            'castingResult'
-        )
-        .value = '';
+item.innerHTML = `
+
+<div>
+
+<h3>
+${escapeHtml(
+casting.project_name
+)}
+</h3>
+
+<p>
+${escapeHtml(
+casting.role_name ||
+'Роль не указана'
+)}
+</p>
+
+${
+casting.deadline
+?
+`<p>
+Дедлайн:
+${escapeHtml(
+formatDate(
+casting.deadline
+)
+)}
+</p>`
+:
+''
+}
+
+${
+casting.applied_at
+?
+`<p>
+Подача:
+${escapeHtml(
+formatDate(
+casting.applied_at
+)
+)}
+</p>`
+:
+''
+}
+
+<span class="badge ${statusClass}">
+${escapeHtml(
+statusLabel
+)}
+</span>
+
+</div>
 
 
-    document
-        .getElementById(
-            'nextAction'
-        )
-        .value = '';
+<div class="casting-actions">
 
-
-    document
-        .getElementById(
-            'castingNotes'
-        )
-        .value = '';
+${
+casting.casting_url
+?
+`<a
+class="btn light"
+href="${escapeAttribute(
+casting.casting_url
+)}"
+target="_blank"
+rel="noopener noreferrer">
+Открыть
+</a>`
+:
+''
 }
 
 
-/* =====================================
-COUNTERS
-===================================== */
+<button
+class="btn light"
+onclick="showCastingDetails('${escapeAttribute(String(casting.id))}')">
+Подробнее
+</button>
 
-function updateCounters(
-    castings
-) {
-
-    const active =
-        castings.filter(
-            c =>
-                ![
-                    'rejected',
-                    'closed',
-                    'approved'
-                ].includes(
-                    c.status
-                )
-        ).length;
-
-
-    const auditions =
-        castings.filter(
-            c =>
-                [
-                    'audition',
-                    'self-tape',
-                    'callback'
-                ].includes(
-                    c.status
-                )
-        ).length;
-
-
-    const waiting =
-        castings.filter(
-            c =>
-                c.status ===
-                'no_response'
-        ).length;
-
-
-    const actions =
-        castings.filter(
-            c =>
-                c.next_action
-        ).length;
-
-
-    document
-        .getElementById(
-            'activeCount'
-        )
-        .textContent =
-        active;
-
-
-    document
-        .getElementById(
-            'auditionCount'
-        )
-        .textContent =
-        auditions;
-
-
-    document
-        .getElementById(
-            'waitingCount'
-        )
-        .textContent =
-        waiting;
-
-
-    document
-        .getElementById(
-            'actionCount'
-        )
-        .textContent =
-        actions;
-}
-
-
-/* =====================================
-CASTING DETAILS
-===================================== */
-
-async function showCastingDetails(
-    id
-) {
-
-    const result =
-        await supabaseClient
-            .from('castings')
-            .select('*')
-            .eq(
-                'id',
-                id
-            )
-            .single();
-
-
-    if (result.error) {
-
-        alert(
-            'Не удалось загрузить кастинг:\n\n' +
-            result.error.message
-        );
-
-        return;
-    }
-
-
-    const c =
-        result.data;
-
-
-    const text = `
-
-ПРОЕКТ
-${c.project_name || '—'}
-
-
-РОЛЬ
-${c.role_name || '—'}
-
-
-СТАТУС
-${getStatusLabel(c.status)}
-
-
-ДЕДЛАЙН
-${c.deadline ? formatDate(c.deadline) : '—'}
-
-
-ДАТА ПОДАЧИ
-${c.applied_at ? formatDate(c.applied_at) : '—'}
-
-
-РЕЗУЛЬТАТ
-${c.result || '—'}
-
-
-СЛЕДУЮЩЕЕ ДЕЙСТВИЕ
-${c.next_action || '—'}
-
-
-ЗАМЕТКИ
-${c.notes || '—'}
-
-
-ТЕКСТ КАСТИНГА
-${c.casting_text || '—'}
+</div>
 
 `;
 
 
-    alert(text);
+list.appendChild(item);
+
+});
+
 }
 
 
-/* =====================================
+updateCounters(
+castings
+);
+
+
+setStatus(
+'Память подключена · ' +
+castings.length +
+' кастингов',
+'success'
+);
+
+}
+
+
+
+/* =========================
+SAVE CASTING
+========================= */
+
+async function saveCasting(){
+
+const projectName =
+document
+.getElementById(
+'projectName'
+)
+.value
+.trim();
+
+
+const roleName =
+document
+.getElementById(
+'roleName'
+)
+.value
+.trim();
+
+
+const castingUrl =
+document
+.getElementById(
+'castingUrl'
+)
+.value
+.trim();
+
+
+const deadline =
+document
+.getElementById(
+'deadline'
+)
+.value ||
+null;
+
+
+const appliedAt =
+document
+.getElementById(
+'appliedAt'
+)
+.value ||
+null;
+
+
+const status =
+document
+.getElementById(
+'castingStatus'
+)
+.value;
+
+
+const castingText =
+document
+.getElementById(
+'castingText'
+)
+.value
+.trim();
+
+
+const resultText =
+document
+.getElementById(
+'castingResult'
+)
+.value
+.trim();
+
+
+const nextAction =
+document
+.getElementById(
+'nextAction'
+)
+.value
+.trim();
+
+
+const notes =
+document
+.getElementById(
+'castingNotes'
+)
+.value
+.trim();
+
+
+if(!projectName){
+
+alert(
+'Введите название проекта.'
+);
+
+return;
+
+}
+
+
+if(!actorId){
+
+const id =
+await findActor();
+
+
+if(!id){
+
+alert(
+'Профиль Марины не найден.'
+);
+
+return;
+
+}
+
+}
+
+
+const result =
+await supabaseClient
+.from('castings')
+.insert({
+
+actor_id:
+actorId,
+
+project_name:
+projectName,
+
+role_name:
+roleName ||
+null,
+
+deadline:
+deadline,
+
+casting_url:
+castingUrl ||
+null,
+
+applied_at:
+appliedAt,
+
+status:
+status,
+
+casting_text:
+castingText ||
+null,
+
+result:
+resultText ||
+null,
+
+next_action:
+nextAction ||
+null,
+
+notes:
+notes ||
+null
+
+});
+
+
+if(result.error){
+
+console.error(
+'Save casting error:',
+result.error
+);
+
+
+alert(
+'Ошибка сохранения:\n\n' +
+result.error.message
+);
+
+return;
+
+}
+
+
+/* очистить форму */
+
+clearCastingForm();
+
+
+closeModal();
+
+
+await loadCastings();
+
+
+showPage(
+'castings'
+);
+
+}
+
+
+
+/* =========================
+CLEAR FORM
+========================= */
+
+function clearCastingForm(){
+
+document
+.getElementById(
+'projectName'
+)
+.value = '';
+
+
+document
+.getElementById(
+'roleName'
+)
+.value = '';
+
+
+document
+.getElementById(
+'castingUrl'
+)
+.value = '';
+
+
+document
+.getElementById(
+'deadline'
+)
+.value = '';
+
+
+document
+.getElementById(
+'appliedAt'
+)
+.value = '';
+
+
+document
+.getElementById(
+'castingStatus'
+)
+.value = 'new';
+
+
+document
+.getElementById(
+'castingText'
+)
+.value = '';
+
+
+document
+.getElementById(
+'castingResult'
+)
+.value = '';
+
+
+document
+.getElementById(
+'nextAction'
+)
+.value = '';
+
+
+document
+.getElementById(
+'castingNotes'
+)
+.value = '';
+
+}
+
+
+
+/* =========================
+COUNTERS
+========================= */
+
+function updateCounters(castings){
+
+const active =
+castings.filter(
+c =>
+![
+'rejected',
+'closed',
+'approved'
+].includes(
+c.status
+)
+).length;
+
+
+const auditions =
+castings.filter(
+c =>
+[
+'audition',
+'self-tape',
+'callback'
+].includes(
+c.status
+)
+).length;
+
+
+const waiting =
+castings.filter(
+c =>
+c.status ===
+'no_response'
+).length;
+
+
+const actions =
+castings.filter(
+c =>
+c.next_action &&
+![
+'rejected',
+'closed',
+'approved'
+].includes(
+c.status
+)
+).length;
+
+
+document
+.getElementById(
+'activeCount'
+)
+.textContent =
+active;
+
+
+document
+.getElementById(
+'auditionCount'
+)
+.textContent =
+auditions;
+
+
+document
+.getElementById(
+'waitingCount'
+)
+.textContent =
+waiting;
+
+
+document
+.getElementById(
+'actionCount'
+)
+.textContent =
+actions;
+
+}
+
+
+
+/* =========================
+CASTING DETAILS
+========================= */
+
+async function showCastingDetails(id){
+
+const result =
+await supabaseClient
+.from('castings')
+.select('*')
+.eq(
+'id',
+id
+)
+.single();
+
+
+if(result.error){
+
+alert(
+'Не удалось загрузить кастинг:\n\n' +
+result.error.message
+);
+
+return;
+
+}
+
+
+const c =
+result.data;
+
+
+const content =
+document.getElementById(
+'detailContent'
+);
+
+
+content.innerHTML = `
+
+<div class="detail-box">
+
+<div class="detail-row">
+
+<span>
+Проект
+</span>
+
+<strong>
+${escapeHtml(
+c.project_name || '—'
+)}
+</strong>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Роль
+</span>
+
+<span>
+${escapeHtml(
+c.role_name || '—'
+)}
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Статус
+</span>
+
+<span>
+
+<span class="badge ${getStatusClass(c.status)}">
+
+${escapeHtml(
+getStatusLabel(c.status)
+)}
+
+</span>
+
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Дедлайн
+</span>
+
+<span>
+${c.deadline
+?
+escapeHtml(
+formatDate(c.deadline)
+)
+:
+'—'}
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Дата подачи
+</span>
+
+<span>
+${c.applied_at
+?
+escapeHtml(
+formatDate(c.applied_at)
+)
+:
+'—'}
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Результат
+</span>
+
+<span>
+${escapeHtml(
+c.result || '—'
+)}
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Следующее действие
+</span>
+
+<span>
+${escapeHtml(
+c.next_action || '—'
+)}
+</span>
+
+</div>
+
+
+<div class="detail-row">
+
+<span>
+Заметки
+</span>
+
+<span>
+${escapeHtml(
+c.notes || '—'
+)}
+</span>
+
+</div>
+
+
+${
+c.casting_url
+?
+`<div style="margin-top:15px">
+<a
+class="link"
+href="${escapeAttribute(c.casting_url)}"
+target="_blank"
+rel="noopener noreferrer">
+Открыть исходный кастинг
+</a>
+</div>`
+:
+''
+}
+
+
+</div>
+
+
+<div class="detail-box">
+
+<strong>
+Текст кастинга
+</strong>
+
+<p style="white-space:pre-wrap">
+
+${escapeHtml(
+c.casting_text || 'Текст не добавлен.'
+)}
+
+</p>
+
+</div>
+
+
+<div class="ai-box">
+
+<strong>
+🧠 AI-анализ
+</strong>
+
+<p>
+
+Следующим этапом здесь появится
+анализ именно этой роли относительно
+профиля Марины.
+
+</p>
+
+<div class="ai-score">
+—%
+</div>
+
+<p>
+
+AI будет оценивать:
+типаж, возраст персонажа,
+характер, навыки, фильмографию,
+материалы и вероятность того,
+что Марину стоит подавать.
+
+</p>
+
+</div>
+
+`;
+
+
+openDetailModal();
+
+}
+
+
+
+/* =========================
 STATUS HELPERS
-===================================== */
+========================= */
 
-function getStatusLabel(status) {
+function getStatusLabel(status){
 
-    const labels = {
+const labels = {
 
-        new:
-            'Новый',
+new:
+'Новый',
 
-        decided_to_apply:
-            'Решила подаваться',
+decided_to_apply:
+'Решила подаваться',
 
-        applied:
-            'Подалась',
+applied:
+'Подалась',
 
-        audition:
-            'Прислали пробу',
+audition:
+'Прислали пробу',
 
-        'self-tape':
-            'Проба отправлена',
+'self-tape':
+'Проба отправлена',
 
-        callback:
-            'Callback',
+callback:
+'Callback',
 
-        approved:
-            'Утверждена',
+approved:
+'Утверждена',
 
-        rejected:
-            'Отказ',
+rejected:
+'Отказ',
 
-        no_response:
-            'Нет ответа',
+no_response:
+'Нет ответа',
 
-        closed:
-            'Кастинг закрыт'
+closed:
+'Кастинг закрыт'
 
-    };
+};
 
 
-    return labels[status] ||
-        status ||
-        'Новый';
+return labels[status] ||
+status ||
+'Новый';
+
 }
 
 
-function getStatusClass(
-    status
-) {
 
-    if (
-        [
-            'approved'
-        ].includes(status)
-    ) {
-        return 'green';
-    }
+function getStatusClass(status){
 
-
-    if (
-        [
-            'audition',
-            'self-tape',
-            'callback'
-        ].includes(status)
-    ) {
-        return 'yellow';
-    }
-
-
-    if (
-        [
-            'rejected',
-            'closed'
-        ].includes(status)
-    ) {
-        return 'red';
-    }
-
-
-    return '';
+if(
+status === 'approved'
+){
+return 'green';
 }
 
 
-/* =====================================
+if(
+[
+'audition',
+'self-tape',
+'callback'
+].includes(status)
+){
+return 'yellow';
+}
+
+
+if(
+[
+'rejected',
+'closed'
+].includes(status)
+){
+return 'red';
+}
+
+
+return '';
+
+}
+
+
+
+/* =========================
 DATE
-===================================== */
+========================= */
 
-function formatDate(
-    value
-) {
+function formatDate(value){
 
-    if (!value)
-        return '—';
+if(!value)
+return '—';
 
 
-    const parts =
-        value.split('-');
+const parts =
+value.split('-');
 
 
-    if (parts.length !== 3)
-        return value;
+if(parts.length !== 3)
+return value;
 
 
-    return (
-        parts[2] +
-        '.' +
-        parts[1] +
-        '.' +
-        parts[0]
-    );
+return (
+parts[2] +
+'.' +
+parts[1] +
+'.' +
+parts[0]
+);
+
 }
 
 
-/* =====================================
+
+/* =========================
 ESCAPE
-===================================== */
+========================= */
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value){
 
-    return String(
-        value ?? ''
-    )
+return String(
+value ?? ''
+)
 
-    .replaceAll(
-        '&',
-        '&amp;'
-    )
+.replaceAll(
+'&',
+'&amp;'
+)
 
-    .replaceAll(
-        '<',
-        '&lt;'
-    )
+.replaceAll(
+'<',
+'&lt;'
+)
 
-    .replaceAll(
-        '>',
-        '&gt;'
-    )
+.replaceAll(
+'>',
+'&gt;'
+)
 
-    .replaceAll(
-        '"',
-        '&quot;'
-    )
+.replaceAll(
+'"',
+'&quot;'
+)
 
-    .replaceAll(
-        "'",
-        '&#039;'
-    );
+.replaceAll(
+"'",
+'&#039;'
+);
+
 }
 
 
-function escapeAttribute(
-    value
-) {
+function escapeAttribute(value){
 
-    return escapeHtml(
-        value
-    );
+return escapeHtml(
+value
+);
+
 }
 
 
-/* =====================================
+
+/* =========================
 CHAT
-===================================== */
+========================= */
 
-function sendMessage() {
+function sendMessage(){
 
-    const input =
-        document.getElementById(
-            'chatInput'
-        );
-
-
-    const text =
-        input.value.trim();
+const input =
+document.getElementById(
+'chatInput'
+);
 
 
-    if (!text)
-        return;
+const text =
+input.value.trim();
 
 
-    const chat =
-        document.getElementById(
-            'chat'
-        );
+if(!text)
+return;
 
 
-    chat.innerHTML += `
-
-    <div class="notice">
-
-    <b>Ты:</b>
-
-    <p>
-    ${escapeHtml(text)}
-    </p>
-
-    </div>
+const chat =
+document.getElementById(
+'chat'
+);
 
 
-    <div class="notice">
+chat.innerHTML += `
 
-    <b>Агент:</b>
+<div class="notice">
 
-    <p>
-    Я сохранил твой запрос.
-    Полноценный AI-анализ подключим
-    следующим этапом.
-    </p>
+<b>
+Ты:
+</b>
 
-    </div>
+<p>
+${escapeHtml(text)}
+</p>
 
-    `;
+</div>
 
 
-    input.value = '';
+<div class="notice">
+
+<b>
+Агент:
+</b>
+
+<p>
+
+Запрос сохранён.
+
+Полноценный AI-анализ подключим
+после создания AI-модуля.
+
+</p>
+
+</div>
+
+`;
+
+
+input.value = '';
+
 }
 
 
-/* =====================================
+
+/* =========================
 START
-===================================== */
+========================= */
 
 window.addEventListener(
-    'DOMContentLoaded',
-    async () => {
+'DOMContentLoaded',
+async () => {
 
-        await findActor();
+await findActor();
 
-        await loadCastings();
+await loadCastings();
 
-    }
+}
 );
+
 
 </script>
 
 </body>
+
 </html>
