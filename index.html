@@ -1283,6 +1283,32 @@ placeholder="Вставь сюда текст кастинга..."
 ></textarea>
 
 </label>
+<label>
+Статус
+
+<select id="castingStatus">
+    <option value="new">Новая подача</option>
+    <option value="submitted">Отправлена</option>
+    <option value="audition">Пригласили на пробы</option>
+    <option value="self-tape">Пробы отправлены</option>
+    <option value="callback">Callback</option>
+    <option value="approved">Утверждена</option>
+    <option value="rejected">Не утвердили</option>
+    <option value="no_response">Не ответили</option>
+    <option value="cancelled">Отменён</option>
+</select>
+</label>
+
+  <label>
+Ссылка на кастинг
+
+<input
+id="castingUrl"
+type="url"
+placeholder="https://..."
+>
+</label>
+
 
 <label>
 Заметки
@@ -1734,6 +1760,20 @@ document
 .value
 .trim();
 
+const castingStatus =
+document
+.getElementById(
+'castingStatus'
+)
+.value;
+
+const castingUrl =
+document
+.getElementById(
+'castingUrl'
+)
+.value
+.trim();  
 
 if(!projectName){
 
@@ -1792,7 +1832,10 @@ notes:
 document.getElementById('castingNotes').value.trim() || null,
 
 status:
-'new'
+castingStatus,
+
+casting_url:
+castingUrl || null
 }
 
 });
