@@ -3249,23 +3249,22 @@ async function analyzeMaterial() {
 
 
         const {
-            data,
-            error
-        } =
-            await supabaseClient.functions.invoke(
-                'analyze-material',
-                {
-                    body: {
-
-                        image:
-                            imageData,
-
-                        profile:
-                            profile
-
-                    }
-                }
-            );
+    data,
+    error
+} =
+    await supabaseClient.functions.invoke(
+        'analyze-material',
+        {
+            body: {
+                image: imageData,
+                profile: profile
+            },
+            headers: {
+                Authorization:
+                    `Bearer ${SUPABASE_KEY}`
+            }
+        }
+    );
 
 
         if (error) {
