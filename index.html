@@ -420,7 +420,99 @@ textarea {
 .castings-link a {
     color: #333;
 }
+/* =====================================================
+   MATERIALS ANALYSIS
+   ===================================================== */
 
+.material-intro {
+    margin-bottom: 15px;
+}
+
+.material-intro h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.material-help {
+    color: #777;
+    line-height: 1.5;
+}
+
+.material-upload {
+    margin-bottom: 15px;
+}
+
+.material-upload h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.material-upload input[type="file"] {
+    margin-bottom: 15px;
+}
+
+.material-preview {
+    margin: 15px 0;
+    display: none;
+}
+
+.material-preview img {
+    display: block;
+    max-width: 280px;
+    max-height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.material-loading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.material-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #ddd;
+    border-top-color: #252321;
+    border-radius: 50%;
+    animation: materialSpin .8s linear infinite;
+}
+
+@keyframes materialSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+.material-result {
+    margin-top: 15px;
+}
+
+.material-analysis {
+    line-height: 1.65;
+    white-space: pre-wrap;
+    color: #333;
+}
+
+.material-analysis strong {
+    font-weight: 700;
+}
+
+@media (max-width: 800px) {
+
+    .material-preview img {
+        max-width: 100%;
+    }
+
+}
 /* =========================
    MOBILE
 ========================= */
@@ -1051,25 +1143,18 @@ textarea {
 </section>
 
 
-<!-- =========================
-     MATERIALS
-========================= -->
+<!-- MATERIALS -->
 
-<section
-    id="materials"
-    class="page"
->
+<section id="materials" class="page">
 
     <div class="header">
 
         <div>
 
-            <h1>
-                📸 Материалы
-            </h1>
+            <h1>📸 Материалы</h1>
 
             <p>
-                Фото, видео и будущий Materials Director
+                Профессиональный анализ актерских материалов
             </p>
 
         </div>
@@ -1077,101 +1162,122 @@ textarea {
     </div>
 
 
-    <div class="cards">
+    <div class="card material-intro">
+
+        <h2>
+            Materials Director
+        </h2>
+
+        <p>
+            Загрузи фотографию, и AI проанализирует,
+            насколько она работает как кастинговый материал
+            именно для твоего профессионального профиля.
+        </p>
+
+    </div>
 
 
-        <div class="card">
+    <div class="card material-upload">
 
-            <h2 style="font-size:18px">
-                Главное фото
-            </h2>
+        <h2>
+            📷 Анализ фотографии
+        </h2>
 
-
-            <img
-                src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
-                style="
-                    width:120px;
-                    height:155px;
-                    object-fit:cover;
-                    border-radius:10px;
-                "
-            >
+        <p class="material-help">
+            Выбери фотографию с компьютера.
+            Она будет отправлена на анализ и не сохраняется
+            в базе Marina AI.
+        </p>
 
 
-            <p>
-                Главное фото профиля.
-            </p>
+        <input
+            type="file"
+            id="materialFile"
+            accept="image/jpeg,image/png,image/webp"
+        >
 
 
-            <span class="badge green">
-                Основное
-            </span>
+        <div
+            id="materialPreview"
+            class="material-preview"
+        ></div>
+
+
+        <button
+            class="btn"
+            id="analyzeMaterialBtn"
+            onclick="analyzeMaterial()"
+            disabled
+        >
+            🔍 Анализировать
+        </button>
+
+    </div>
+
+
+    <div
+        id="materialLoading"
+        class="card"
+        style="display:none"
+    >
+
+        <div class="material-loading">
+
+            <div class="material-spinner"></div>
+
+            <div>
+
+                <strong>
+                    AI анализирует фотографию...
+                </strong>
+
+                <p>
+                    Оцениваем материал с точки зрения
+                    кастинговой пригодности.
+                </p>
+
+            </div>
 
         </div>
 
+    </div>
 
-        <div class="card">
 
-            <h2 style="font-size:18px">
-                Фотографии
+    <div
+        id="materialError"
+        class="status error"
+        style="display:none"
+    ></div>
+
+
+    <div
+        id="materialResult"
+        class="card material-result"
+        style="display:none"
+    >
+
+        <div class="section-title">
+
+            <h2>
+                🧠 Результат анализа
             </h2>
-
-            <strong style="font-size:30px">
-                24
-            </strong>
-
-            <p>
-                фотографии в профиле
-            </p>
 
             <span class="badge yellow">
-                AI-аудит
+                AI
             </span>
 
         </div>
 
 
-        <div class="card">
-
-            <h2 style="font-size:18px">
-                Видео
-            </h2>
-
-            <strong style="font-size:30px">
-                1+
-            </strong>
-
-            <p>
-                видео
-            </p>
-
-            <span class="badge yellow">
-                AI-анализ
-            </span>
-
-        </div>
-
-
-        <div class="card">
-
-            <h2 style="font-size:18px">
-                Что снять
-            </h2>
-
-            <p>
-
-                AI позже предложит фотографии,
-                монологи и сцены, которые лучше
-                раскрывают твой кастинговый диапазон.
-
-            </p>
-
-        </div>
+        <div
+            id="materialAnalysis"
+            class="material-analysis"
+        ></div>
 
     </div>
 
 </section>
-
+      
 
 <!-- =========================
      CAREER
@@ -3143,7 +3249,426 @@ document
         }
     );
 
+/* =====================================================
+   MATERIALS AI ANALYSIS
+   ===================================================== */
 
+let selectedMaterialFile = null;
+
+
+/* =====================================================
+   FILE SELECT
+   ===================================================== */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const fileInput =
+            document.getElementById(
+                'materialFile'
+            );
+
+        if (!fileInput) {
+            return;
+        }
+
+        fileInput.addEventListener(
+            'change',
+            handleMaterialFile
+        );
+
+    }
+);
+
+
+/* =====================================================
+   HANDLE FILE
+   ===================================================== */
+
+function handleMaterialFile(event) {
+
+    const file =
+        event.target.files?.[0];
+
+    const preview =
+        document.getElementById(
+            'materialPreview'
+        );
+
+    const button =
+        document.getElementById(
+            'analyzeMaterialBtn'
+        );
+
+    const error =
+        document.getElementById(
+            'materialError'
+        );
+
+
+    error.style.display = 'none';
+
+
+    if (!file) {
+
+        selectedMaterialFile = null;
+
+        preview.innerHTML = '';
+
+        preview.style.display = 'none';
+
+        button.disabled = true;
+
+        return;
+    }
+
+
+    if (!file.type.startsWith('image/')) {
+
+        showMaterialError(
+            'Можно выбрать только изображение.'
+        );
+
+        selectedMaterialFile = null;
+
+        button.disabled = true;
+
+        return;
+    }
+
+
+    const maxSize =
+        8 * 1024 * 1024;
+
+
+    if (file.size > maxSize) {
+
+        showMaterialError(
+            'Фотография слишком большая. Максимальный размер — 8 МБ.'
+        );
+
+        selectedMaterialFile = null;
+
+        button.disabled = true;
+
+        return;
+    }
+
+
+    selectedMaterialFile = file;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function(e) {
+
+        preview.innerHTML = `
+            <img
+                src="${e.target.result}"
+                alt="Выбранная фотография"
+            >
+        `;
+
+        preview.style.display = 'block';
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+
+    button.disabled = false;
+
+}
+
+
+/* =====================================================
+   ANALYZE
+   ===================================================== */
+
+async function analyzeMaterial() {
+
+    if (!selectedMaterialFile) {
+
+        showMaterialError(
+            'Сначала выбери фотографию.'
+        );
+
+        return;
+    }
+
+
+    const loading =
+        document.getElementById(
+            'materialLoading'
+        );
+
+    const resultBox =
+        document.getElementById(
+            'materialResult'
+        );
+
+    const analysisBox =
+        document.getElementById(
+            'materialAnalysis'
+        );
+
+    const button =
+        document.getElementById(
+            'analyzeMaterialBtn'
+        );
+
+
+    hideMaterialError();
+
+
+    loading.style.display =
+        'block';
+
+
+    resultBox.style.display =
+        'none';
+
+
+    button.disabled =
+        true;
+
+
+    try {
+
+        const imageData =
+            await fileToDataUrl(
+                selectedMaterialFile
+            );
+
+
+        const profile = {
+
+            name:
+                'Фролова Марина Сергеевна',
+
+            age:
+                '27 лет',
+
+            height:
+                '157 см',
+
+            type:
+                'молодая драматическая героиня, эмоциональная уязвимость, внутренняя сила и романтическая природа',
+
+            experience:
+                'главные и эпизодические роли в кино и сериалах'
+
+        };
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.functions.invoke(
+                'analyze-material',
+                {
+                    body: {
+
+                        image:
+                            imageData,
+
+                        profile:
+                            profile
+
+                    }
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                'AI analysis error:',
+                error
+            );
+
+            let message =
+                error.message ||
+                'Ошибка AI-анализа';
+
+
+            if (
+                error.context &&
+                typeof error.context.json === 'function'
+            ) {
+
+                try {
+
+                    const details =
+                        await error.context.json();
+
+                    if (details?.error) {
+                        message =
+                            details.error;
+                    }
+
+                } catch (_) {}
+
+            }
+
+
+            throw new Error(
+                message
+            );
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                'Пустой ответ от Edge Function.'
+            );
+
+        }
+
+
+        if (data.error) {
+
+            throw new Error(
+                data.error
+            );
+
+        }
+
+
+        if (!data.analysis) {
+
+            throw new Error(
+                'AI не вернул текст анализа.'
+            );
+
+        }
+
+
+        analysisBox.textContent =
+            data.analysis;
+
+
+        resultBox.style.display =
+            'block';
+
+
+    } catch (error) {
+
+        console.error(
+            'Material analysis error:',
+            error
+        );
+
+
+        showMaterialError(
+            error.message ||
+            'Не удалось выполнить анализ.'
+        );
+
+    } finally {
+
+        loading.style.display =
+            'none';
+
+        button.disabled =
+            false;
+
+    }
+
+}
+
+
+/* =====================================================
+   FILE → DATA URL
+   ===================================================== */
+
+function fileToDataUrl(file) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                () => resolve(
+                    reader.result
+                );
+
+
+            reader.onerror =
+                () => reject(
+                    new Error(
+                        'Не удалось прочитать фотографию.'
+                    )
+                );
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ERROR
+   ===================================================== */
+
+function showMaterialError(message) {
+
+    const error =
+        document.getElementById(
+            'materialError'
+        );
+
+
+    if (!error) {
+        return;
+    }
+
+
+    error.textContent =
+        message;
+
+
+    error.style.display =
+        'block';
+
+}
+
+
+function hideMaterialError() {
+
+    const error =
+        document.getElementById(
+            'materialError'
+        );
+
+
+    if (!error) {
+        return;
+    }
+
+
+    error.textContent =
+        '';
+
+
+    error.style.display =
+        'none';
+
+}
+
+      
 /* =====================================================
    START
 ===================================================== */
