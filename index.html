@@ -1911,50 +1911,11 @@ textarea {
 
 <script>
 
-/* =====================================================
-   CASTINGS STATE
-===================================================== */
-
-let allCastings = [];
-
-let currentCastingFilter = 'all';
 
 
-/* =====================================================
-   FILTER CASTINGS
-===================================================== */
-
-function filterCastings(status) {
-
-    currentCastingFilter = status || 'all';
-
-    renderFilteredCastings();
-
-}
 
 
-/* =====================================================
-   RENDER FILTERED CASTINGS
-===================================================== */
 
-function renderFilteredCastings() {
-
-    let filtered = allCastings;
-
-    if (currentCastingFilter !== 'all') {
-
-        filtered =
-            allCastings.filter(
-                casting =>
-                    casting.status ===
-                    currentCastingFilter
-            );
-
-    }
-
-    renderCastings(filtered);
-
-}
 
 
 /* =====================================================
@@ -1978,83 +1939,6 @@ const supabaseClient =
 let actorId = null;
 
 
-/* =====================================================
-   LOAD CASTINGS
-===================================================== */
-
-async function loadCastings() {
-
-    setStatus(
-        'Подключение к памяти...'
-    );
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-        if (!id) {
-            return;
-        }
-
-    }
-
-
-    const result =
-        await supabaseClient
-            .from('castings')
-            .select('*')
-            .eq(
-                'actor_id',
-                actorId
-            )
-            .order(
-                'created_at',
-                {
-                    ascending:false
-                }
-            );
-
-
-    if (result.error) {
-
-        console.error(
-            'Supabase casting error:',
-            result.error
-        );
-
-        setStatus(
-            'Ошибка загрузки кастингов: ' +
-            result.error.message,
-            'error'
-        );
-
-        return;
-
-    }
-
-
-    allCastings =
-        result.data || [];
-
-
-    renderFilteredCastings();
-
-
-    updateCounters(
-        allCastings
-    );
-
-
-    setStatus(
-        'Память подключена · ' +
-        allCastings.length +
-        ' кастингов',
-        'success'
-    );
-
-}
 
 
 /* =====================================================
@@ -2279,16 +2163,16 @@ async function analyzeCurrentCasting() {
            MATERIALS
         ================================================= */
 
-        const materialsResult =
-            await supabaseClient
-                .from('materials')
-                .select(
-                    'id, title, name, type, url, file_url, analysis'
-                )
-                .eq(
-                    'actor_id',
-                    actorId
-                );
+      const materialsResult =
+    await supabaseClient
+        .from('materials')
+        .select(
+            'id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at'
+        )
+        .eq(
+            'actor_id',
+            actorId
+        );
 
 
         if (materialsResult.error) {
@@ -5139,7 +5023,14 @@ async function analyzeAllMaterials(forceNew = false) {
 
         }
 
+result.innerHTML =
+    formatAIText(
+        ai.data.analysis
+    );
 
+result.style.display =
+    'block';
+          
         /* =========================
            ПОЛУЧАЕМ МАТЕРИАЛЫ
         ========================= */
@@ -5207,23 +5098,37 @@ async function analyzeAllMaterials(forceNew = false) {
             ai.data?.analysis;
 
 
-        if (!analysis) {
+        if (!ai.data?.analysis) {
 
-            throw new Error(
-                ai.data?.error ||
-                'AI не вернул общий анализ.'
-            );
+    throw new Error(
+        ai.data?.error ||
+        'AI не вернул общий анализ.'
+    );
 
-        }
+}
+
+
+/* Сохраняем анализ в actors */
+
+await savePortfolioAnalysis(
+    ai.data.analysis
+);
+
+
+/* Показываем результат */
+
+result.textContent =
+    ai.data.analysis;
+
+result.style.display =
+    'block';
 
 
         /* =========================
            СОХРАНЯЕМ АНАЛИЗ
         ========================= */
 
-        await savePortfolioAnalysis(
-            analysis
-        );
+        
 
 
         /* =========================
