@@ -1275,7 +1275,62 @@ textarea {
         ></div>
 
     </div>
+<div class="card">
 
+    <div class="section-title">
+
+        <div>
+            <h2>🧠 Все материалы</h2>
+
+            <p>
+                AI посмотрит на всю коллекцию и определит,
+                какие актерские задачи уже закрыты,
+                а каких материалов не хватает.
+            </p>
+        </div>
+
+    </div>
+
+    <button
+        class="btn"
+        onclick="analyzeAllMaterials()"
+        id="analyzeAllMaterialsBtn"
+    >
+        🧠 Проанализировать все материалы
+    </button>
+
+    <div
+        id="allMaterialsLoading"
+        style="display:none;margin-top:15px"
+    >
+        Анализирую всю коллекцию материалов...
+    </div>
+
+    <div
+        id="allMaterialsError"
+        class="status error"
+        style="display:none;margin-top:15px"
+    ></div>
+
+    <div
+        id="allMaterialsResult"
+        class="material-analysis"
+        style="display:none;margin-top:20px"
+    ></div>
+
+</div>
+
+      <div
+    id="savedMaterials"
+    class="card"
+>
+    <h2>📁 Мои материалы</h2>
+
+    <div id="savedMaterialsList">
+        Загрузка материалов...
+    </div>
+</div>
+      
 </section>
       
 
@@ -3183,7 +3238,6 @@ async function analyzeMaterial() {
         return;
     }
 
-
     const loading =
         document.getElementById(
             'materialLoading'
@@ -3204,29 +3258,101 @@ async function analyzeMaterial() {
             'analyzeMaterialBtn'
         );
 
-
     hideMaterialError();
 
-
-    loading.style.display =
-        'block';
-
-
-    resultBox.style.display =
-        'none';
-
-
-    button.disabled =
-        true;
-
+    loading.style.display = 'block';
+    resultBox.style.display = 'none';
+    button.disabled = true;
 
     try {
 
-        const imageData =
-            await fileToDataUrl(
+        if (!actorId) {
+
+            const id =
+                await findActor();
+
+            if (!id) {
+                throw new Error(
+                    'Профиль Марины не найден.'
+                );
+            }
+        }
+
+        /*
+         * 1. СЖИМАЕМ ФОТО
+         */
+
+        const compressedFile =
+            await compressMaterialImage(
                 selectedMaterialFile
             );
 
+
+        /*
+         * 2. СОЗДАЁМ ИМЯ
+         */
+
+        const extension = 'jpg';
+
+        const fileName =
+            `${actorId}/${crypto.randomUUID()}.${extension}`;
+
+
+        /*
+         * 3. ЗАГРУЖАЕМ В STORAGE
+         */
+
+        const upload =
+            await supabaseClient
+                .storage
+                .from('materials')
+                .upload(
+                    fileName,
+                    compressedFile,
+                    {
+                        contentType:
+                            'image/jpeg',
+
+                        upsert: false
+                    }
+                );
+
+
+        if (upload.error) {
+
+            throw upload.error;
+
+        }
+
+
+        /*
+         * 4. ПОЛУЧАЕМ PUBLIC URL
+         */
+
+        const publicUrl =
+            supabaseClient
+                .storage
+                .from('materials')
+                .getPublicUrl(
+                    fileName
+                )
+                .data
+                .publicUrl;
+
+
+        /*
+         * 5. DATA URL ДЛЯ AI
+         */
+
+        const imageData =
+            await fileToDataUrl(
+                compressedFile
+            );
+
+
+        /*
+         * 6. ПРОФИЛЬ
+         */
 
         const profile = {
 
@@ -3240,7 +3366,7 @@ async function analyzeMaterial() {
                 '157 см',
 
             type:
-                'молодая драматическая героиня, эмоциональная уязвимость, внутренняя сила и романтическая природа',
+                'молодая драматическая героиня, эмоциональная уязвимость, внутренняя сила, романтическая природа',
 
             experience:
                 'главные и эпизодические роли в кино и сериалах'
@@ -3248,97 +3374,127 @@ async function analyzeMaterial() {
         };
 
 
+        /*
+         * 7. AI
+         */
+
         const {
-    data,
-    error
-} =
-    await supabaseClient.functions.invoke(
-        'analyze-material',
-        {
-            body: {
-                image: imageData,
-                profile: profile
-            },
-            headers: {
-                Authorization:
-                    `Bearer ${SUPABASE_KEY}`
-            }
-        }
-    );
+            data,
+            error
+        } =
+            await supabaseClient
+                .functions
+                .invoke(
+                    'analyze-material',
+                    {
+                        body: {
+
+                            image:
+                                imageData,
+
+                            profile:
+                                profile
+
+                        }
+                    }
+                );
 
 
         if (error) {
 
-            console.error(
-                'AI analysis error:',
-                error
-            );
+            throw error;
 
-            let message =
-                error.message ||
-                'Ошибка AI-анализа';
-
-
-            if (
-                error.context &&
-                typeof error.context.json === 'function'
-            ) {
-
-                try {
-
-                    const details =
-                        await error.context.json();
-
-                    if (details?.error) {
-                        message =
-                            details.error;
-                    }
-
-                } catch (_) {}
-
-            }
-
-
-            throw new Error(
-                message
-            );
         }
 
 
-        if (!data) {
+        if (!data?.analysis) {
 
             throw new Error(
-                'Пустой ответ от Edge Function.'
+                data?.error ||
+                'AI не вернул анализ.'
             );
 
         }
 
 
-        if (data.error) {
+        /*
+         * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
+         */
 
-            throw new Error(
-                data.error
-            );
+        const insert =
+            await supabaseClient
+                .from('materials')
+                .insert({
+
+                    actor_id:
+                        actorId,
+
+                    file_path:
+                        fileName,
+
+                    image_url:
+                        publicUrl,
+
+                    original_name:
+                        selectedMaterialFile.name,
+
+                    analysis:
+                        data.analysis
+
+                });
+
+
+        if (insert.error) {
+
+            /*
+             * Если БД не сохранила запись,
+             * удаляем уже загруженный файл.
+             */
+
+            await supabaseClient
+                .storage
+                .from('materials')
+                .remove([
+                    fileName
+                ]);
+
+            throw insert.error;
 
         }
 
 
-        if (!data.analysis) {
-
-            throw new Error(
-                'AI не вернул текст анализа.'
-            );
-
-        }
-
+        /*
+         * 9. ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
+         */
 
         analysisBox.textContent =
             data.analysis;
 
-
         resultBox.style.display =
             'block';
 
+
+        /*
+         * 10. ОБНОВЛЯЕМ СПИСОК
+         */
+
+        await loadSavedMaterials();
+
+
+        /*
+         * 11. ОЧИЩАЕМ INPUT
+         */
+
+        selectedMaterialFile = null;
+
+        const fileInput =
+            document.getElementById(
+                'materialFile'
+            );
+
+        if (fileInput) {
+            fileInput.value = '';
+        }
 
     } catch (error) {
 
@@ -3346,7 +3502,6 @@ async function analyzeMaterial() {
             'Material analysis error:',
             error
         );
-
 
         showMaterialError(
             error.message ||
@@ -3362,10 +3517,411 @@ async function analyzeMaterial() {
             false;
 
     }
-
 }
 
 
+
+      async function compressMaterialImage(file) {
+
+    const maxWidth = 1400;
+    const maxHeight = 1400;
+    const quality = 0.78;
+
+    const image =
+        await new Promise(
+            (resolve, reject) => {
+
+                const img =
+                    new Image();
+
+                img.onload =
+                    () => resolve(img);
+
+                img.onerror =
+                    () => reject(
+                        new Error(
+                            'Не удалось открыть фотографию.'
+                        )
+                    );
+
+                img.src =
+                    URL.createObjectURL(file);
+
+            }
+        );
+
+
+    let width =
+        image.naturalWidth;
+
+    let height =
+        image.naturalHeight;
+
+
+    const scale =
+        Math.min(
+            1,
+            maxWidth / width,
+            maxHeight / height
+        );
+
+
+    width =
+        Math.round(
+            width * scale
+        );
+
+    height =
+        Math.round(
+            height * scale
+        );
+
+
+    const canvas =
+        document.createElement(
+            'canvas'
+        );
+
+
+    canvas.width =
+        width;
+
+    canvas.height =
+        height;
+
+
+    const ctx =
+        canvas.getContext(
+            '2d'
+        );
+
+
+    ctx.drawImage(
+        image,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    return new Promise(
+        (resolve, reject) => {
+
+            canvas.toBlob(
+                blob => {
+
+                    if (!blob) {
+
+                        reject(
+                            new Error(
+                                'Не удалось сжать фотографию.'
+                            )
+                        );
+
+                        return;
+
+                    }
+
+                    resolve(
+                        new File(
+                            [blob],
+                            'material.jpg',
+                            {
+                                type:
+                                    'image/jpeg'
+                            }
+                        )
+                    );
+
+                },
+
+                'image/jpeg',
+
+                quality
+            );
+
+        }
+    );
+
+}
+
+      async function loadSavedMaterials() {
+
+    const list =
+        document.getElementById(
+            'savedMaterialsList'
+        );
+
+    if (!list) {
+        return;
+    }
+
+
+    if (!actorId) {
+
+        const id =
+            await findActor();
+
+        if (!id) {
+            return;
+        }
+
+    }
+
+
+    const result =
+        await supabaseClient
+            .from('materials')
+            .select('*')
+            .eq(
+                'actor_id',
+                actorId
+            )
+            .order(
+                'created_at',
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (result.error) {
+
+        console.error(
+            'Materials load error:',
+            result.error
+        );
+
+        list.innerHTML =
+            '<p>Не удалось загрузить материалы.</p>';
+
+        return;
+    }
+
+
+    const materials =
+        result.data || [];
+
+
+    if (!materials.length) {
+
+        list.innerHTML =
+            '<div class="empty">Пока нет сохранённых материалов.</div>';
+
+        return;
+    }
+
+
+    list.innerHTML =
+        materials
+            .map(
+                material => `
+
+                    <div
+                        class="material-item"
+                        style="
+                            margin-bottom:20px;
+                            padding-bottom:20px;
+                            border-bottom:1px solid #eee;
+                        "
+                    >
+
+                        <img
+                            src="${escapeHtml(
+                                material.image_url
+                            )}"
+                            alt="Материал"
+                            style="
+                                width:180px;
+                                max-height:220px;
+                                object-fit:cover;
+                                border-radius:12px;
+                                display:block;
+                                margin-bottom:12px;
+                            "
+                        >
+
+                        <div
+                            style="
+                                display:flex;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <button
+                                class="btn light small"
+                                onclick="showMaterialAnalysis('${material.id}')"
+                            >
+                                🧠 Посмотреть анализ
+                            </button>
+
+                            <button
+                                class="btn danger small"
+                                onclick="deleteMaterial('${material.id}')"
+                            >
+                                🗑️ Удалить
+                            </button>
+
+                        </div>
+
+                        <div
+                            id="material-analysis-${material.id}"
+                            style="
+                                display:none;
+                                margin-top:15px;
+                                white-space:pre-wrap;
+                            "
+                        >
+                            ${escapeHtml(
+                                material.analysis || ''
+                            )}
+                        </div>
+
+                    </div>
+
+                `
+            )
+            .join('');
+
+}
+
+      function showMaterialAnalysis(id) {
+
+    const element =
+        document.getElementById(
+            `material-analysis-${id}`
+        );
+
+    if (!element) {
+        return;
+    }
+
+
+    if (
+        element.style.display ===
+        'none'
+    ) {
+
+        element.style.display =
+            'block';
+
+    } else {
+
+        element.style.display =
+            'none';
+
+    }
+
+}
+
+      async function deleteMaterial(id) {
+
+    const confirmed =
+        confirm(
+            'Удалить этот материал?\n\nФотография и её анализ будут удалены.'
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const result =
+            await supabaseClient
+                .from('materials')
+                .select(
+                    'id,file_path'
+                )
+                .eq(
+                    'id',
+                    id
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                )
+                .single();
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        const material =
+            result.data;
+
+
+        /*
+         * Удаляем файл
+         */
+
+        const storage =
+            await supabaseClient
+                .storage
+                .from('materials')
+                .remove([
+                    material.file_path
+                ]);
+
+
+        if (storage.error) {
+            throw storage.error;
+        }
+
+
+        /*
+         * Удаляем запись
+         */
+
+        const deleted =
+            await supabaseClient
+                .from('materials')
+                .delete()
+                .eq(
+                    'id',
+                    id
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                );
+
+
+        if (deleted.error) {
+            throw deleted.error;
+        }
+
+
+        await loadSavedMaterials();
+
+
+    } catch (error) {
+
+        console.error(
+            'Delete material error:',
+            error
+        );
+
+
+        showMaterialError(
+            'Не удалось удалить материал: ' +
+            (
+                error.message ||
+                error
+            )
+        );
+
+    }
+
+}
+
+      
 /* =====================================================
    FILE → DATA URL
    ===================================================== */
