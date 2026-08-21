@@ -3447,11 +3447,66 @@ const photoNumber =
 const materialTitle =
     `Фото ${photoNumber}`;
 
+/* =====================================================
+   СОЗДАЁМ СЛЕДУЮЩИЙ НОМЕР ФОТО
+===================================================== */
 
+const existingMaterials =
+    await supabaseClient
+        .from('materials')
+        .select('title')
+        .eq(
+            'actor_id',
+            actorId
+        );
+
+if (existingMaterials.error) {
+
+    throw existingMaterials.error;
+
+}
+
+
+let maxPhotoNumber = 0;
+
+
+(existingMaterials.data || [])
+    .forEach(material => {
+
+        const match =
+            String(material.title || '')
+                .match(/^Фото\s+(\d+)$/i);
+
+        if (match) {
+
+            const number =
+                parseInt(
+                    match[1],
+                    10
+                );
+
+            if (
+                number >
+                maxPhotoNumber
+            ) {
+
+                maxPhotoNumber =
+                    number;
+
+            }
+
+        }
+
+    });
+
+
+const materialTitle =
+    `Фото ${maxPhotoNumber + 1}`;
+
+          
 /* =====================================================
    СОХРАНЯЕМ МАТЕРИАЛ
 ===================================================== */
-
 const insert =
     await supabaseClient
         .from('materials')
@@ -3480,39 +3535,18 @@ const insert =
             is_primary:
                 false
         });
-          
-        /*
- * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
- */
 
-const insert =
+if (insert.error) {
+
     await supabaseClient
+        .storage
         .from('materials')
-        .insert({
-            actor_id:
-                actorId,
+        .remove([
+            fileName
+        ]);
 
-            material_type:
-                'photo',
-
-            title:
-                selectedMaterialFile.name,
-
-            file_path:
-                fileName,
-
-            image_url:
-                publicUrl,
-
-            original_name:
-                selectedMaterialFile.name,
-
-            analysis:
-                data.analysis,
-
-            is_primary:
-                false
-        });
+    throw insert.error;
+}
 
 
 if (insert.error) {
@@ -3743,7 +3777,9 @@ if (insert.error) {
     const result =
         await supabaseClient
             .from('materials')
-            .select('*')
+            .select(
+                'id,title,image_url,analysis,original_name,created_at'
+            )
             .eq(
                 'actor_id',
                 actorId
@@ -3751,7 +3787,7 @@ if (insert.error) {
             .order(
                 'created_at',
                 {
-                    ascending: false
+                    ascending: true
                 }
             );
 
@@ -3777,7 +3813,9 @@ if (insert.error) {
     if (!materials.length) {
 
         list.innerHTML =
-            '<div class="empty">Пока нет сохранённых материалов.</div>';
+            '<div class="empty">' +
+            'Пока нет сохранённых материалов.' +
+            '</div>';
 
         return;
     }
@@ -3791,37 +3829,50 @@ if (insert.error) {
                     <div
                         class="material-item"
                         style="
-                            margin-bottom:20px;
-                            padding-bottom:20px;
+                            margin-bottom:25px;
+                            padding-bottom:25px;
                             border-bottom:1px solid #eee;
                         "
                     >
 
                         <img
-    src="${escapeHtml(
-        material.image_url
-    )}"
-    alt="Материал"
-    style="
-        width:180px;
-        max-height:220px;
-        object-fit:cover;
-        border-radius:12px;
-        display:block;
-        margin-bottom:4px;
-">
+                            src="${escapeHtml(
+                                material.image_url || ''
+                            )}"
+                            alt="${escapeHtml(
+                                material.title || 'Фото'
+                            )}"
+                            style="
+                                width:180px;
+                                max-height:220px;
+                                object-fit:cover;
+                                border-radius:12px;
+                                display:block;
+                                margin-bottom:8px;
+                            "
+                        >
 
-<div
-    style="
-        font-weight:600;
-        margin:8px 0 12px 0;
-    "
->
-    ${escapeHtml(
-        material.title ||
-        'Фото'
-    )}
-</div>
+                        <div
+                            style="
+                                font-weight:700;
+                                font-size:16px;
+                                margin-bottom:12px;
+                            "
+                        >
+                            📷 ${escapeHtml(
+                                material.title ||
+                                'Фото'
+                            )}
+                        </div>
+
+
+                        <div
+                            style="
+                                display:flex;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
 
                             <button
                                 class="btn light small"
@@ -3829,6 +3880,7 @@ if (insert.error) {
                             >
                                 🧠 Посмотреть анализ
                             </button>
+
 
                             <button
                                 class="btn danger small"
@@ -3838,6 +3890,7 @@ if (insert.error) {
                             </button>
 
                         </div>
+
 
                         <div
                             id="material-analysis-${material.id}"
@@ -3860,6 +3913,7 @@ if (insert.error) {
 
 }
 
+      
       /* =====================================================
    SHOW MATERIAL ANALYSIS
 ===================================================== */
@@ -3892,61 +3946,6 @@ function showMaterialAnalysis(id) {
 
 }
 
-/* =====================================================
-   СОЗДАЁМ СЛЕДУЮЩИЙ НОМЕР ФОТО
-===================================================== */
-
-const existingMaterials =
-    await supabaseClient
-        .from('materials')
-        .select('title')
-        .eq(
-            'actor_id',
-            actorId
-        );
-
-if (existingMaterials.error) {
-
-    throw existingMaterials.error;
-
-}
-
-
-let maxPhotoNumber = 0;
-
-
-(existingMaterials.data || [])
-    .forEach(material => {
-
-        const match =
-            String(material.title || '')
-                .match(/^Фото\s+(\d+)$/i);
-
-        if (match) {
-
-            const number =
-                parseInt(
-                    match[1],
-                    10
-                );
-
-            if (
-                number >
-                maxPhotoNumber
-            ) {
-
-                maxPhotoNumber =
-                    number;
-
-            }
-
-        }
-
-    });
-
-
-const materialTitle =
-    `Фото ${maxPhotoNumber + 1}`;
 
       
 /* =====================================================
