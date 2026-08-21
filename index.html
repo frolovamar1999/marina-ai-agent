@@ -3416,7 +3416,71 @@ async function analyzeMaterial() {
 
         }
 
+/* =====================================================
+   СОЗДАЁМ НОМЕР ФОТО
+===================================================== */
 
+const countResult =
+    await supabaseClient
+        .from('materials')
+        .select(
+            'id',
+            {
+                count: 'exact',
+                head: true
+            }
+        )
+        .eq(
+            'actor_id',
+            actorId
+        );
+
+if (countResult.error) {
+
+    throw countResult.error;
+
+}
+
+const photoNumber =
+    (countResult.count || 0) + 1;
+
+const materialTitle =
+    `Фото ${photoNumber}`;
+
+
+/* =====================================================
+   СОХРАНЯЕМ МАТЕРИАЛ
+===================================================== */
+
+const insert =
+    await supabaseClient
+        .from('materials')
+        .insert({
+            actor_id:
+                actorId,
+
+            material_type:
+                'photo',
+
+            title:
+                materialTitle,
+
+            file_path:
+                fileName,
+
+            image_url:
+                publicUrl,
+
+            original_name:
+                selectedMaterialFile.name,
+
+            analysis:
+                data.analysis,
+
+            is_primary:
+                false
+        });
+          
         /*
  * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
  */
@@ -3734,27 +3798,30 @@ if (insert.error) {
                     >
 
                         <img
-                            src="${escapeHtml(
-                                material.image_url
-                            )}"
-                            alt="Материал"
-                            style="
-                                width:180px;
-                                max-height:220px;
-                                object-fit:cover;
-                                border-radius:12px;
-                                display:block;
-                                margin-bottom:12px;
-                            "
-                        >
+    src="${escapeHtml(
+        material.image_url
+    )}"
+    alt="Материал"
+    style="
+        width:180px;
+        max-height:220px;
+        object-fit:cover;
+        border-radius:12px;
+        display:block;
+        margin-bottom:4px;
+">
 
-                        <div
-                            style="
-                                display:flex;
-                                gap:10px;
-                                flex-wrap:wrap;
-                            "
-                        >
+<div
+    style="
+        font-weight:600;
+        margin:8px 0 12px 0;
+    "
+>
+    ${escapeHtml(
+        material.title ||
+        'Фото'
+    )}
+</div>
 
                             <button
                                 class="btn light small"
@@ -3825,7 +3892,63 @@ function showMaterialAnalysis(id) {
 
 }
 
+/* =====================================================
+   СОЗДАЁМ СЛЕДУЮЩИЙ НОМЕР ФОТО
+===================================================== */
 
+const existingMaterials =
+    await supabaseClient
+        .from('materials')
+        .select('title')
+        .eq(
+            'actor_id',
+            actorId
+        );
+
+if (existingMaterials.error) {
+
+    throw existingMaterials.error;
+
+}
+
+
+let maxPhotoNumber = 0;
+
+
+(existingMaterials.data || [])
+    .forEach(material => {
+
+        const match =
+            String(material.title || '')
+                .match(/^Фото\s+(\d+)$/i);
+
+        if (match) {
+
+            const number =
+                parseInt(
+                    match[1],
+                    10
+                );
+
+            if (
+                number >
+                maxPhotoNumber
+            ) {
+
+                maxPhotoNumber =
+                    number;
+
+            }
+
+        }
+
+    });
+
+
+const materialTitle =
+    `Фото ${maxPhotoNumber + 1}`;
+
+      
 /* =====================================================
    DELETE MATERIAL
 ===================================================== */
@@ -4023,8 +4146,8 @@ async function deleteMaterial(id) {
             await supabaseClient
                 .from('materials')
                 .select(
-                    'id,image_url,analysis,created_at'
-                )
+    'id,title,image_url,analysis,created_at'
+)
                 .eq(
                     'actor_id',
                     actorId
