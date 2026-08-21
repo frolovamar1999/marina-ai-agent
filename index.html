@@ -3921,7 +3921,157 @@ async function analyzeMaterial() {
 
 }
 
-      
+      async function analyzeAllMaterials() {
+
+    const button =
+        document.getElementById(
+            'analyzeAllMaterialsBtn'
+        );
+
+    const loading =
+        document.getElementById(
+            'allMaterialsLoading'
+        );
+
+    const result =
+        document.getElementById(
+            'allMaterialsResult'
+        );
+
+    const errorBox =
+        document.getElementById(
+            'allMaterialsError'
+        );
+
+
+    errorBox.style.display =
+        'none';
+
+    result.style.display =
+        'none';
+
+    loading.style.display =
+        'block';
+
+    button.disabled =
+        true;
+
+
+    try {
+
+        if (!actorId) {
+
+            const id =
+                await findActor();
+
+            if (!id) {
+                throw new Error(
+                    'Профиль Марины не найден.'
+                );
+            }
+
+        }
+
+
+        const response =
+            await supabaseClient
+                .from('materials')
+                .select(
+                    'id,image_url,analysis,created_at'
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (response.error) {
+            throw response.error;
+        }
+
+
+        const materials =
+            response.data || [];
+
+
+        if (!materials.length) {
+
+            throw new Error(
+                'Сначала добавь хотя бы один материал.'
+            );
+
+        }
+
+
+        const ai =
+            await supabaseClient
+                .functions
+                .invoke(
+                    'analyze-materials',
+                    {
+                        body: {
+                            materials
+                        }
+                    }
+                );
+
+
+        if (ai.error) {
+
+            throw ai.error;
+
+        }
+
+
+        if (!ai.data?.analysis) {
+
+            throw new Error(
+                ai.data?.error ||
+                'AI не вернул общий анализ.'
+            );
+
+        }
+
+
+        result.textContent =
+            ai.data.analysis;
+
+        result.style.display =
+            'block';
+
+
+    } catch (err) {
+
+        console.error(
+            'All materials analysis error:',
+            err
+        );
+
+
+        errorBox.textContent =
+            err.message ||
+            'Не удалось выполнить анализ.';
+
+        errorBox.style.display =
+            'block';
+
+    } finally {
+
+        loading.style.display =
+            'none';
+
+        button.disabled =
+            false;
+
+    }
+
+}
 /* =====================================================
    FILE → DATA URL
    ===================================================== */
@@ -4018,6 +4168,8 @@ window.addEventListener(
         await findActor();
 
         await loadCastings();
+
+        await loadSavedMaterials();
 
     }
 );
