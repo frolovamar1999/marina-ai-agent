@@ -1089,7 +1089,77 @@ textarea {
 <!-- =========================
      CASTINGS
 ========================= -->
+<div
+    class="casting-filters"
+    style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:15px;
+    "
+>
 
+    <button
+        class="btn light small"
+        onclick="filterCastings('all')"
+    >
+        Все
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('new')"
+    >
+        Новые
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('submitted')"
+    >
+        Отправлены
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('audition')"
+    >
+        Пробы
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('self-tape')"
+    >
+        Пробы отправлены
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('callback')"
+    >
+        Callback
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('approved')"
+    >
+        Утверждены
+    </button>
+
+    <button
+        class="btn light small"
+        onclick="filterCastings('rejected')"
+    >
+        Не утвердили
+    </button>
+
+</div>
+      let allCastings = [];
+let currentCastingFilter = 'all';
+
+      
 <section
     id="castings"
     class="page"
@@ -1291,13 +1361,25 @@ textarea {
 
     </div>
 
+    <<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+
     <button
         class="btn"
-        onclick="analyzeAllMaterials()"
-        id="analyzeAllMaterialsBtn"
+        onclick="loadSavedPortfolioAnalysis()"
+        id="loadPortfolioAnalysisBtn"
     >
-        🧠 Проанализировать все материалы
+        🧠 Посмотреть анализ портфолио
     </button>
+
+    <button
+        class="btn light"
+        onclick="analyzeAllMaterials(true)"
+        id="newPortfolioAnalysisBtn"
+    >
+        🔄 Новый анализ
+    </button>
+
+</div>
 
     <div
         id="allMaterialsLoading"
@@ -1644,7 +1726,41 @@ textarea {
                 rows="7"
                 placeholder="Вставь сюда текст кастинга..."
             ></textarea>
+<div
+    style="
+        display:flex;
+        gap:10px;
+        margin-top:10px;
+        flex-wrap:wrap;
+    "
+>
 
+    <button
+        type="button"
+        class="btn light"
+        onclick="analyzeCurrentCasting()"
+        id="analyzeCastingBtn"
+    >
+        🧠 Проанализировать кастинг
+    </button>
+
+</div>
+<label>
+
+    Сообщение от кастинг-директора
+
+    <textarea
+        id="castingDirectorMessage"
+        rows="6"
+        placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
+    ></textarea>
+
+</label>
+<div
+    id="castingAIStatus"
+    class="status"
+    style="display:none;margin-top:10px"
+></div>
         </label>
 
 
@@ -1704,7 +1820,19 @@ textarea {
                 rows="4"
                 placeholder="Что важно помнить об этом кастинге..."
             ></textarea>
+<div
+    id="castingAIResult"
+    class="card"
+    style="display:none;margin-top:15px;"
+>
 
+    <h3>
+        🧠 AI-анализ кастинга
+    </h3>
+
+    <div id="castingAIContent"></div>
+
+</div>
         </label>
 
 
@@ -1897,7 +2025,227 @@ async function findActor() {
 
 }
 
+async function analyzeCurrentCasting() {
 
+    const castingText =
+        document
+            .getElementById('castingText')
+            .value
+            .trim();
+
+    const directorMessage =
+        document
+            .getElementById('castingDirectorMessage')
+            .value
+            .trim();
+
+    const roleName =
+        document
+            .getElementById('roleName')
+            .value
+            .trim();
+
+    if (!castingText && !directorMessage) {
+
+        alert(
+            'Добавь текст кастинга или сообщение от кастинг-директора.'
+        );
+
+        return;
+
+    }
+
+    if (!actorId) {
+
+        const id = await findActor();
+
+        if (!id) {
+            return;
+        }
+
+    }
+
+    const status =
+        document.getElementById(
+            'castingAIStatus'
+        );
+
+    const resultBox =
+        document.getElementById(
+            'castingAIResult'
+        );
+
+    const resultContent =
+        document.getElementById(
+            'castingAIContent'
+        );
+
+    status.style.display = 'block';
+
+    status.className = 'status';
+
+    status.textContent =
+        '🧠 AI анализирует кастинг...';
+
+    resultBox.style.display = 'none';
+
+    try {
+
+        /*
+         * Сначала получаем СОХРАНЁННЫЙ
+         * анализ портфолио.
+         */
+
+        const portfolioResult =
+            await supabaseClient
+                .from('actors')
+                .select(
+                    'portfolio_analysis'
+                )
+                .eq(
+                    'id',
+                    actorId
+                )
+                .single();
+
+        if (portfolioResult.error) {
+            throw new Error(
+                portfolioResult.error.message
+            );
+        }
+
+        const portfolioAnalysis =
+            portfolioResult
+                .data
+                ?.portfolio_analysis;
+
+        if (!portfolioAnalysis) {
+
+            throw new Error(
+                'Сначала необходимо создать анализ портфолио.'
+            );
+
+        }
+
+        /*
+         * Получаем материалы.
+         */
+
+        const materialsResult =
+            await supabaseClient
+                .from('materials')
+                .select('*')
+                .eq(
+                    'actor_id',
+                    actorId
+                );
+
+        if (materialsResult.error) {
+            throw new Error(
+                materialsResult.error.message
+            );
+        }
+
+        const materials =
+            materialsResult.data || [];
+
+        const response =
+            await fetch(
+                'https://kavepxugysumhpcftzqy.supabase.co/functions/v1/analyze-casting',
+                {
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json',
+
+                        'apikey':
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            roleName,
+
+                            castingText,
+
+                            directorMessage,
+
+                            portfolioAnalysis,
+
+                            materials
+
+                        })
+
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data?.error ||
+                'Ошибка AI анализа'
+            );
+
+        }
+
+        if (!data.analysis) {
+
+            throw new Error(
+                'AI не вернул анализ'
+            );
+
+        }
+
+        resultContent.innerHTML =
+            formatAIText(
+                data.analysis
+            );
+
+        resultBox.style.display =
+            'block';
+
+        status.className =
+            'status success';
+
+        status.textContent =
+            '✓ Анализ кастинга готов';
+
+        /*
+         * Сохраняем результат в форме,
+         * чтобы saveCasting() записал
+         * его в Supabase.
+         */
+
+        window.currentCastingAI =
+            data;
+
+    }
+    catch (error) {
+
+        console.error(
+            'Casting AI error:',
+            error
+        );
+
+        status.className =
+            'status error';
+
+        status.textContent =
+            error instanceof Error
+                ? error.message
+                : String(error);
+
+    }
+
+}
+      
 /* =====================================================
    OPEN NEW CASTING MODAL
 ===================================================== */
@@ -1925,7 +2273,13 @@ function openNewCastingModal() {
 
 }
 
-
+const directorMessage =
+    document
+        .getElementById(
+            'castingDirectorMessage'
+        )
+        .value
+        .trim();
 /* =====================================================
    CLOSE MODAL
 ===================================================== */
@@ -2068,11 +2422,11 @@ async function loadCastings() {
 
     const castings =
         result.data || [];
-
+allCastings = castings;
 
     renderCastings(
-        castings
-    );
+    getFilteredCastings()
+);
 
 
     updateCounters(
@@ -2089,7 +2443,36 @@ async function loadCastings() {
 
 }
 
+function getFilteredCastings() {
 
+    if (
+        currentCastingFilter ===
+        'all'
+    ) {
+
+        return allCastings;
+
+    }
+
+    return allCastings.filter(
+        casting =>
+            casting.status ===
+            currentCastingFilter
+    );
+
+}
+
+
+function filterCastings(status) {
+
+    currentCastingFilter =
+        status;
+
+    renderCastings(
+        getFilteredCastings()
+    );
+
+}
 /* =====================================================
    RENDER CASTINGS
 ===================================================== */
@@ -2748,7 +3131,30 @@ async function saveCasting() {
                 notes:
                     castingNotes ||
                     null
+ai_analysis:
+    window.currentCastingAI
+        ?.analysis || null,
 
+ai_character:
+    window.currentCastingAI
+        ?.character || null,
+
+ai_fit:
+    window.currentCastingAI
+        ?.fit || null,
+
+ai_recommended_materials:
+    window.currentCastingAI
+        ?.recommendedMaterials || null,
+
+ai_email:
+    window.currentCastingAI
+        ?.email || null,
+
+ai_analyzed_at:
+    window.currentCastingAI
+        ? new Date().toISOString()
+        : null
             });
 
 
@@ -4255,6 +4661,187 @@ async function deleteMaterial(id) {
 
     }
 
+}
+
+
+      async function savePortfolioAnalysis(analysis) {
+
+    if (!actorId) {
+
+        const id = await findActor();
+
+        if (!id) {
+            throw new Error(
+                'Профиль Марины не найден'
+            );
+        }
+    }
+
+    const result =
+        await supabaseClient
+            .from('actors')
+            .update({
+
+                portfolio_analysis:
+                    analysis,
+
+                portfolio_analysis_at:
+                    new Date().toISOString()
+
+            })
+            .eq(
+                'id',
+                actorId
+            );
+
+    if (result.error) {
+
+        console.error(
+            'Save portfolio analysis error:',
+            result.error
+        );
+
+        throw new Error(
+            'Не удалось сохранить анализ портфолио: ' +
+            result.error.message
+        );
+
+    }
+
+}
+
+      await savePortfolioAnalysis(analysis);
+
+      async function loadSavedPortfolioAnalysis() {
+
+    if (!actorId) {
+
+        const id = await findActor();
+
+        if (!id) {
+            return;
+        }
+
+    }
+
+    const result =
+        await supabaseClient
+            .from('actors')
+            .select(
+                'portfolio_analysis,portfolio_analysis_at'
+            )
+            .eq(
+                'id',
+                actorId
+            )
+            .single();
+
+    if (result.error) {
+
+        console.error(
+            'Load portfolio analysis error:',
+            result.error
+        );
+
+        alert(
+            'Не удалось загрузить анализ портфолио:\n\n' +
+            result.error.message
+        );
+
+        return;
+
+    }
+
+    const analysis =
+        result.data?.portfolio_analysis;
+
+    const date =
+        result.data?.portfolio_analysis_at;
+
+    const container =
+        document.getElementById(
+            'allMaterialsResult'
+        );
+
+    if (!analysis) {
+
+        container.style.display = 'block';
+
+        container.innerHTML = `
+            <div class="empty">
+
+                Анализа портфолио пока нет.
+
+                <br><br>
+
+                Нажми
+                <b>«Новый анализ»</b>,
+                чтобы создать его.
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.style.display = 'block';
+
+    container.innerHTML = `
+        <div class="notice">
+
+            <strong>
+                🧠 Сохранённый анализ портфолио
+            </strong>
+
+            ${
+                date
+                ? `
+                    <p style="opacity:.7">
+                        Последний анализ:
+                        ${escapeHtml(
+                            new Date(date)
+                                .toLocaleString('ru-RU')
+                        )}
+                    </p>
+                  `
+                : ''
+            }
+
+        </div>
+
+        <div style="margin-top:20px;">
+            ${formatAIText(analysis)}
+        </div>
+    `;
+
+}
+
+      function formatAIText(text) {
+
+    if (!text) {
+        return '';
+    }
+
+    return escapeHtml(text)
+        .replace(/\n\n+/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(
+            /^# (.+)$/gm,
+            '<h2>$1</h2>'
+        )
+        .replace(
+            /^## (.+)$/gm,
+            '<h3>$1</h3>'
+        )
+        .replace(
+            /\*\*(.*?)\*\*/g,
+            '<strong>$1</strong>'
+        )
+        .replace(
+            /^- (.+)$/gm,
+            '• $1'
+        );
 }
 /* =====================================================
    FILE → DATA URL
