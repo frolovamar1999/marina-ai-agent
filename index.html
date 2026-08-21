@@ -3420,17 +3420,21 @@ async function analyzeMaterial() {
         /*
          * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
          */
+const file = selectedMaterialFile;
 
+if (!file) {
+    throw new Error('Фотография не выбрана.');
+}
         const insert =
             await supabaseClient
                 .from('materials')
 .insert({
     actor_id: actorId,
     material_type: 'photo',
-    title: file.name,
+    title: selectedMaterialFile.name,
     file_path: filePath,
     image_url: imageUrl,
-    original_name: file.name,
+    original_name: selectedMaterialFile.name,
     analysis: data.analysis,
     is_primary: false
 })
@@ -3447,7 +3451,7 @@ async function analyzeMaterial() {
                 .storage
                 .from('materials')
                 .remove([
-                    fileName
+                    selectedMaterialFile
                 ]);
 
             throw insert.error;
