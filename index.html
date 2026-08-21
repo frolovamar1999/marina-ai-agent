@@ -1443,7 +1443,11 @@ textarea {
         ></div>
 
     </div>
-
+      
+async function loadSavedPortfolioAnalysis() {
+    await analyzeAllMaterials(false);
+}
+      
 
     <!-- СОХРАНЕННЫЕ МАТЕРИАЛЫ -->
 
@@ -4879,7 +4883,7 @@ async function deleteMaterial(id) {
 
 }
 
-     /* =====================================================
+    /* =====================================================
    ANALYZE ALL MATERIALS
 ===================================================== */
 
@@ -4887,7 +4891,7 @@ async function analyzeAllMaterials(forceNew = false) {
 
     const button =
         document.getElementById(
-            'analyzeAllMaterialsBtn'
+            'newPortfolioAnalysisBtn'
         );
 
     const loading =
@@ -4907,29 +4911,40 @@ async function analyzeAllMaterials(forceNew = false) {
 
 
     if (errorBox) {
+
         errorBox.style.display = 'none';
         errorBox.textContent = '';
+
     }
+
 
     if (resultBox) {
+
         resultBox.style.display = 'none';
         resultBox.innerHTML = '';
+
     }
+
 
     if (loading) {
+
         loading.style.display = 'block';
+
     }
 
+
     if (button) {
+
         button.disabled = true;
+
     }
 
 
     try {
 
-        /* =========================
-           ACTOR
-        ========================= */
+        /* =================================================
+           1. ACTOR
+        ================================================= */
 
         if (!actorId) {
 
@@ -4947,10 +4962,10 @@ async function analyzeAllMaterials(forceNew = false) {
         }
 
 
-        /* =========================
-           ЕСЛИ НЕ НУЖЕН НОВЫЙ АНАЛИЗ —
-           ПОКАЗЫВАЕМ СОХРАНЁННЫЙ
-        ========================= */
+        /* =================================================
+           2. ЕСЛИ НОВЫЙ АНАЛИЗ НЕ НУЖЕН —
+              ЗАГРУЖАЕМ СОХРАНЁННЫЙ
+        ================================================= */
 
         if (!forceNew) {
 
@@ -4968,7 +4983,9 @@ async function analyzeAllMaterials(forceNew = false) {
 
 
             if (saved.error) {
+
                 throw saved.error;
+
             }
 
 
@@ -4979,7 +4996,16 @@ async function analyzeAllMaterials(forceNew = false) {
 
                 if (resultBox) {
 
+                    const savedDate =
+                        saved.data.portfolio_analysis_at
+                            ? new Date(
+                                saved.data.portfolio_analysis_at
+                              ).toLocaleString('ru-RU')
+                            : null;
+
+
                     resultBox.innerHTML = `
+
                         <div class="notice">
 
                             <strong>
@@ -4987,17 +5013,11 @@ async function analyzeAllMaterials(forceNew = false) {
                             </strong>
 
                             ${
-                                saved.data.portfolio_analysis_at
+                                savedDate
                                 ? `
                                     <p style="opacity:.7">
                                         Последний анализ:
-                                        ${escapeHtml(
-                                            new Date(
-                                                saved.data.portfolio_analysis_at
-                                            ).toLocaleString(
-                                                'ru-RU'
-                                            )
-                                        )}
+                                        ${escapeHtml(savedDate)}
                                     </p>
                                   `
                                 : ''
@@ -5010,12 +5030,15 @@ async function analyzeAllMaterials(forceNew = false) {
                                 saved.data.portfolio_analysis
                             )}
                         </div>
+
                     `;
+
 
                     resultBox.style.display =
                         'block';
 
                 }
+
 
                 return;
 
@@ -5023,17 +5046,10 @@ async function analyzeAllMaterials(forceNew = false) {
 
         }
 
-result.innerHTML =
-    formatAIText(
-        ai.data.analysis
-    );
 
-result.style.display =
-    'block';
-          
-        /* =========================
-           ПОЛУЧАЕМ МАТЕРИАЛЫ
-        ========================= */
+        /* =================================================
+           3. ПОЛУЧАЕМ МАТЕРИАЛЫ
+        ================================================= */
 
         const response =
             await supabaseClient
@@ -5054,7 +5070,9 @@ result.style.display =
 
 
         if (response.error) {
+
             throw response.error;
+
         }
 
 
@@ -5071,9 +5089,9 @@ result.style.display =
         }
 
 
-        /* =========================
-           AI
-        ========================= */
+        /* =================================================
+           4. ОТПРАВЛЯЕМ МАТЕРИАЛЫ В AI
+        ================================================= */
 
         const ai =
             await supabaseClient
@@ -5082,15 +5100,22 @@ result.style.display =
                     'analyze-materials',
                     {
                         body: {
-                            actorId,
-                            materials
+
+                            actorId:
+                                actorId,
+
+                            materials:
+                                materials
+
                         }
                     }
                 );
 
 
         if (ai.error) {
+
             throw ai.error;
+
         }
 
 
@@ -5098,46 +5123,33 @@ result.style.display =
             ai.data?.analysis;
 
 
-        if (!ai.data?.analysis) {
+        if (!analysis) {
 
-    throw new Error(
-        ai.data?.error ||
-        'AI не вернул общий анализ.'
-    );
+            throw new Error(
+                ai.data?.error ||
+                'AI не вернул общий анализ.'
+            );
 
-}
-
-
-/* Сохраняем анализ в actors */
-
-await savePortfolioAnalysis(
-    ai.data.analysis
-);
+        }
 
 
-/* Показываем результат */
+        /* =================================================
+           5. СОХРАНЯЕМ АНАЛИЗ В ACTORS
+        ================================================= */
 
-result.textContent =
-    ai.data.analysis;
-
-result.style.display =
-    'block';
-
-
-        /* =========================
-           СОХРАНЯЕМ АНАЛИЗ
-        ========================= */
-
-        
+        await savePortfolioAnalysis(
+            analysis
+        );
 
 
-        /* =========================
-           ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
-        ========================= */
+        /* =================================================
+           6. ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
+        ================================================= */
 
         if (resultBox) {
 
             resultBox.innerHTML = `
+
                 <div class="notice">
 
                     <strong>
@@ -5155,7 +5167,9 @@ result.style.display =
                         analysis
                     )}
                 </div>
+
             `;
+
 
             resultBox.style.display =
                 'block';
@@ -5192,6 +5206,7 @@ result.style.display =
 
         }
 
+
         if (button) {
 
             button.disabled =
@@ -5203,7 +5218,7 @@ result.style.display =
 
 }
 
-
+      
 /* =====================================================
    SAVE PORTFOLIO ANALYSIS
 ===================================================== */
