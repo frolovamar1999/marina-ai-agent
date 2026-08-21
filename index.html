@@ -3238,6 +3238,7 @@ async function analyzeMaterial() {
         return;
     }
 
+
     const loading =
         document.getElementById(
             'materialLoading'
@@ -3258,13 +3259,28 @@ async function analyzeMaterial() {
             'analyzeMaterialBtn'
         );
 
+
     hideMaterialError();
 
-    loading.style.display = 'block';
-    resultBox.style.display = 'none';
-    button.disabled = true;
+
+    if (loading) {
+        loading.style.display = 'block';
+    }
+
+    if (resultBox) {
+        resultBox.style.display = 'none';
+    }
+
+    if (button) {
+        button.disabled = true;
+    }
+
 
     try {
+
+        /* =====================================================
+           1. ПОЛУЧАЕМ ACTOR ID
+        ===================================================== */
 
         if (!actorId) {
 
@@ -3272,15 +3288,19 @@ async function analyzeMaterial() {
                 await findActor();
 
             if (!id) {
+
                 throw new Error(
                     'Профиль Марины не найден.'
                 );
+
             }
+
         }
 
-        /*
-         * 1. СЖИМАЕМ ФОТО
-         */
+
+        /* =====================================================
+           2. СЖИМАЕМ ФОТО
+        ===================================================== */
 
         const compressedFile =
             await compressMaterialImage(
@@ -3288,19 +3308,17 @@ async function analyzeMaterial() {
             );
 
 
-        /*
-         * 2. СОЗДАЁМ ИМЯ
-         */
-
-        const extension = 'jpg';
+        /* =====================================================
+           3. СОЗДАЁМ УНИКАЛЬНЫЙ ПУТЬ ФАЙЛА
+        ===================================================== */
 
         const fileName =
-            `${actorId}/${crypto.randomUUID()}.${extension}`;
+            `${actorId}/${crypto.randomUUID()}.jpg`;
 
 
-        /*
-         * 3. ЗАГРУЖАЕМ В STORAGE
-         */
+        /* =====================================================
+           4. ЗАГРУЖАЕМ ФОТО В STORAGE
+        ===================================================== */
 
         const upload =
             await supabaseClient
@@ -3313,7 +3331,8 @@ async function analyzeMaterial() {
                         contentType:
                             'image/jpeg',
 
-                        upsert: false
+                        upsert:
+                            false
                     }
                 );
 
@@ -3325,9 +3344,9 @@ async function analyzeMaterial() {
         }
 
 
-        /*
-         * 4. ПОЛУЧАЕМ PUBLIC URL
-         */
+        /* =====================================================
+           5. ПОЛУЧАЕМ PUBLIC URL
+        ===================================================== */
 
         const publicUrl =
             supabaseClient
@@ -3340,9 +3359,9 @@ async function analyzeMaterial() {
                 .publicUrl;
 
 
-        /*
-         * 5. DATA URL ДЛЯ AI
-         */
+        /* =====================================================
+           6. ПРЕОБРАЗУЕМ ФОТО В DATA URL ДЛЯ AI
+        ===================================================== */
 
         const imageData =
             await fileToDataUrl(
@@ -3350,9 +3369,9 @@ async function analyzeMaterial() {
             );
 
 
-        /*
-         * 6. ПРОФИЛЬ
-         */
+        /* =====================================================
+           7. ПРОФИЛЬ МАРИНЫ
+        ===================================================== */
 
         const profile = {
 
@@ -3374,9 +3393,9 @@ async function analyzeMaterial() {
         };
 
 
-        /*
-         * 7. AI
-         */
+        /* =====================================================
+           8. ОТПРАВЛЯЕМ ФОТО В AI
+        ===================================================== */
 
         const {
             data,
@@ -3417,144 +3436,175 @@ async function analyzeMaterial() {
         }
 
 
-/* =====================================================
-   СОЗДАЁМ СЛЕДУЮЩИЙ НОМЕР ФОТО
-===================================================== */
+        /* =====================================================
+           9. ОПРЕДЕЛЯЕМ СЛЕДУЮЩИЙ НОМЕР ФОТО
+        ===================================================== */
 
-const existingMaterials =
-    await supabaseClient
-        .from('materials')
-        .select('title')
-        .eq(
-            'actor_id',
-            actorId
-        );
-
-if (existingMaterials.error) {
-
-    throw existingMaterials.error;
-
-}
-
-
-let maxPhotoNumber = 0;
-
-
-(existingMaterials.data || [])
-    .forEach(material => {
-
-        const match =
-            String(material.title || '')
-                .match(/^Фото\s+(\d+)$/i);
-
-        if (match) {
-
-            const number =
-                parseInt(
-                    match[1],
-                    10
+        const existingMaterials =
+            await supabaseClient
+                .from('materials')
+                .select('title')
+                .eq(
+                    'actor_id',
+                    actorId
                 );
 
-            if (
-                number >
-                maxPhotoNumber
-            ) {
 
-                maxPhotoNumber =
-                    number;
+        if (existingMaterials.error) {
 
-            }
+            throw existingMaterials.error;
 
         }
 
-    });
+
+        let maxPhotoNumber = 0;
 
 
-const materialTitle =
-    `Фото ${maxPhotoNumber + 1}`;
+        (existingMaterials.data || [])
+            .forEach(
+                material => {
 
-          
-/* =====================================================
-   СОХРАНЯЕМ МАТЕРИАЛ
-===================================================== */
-const insert =
-    await supabaseClient
-        .from('materials')
-        .insert({
-            actor_id:
-                actorId,
-
-            material_type:
-                'photo',
-
-            title:
-                materialTitle,
-
-            file_path:
-                fileName,
-
-            image_url:
-                publicUrl,
-
-            original_name:
-                selectedMaterialFile.name,
-
-            analysis:
-                data.analysis,
-
-            is_primary:
-                false
-        });
+                    const match =
+                        String(
+                            material.title || ''
+                        )
+                        .match(
+                            /^Фото\s+(\d+)$/i
+                        );
 
 
-    /*
-     * Если запись БД не создалась,
-     * удаляем уже загруженный файл из Storage.
-     */
+                    if (match) {
 
-    await supabaseClient
-        .storage
-        .from('materials')
-        .remove([
-            fileName
-        ]);
-
-    throw insert.error;
-}
-
-          
-        /*
-         * 9. ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
-         */
-
-        analysisBox.textContent =
-            data.analysis;
-
-        resultBox.style.display =
-            'block';
+                        const number =
+                            parseInt(
+                                match[1],
+                                10
+                            );
 
 
-        /*
-         * 10. ОБНОВЛЯЕМ СПИСОК
-         */
+                        if (
+                            number >
+                            maxPhotoNumber
+                        ) {
+
+                            maxPhotoNumber =
+                                number;
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+        const materialTitle =
+            `Фото ${maxPhotoNumber + 1}`;
+
+
+        /* =====================================================
+           10. СОХРАНЯЕМ МАТЕРИАЛ В БАЗУ
+        ===================================================== */
+
+        const insert =
+            await supabaseClient
+                .from('materials')
+                .insert({
+
+                    actor_id:
+                        actorId,
+
+                    material_type:
+                        'photo',
+
+                    title:
+                        materialTitle,
+
+                    file_path:
+                        fileName,
+
+                    image_url:
+                        publicUrl,
+
+                    original_name:
+                        selectedMaterialFile.name,
+
+                    analysis:
+                        data.analysis,
+
+                    is_primary:
+                        false
+
+                });
+
+
+        /* =====================================================
+           11. ЕСЛИ БАЗА НЕ СОХРАНИЛА ЗАПИСЬ
+        ===================================================== */
+
+        if (insert.error) {
+
+            await supabaseClient
+                .storage
+                .from('materials')
+                .remove([
+                    fileName
+                ]);
+
+
+            throw insert.error;
+
+        }
+
+
+        /* =====================================================
+           12. ПОКАЗЫВАЕМ АНАЛИЗ
+        ===================================================== */
+
+        if (analysisBox) {
+
+            analysisBox.textContent =
+                data.analysis;
+
+        }
+
+
+        if (resultBox) {
+
+            resultBox.style.display =
+                'block';
+
+        }
+
+
+        /* =====================================================
+           13. ОБНОВЛЯЕМ СПИСОК ФОТО
+        ===================================================== */
 
         await loadSavedMaterials();
 
 
-        /*
-         * 11. ОЧИЩАЕМ INPUT
-         */
+        /* =====================================================
+           14. ОЧИЩАЕМ INPUT
+        ===================================================== */
 
-        selectedMaterialFile = null;
+        selectedMaterialFile =
+            null;
+
 
         const fileInput =
             document.getElementById(
                 'materialFile'
             );
 
+
         if (fileInput) {
-            fileInput.value = '';
+
+            fileInput.value =
+                '';
+
         }
+
 
     } catch (error) {
 
@@ -3563,23 +3613,33 @@ const insert =
             error
         );
 
+
         showMaterialError(
-            error.message ||
+            error?.message ||
             'Не удалось выполнить анализ.'
         );
 
+
     } finally {
 
-        loading.style.display =
-            'none';
+        if (loading) {
 
-        button.disabled =
-            false;
+            loading.style.display =
+                'none';
+
+        }
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+        }
 
     }
+
 }
-
-
 
       async function compressMaterialImage(file) {
 
