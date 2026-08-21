@@ -3424,24 +3424,16 @@ async function analyzeMaterial() {
         const insert =
             await supabaseClient
                 .from('materials')
-                .insert({
-
-                    actor_id:
-                        actorId,
-
-                    file_path:
-                        fileName,
-
-                    image_url:
-                        publicUrl,
-
-                    original_name:
-                        selectedMaterialFile.name,
-
-                    analysis:
-                        data.analysis
-
-                });
+.insert({
+    actor_id: actorId,
+    material_type: 'photo',
+    title: file.name,
+    file_path: filePath,
+    image_url: imageUrl,
+    original_name: file.name,
+    analysis: data.analysis,
+    is_primary: false
+})
 
 
         if (insert.error) {
