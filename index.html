@@ -1089,77 +1089,7 @@ textarea {
 <!-- =========================
      CASTINGS
 ========================= -->
-<div
-    class="casting-filters"
-    style="
-        display:flex;
-        gap:8px;
-        flex-wrap:wrap;
-        margin-bottom:15px;
-    "
->
 
-    <button
-        class="btn light small"
-        onclick="filterCastings('all')"
-    >
-        Все
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('new')"
-    >
-        Новые
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('submitted')"
-    >
-        Отправлены
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('audition')"
-    >
-        Пробы
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('self-tape')"
-    >
-        Пробы отправлены
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('callback')"
-    >
-        Callback
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('approved')"
-    >
-        Утверждены
-    </button>
-
-    <button
-        class="btn light small"
-        onclick="filterCastings('rejected')"
-    >
-        Не утвердили
-    </button>
-
-</div>
-      let allCastings = [];
-let currentCastingFilter = 'all';
-
-      
 <section
     id="castings"
     class="page"
@@ -1179,7 +1109,6 @@ let currentCastingFilter = 'all';
 
         </div>
 
-
         <button
             class="btn"
             onclick="openNewCastingModal()"
@@ -1198,6 +1127,85 @@ let currentCastingFilter = 'all';
     </div>
 
 
+    <!-- ФИЛЬТРЫ -->
+
+    <div
+        class="casting-filters"
+        style="
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+            margin-bottom:15px;
+        "
+    >
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('all')"
+        >
+            Все
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('new')"
+        >
+            Новые
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('submitted')"
+        >
+            Отправлены
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('audition')"
+        >
+            Пробы
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('self-tape')"
+        >
+            Пробы отправлены
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('callback')"
+        >
+            Callback
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('approved')"
+        >
+            Утверждены
+        </button>
+
+        <button
+            type="button"
+            class="btn light small"
+            onclick="filterCastings('rejected')"
+        >
+            Не утвердили
+        </button>
+
+    </div>
+
+
     <div class="card">
 
         <div id="castingList">
@@ -1213,7 +1221,9 @@ let currentCastingFilter = 'all';
 </section>
 
 
-<!-- MATERIALS -->
+<!-- =========================
+     MATERIALS
+========================= -->
 
 <section id="materials" class="page">
 
@@ -1221,7 +1231,9 @@ let currentCastingFilter = 'all';
 
         <div>
 
-            <h1>📸 Материалы</h1>
+            <h1>
+                📸 Материалы
+            </h1>
 
             <p>
                 Профессиональный анализ актерских материалов
@@ -1255,8 +1267,7 @@ let currentCastingFilter = 'all';
 
         <p class="material-help">
             Выбери фотографию с компьютера.
-            Она будет отправлена на анализ и не сохраняется
-            в базе Marina AI.
+            Она будет отправлена на анализ.
         </p>
 
 
@@ -1274,6 +1285,7 @@ let currentCastingFilter = 'all';
 
 
         <button
+            type="button"
             class="btn"
             id="analyzeMaterialBtn"
             onclick="analyzeMaterial()"
@@ -1345,76 +1357,113 @@ let currentCastingFilter = 'all';
         ></div>
 
     </div>
-<div class="card">
 
-    <div class="section-title">
 
-        <div>
-            <h2>🧠 Все материалы</h2>
+    <!-- АНАЛИЗ ВСЕГО ПОРТФОЛИО -->
 
-            <p>
-                AI посмотрит на всю коллекцию и определит,
-                какие актерские задачи уже закрыты,
-                а каких материалов не хватает.
-            </p>
+    <div class="card">
+
+        <div class="section-title">
+
+            <div>
+
+                <h2>
+                    🧠 Анализ портфолио
+                </h2>
+
+                <p>
+                    Сохраненный анализ используется повторно.
+                    Новый анализ запускается только вручную.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                align-items:center;
+            "
+        >
+
+            <button
+                type="button"
+                class="btn"
+                onclick="loadSavedPortfolioAnalysis()"
+                id="loadPortfolioAnalysisBtn"
+            >
+                🧠 Посмотреть анализ
+            </button>
+
+
+            <button
+                type="button"
+                class="btn light"
+                onclick="analyzeAllMaterials(true)"
+                id="newPortfolioAnalysisBtn"
+            >
+                🔄 Новый анализ
+            </button>
+
+        </div>
+
+
+        <div
+            id="allMaterialsLoading"
+            style="
+                display:none;
+                margin-top:15px;
+            "
+        >
+            Анализирую всю коллекцию материалов...
+        </div>
+
+
+        <div
+            id="allMaterialsError"
+            class="status error"
+            style="
+                display:none;
+                margin-top:15px;
+            "
+        ></div>
+
+
+        <div
+            id="allMaterialsResult"
+            class="material-analysis"
+            style="
+                display:none;
+                margin-top:20px;
+            "
+        ></div>
+
+    </div>
+
+
+    <!-- СОХРАНЕННЫЕ МАТЕРИАЛЫ -->
+
+    <div
+        id="savedMaterials"
+        class="card"
+    >
+
+        <h2>
+            📁 Мои материалы
+        </h2>
+
+        <div id="savedMaterialsList">
+            Загрузка материалов...
         </div>
 
     </div>
 
-    <<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-
-    <button
-        class="btn"
-        onclick="loadSavedPortfolioAnalysis()"
-        id="loadPortfolioAnalysisBtn"
-    >
-        🧠 Посмотреть анализ портфолио
-    </button>
-
-    <button
-        class="btn light"
-        onclick="analyzeAllMaterials(true)"
-        id="newPortfolioAnalysisBtn"
-    >
-        🔄 Новый анализ
-    </button>
-
-</div>
-
-    <div
-        id="allMaterialsLoading"
-        style="display:none;margin-top:15px"
-    >
-        Анализирую всю коллекцию материалов...
-    </div>
-
-    <div
-        id="allMaterialsError"
-        class="status error"
-        style="display:none;margin-top:15px"
-    ></div>
-
-    <div
-        id="allMaterialsResult"
-        class="material-analysis"
-        style="display:none;margin-top:20px"
-    ></div>
-
-</div>
-
-      <div
-    id="savedMaterials"
-    class="card"
->
-    <h2>📁 Мои материалы</h2>
-
-    <div id="savedMaterialsList">
-        Загрузка материалов...
-    </div>
-</div>
-      
 </section>
-      
+
 
 <!-- =========================
      CAREER
@@ -1443,7 +1492,6 @@ let currentCastingFilter = 'all';
 
 
     <div class="cards">
-
 
         <div class="card metric">
 
@@ -1514,33 +1562,13 @@ let currentCastingFilter = 'all';
 
         <ul>
 
-            <li>
-                какие кастинги появились;
-            </li>
-
-            <li>
-                куда ты подавалась;
-            </li>
-
-            <li>
-                где были пробы;
-            </li>
-
-            <li>
-                какие заявки получили ответ;
-            </li>
-
-            <li>
-                какие роли приводят к пробам;
-            </li>
-
-            <li>
-                какие материалы работают;
-            </li>
-
-            <li>
-                что делать на следующей неделе.
-            </li>
+            <li>какие кастинги появились;</li>
+            <li>куда ты подавалась;</li>
+            <li>где были пробы;</li>
+            <li>какие заявки получили ответ;</li>
+            <li>какие роли приводят к пробам;</li>
+            <li>какие материалы работают;</li>
+            <li>что делать на следующей неделе.</li>
 
         </ul>
 
@@ -1586,11 +1614,9 @@ let currentCastingFilter = 'all';
                 </b>
 
                 <p>
-
                     Я уже вижу твой профиль.
                     Следующий этап — подключить
                     реальный AI-анализ.
-
                 </p>
 
             </div>
@@ -1610,8 +1636,8 @@ let currentCastingFilter = 'all';
                 placeholder="Например: стоит ли мне подаваться?"
             >
 
-
             <button
+                type="button"
                 class="btn"
                 onclick="sendMessage()"
             >
@@ -1624,13 +1650,9 @@ let currentCastingFilter = 'all';
 
 </section>
 
-</main>
-
-</div>
-
 
 <!-- =========================
-     MODAL
+     MODAL CASTING
 ========================= -->
 
 <div
@@ -1639,11 +1661,6 @@ let currentCastingFilter = 'all';
 >
 
     <div class="modal-box">
-
-        <!-- ВАЖНО:
-             ID хранит редактируемый кастинг.
-             При новом кастинге он пустой.
-        -->
 
         <input
             type="hidden"
@@ -1717,6 +1734,8 @@ let currentCastingFilter = 'all';
         </label>
 
 
+        <!-- ТЕКСТ КАСТИНГА -->
+
         <label>
 
             Текст или описание кастинга
@@ -1726,43 +1745,80 @@ let currentCastingFilter = 'all';
                 rows="7"
                 placeholder="Вставь сюда текст кастинга..."
             ></textarea>
-<div
-    style="
-        display:flex;
-        gap:10px;
-        margin-top:10px;
-        flex-wrap:wrap;
-    "
->
 
-    <button
-        type="button"
-        class="btn light"
-        onclick="analyzeCurrentCasting()"
-        id="analyzeCastingBtn"
-    >
-        🧠 Проанализировать кастинг
-    </button>
-
-</div>
-<label>
-
-    Сообщение от кастинг-директора
-
-    <textarea
-        id="castingDirectorMessage"
-        rows="6"
-        placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
-    ></textarea>
-
-</label>
-<div
-    id="castingAIStatus"
-    class="status"
-    style="display:none;margin-top:10px"
-></div>
         </label>
 
+
+        <!-- КНОПКА AI -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                margin-top:10px;
+                margin-bottom:15px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                type="button"
+                class="btn light"
+                onclick="analyzeCurrentCasting()"
+                id="analyzeCastingBtn"
+            >
+                🧠 Проанализировать кастинг
+            </button>
+
+        </div>
+
+
+        <!-- СООБЩЕНИЕ КАСТИНГ-ДИРЕКТОРА -->
+
+        <label>
+
+            Сообщение от кастинг-директора
+
+            <textarea
+                id="castingDirectorMessage"
+                rows="6"
+                placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
+            ></textarea>
+
+        </label>
+
+
+        <div
+            id="castingAIStatus"
+            class="status"
+            style="
+                display:none;
+                margin-top:10px;
+            "
+        ></div>
+
+
+        <!-- AI-АНАЛИЗ -->
+
+        <div
+            id="castingAIResult"
+            class="card"
+            style="
+                display:none;
+                margin-top:15px;
+            "
+        >
+
+            <h3>
+                🧠 AI-анализ кастинга
+            </h3>
+
+            <div id="castingAIContent"></div>
+
+        </div>
+
+
+        <!-- СТАТУС -->
 
         <label>
 
@@ -1811,6 +1867,8 @@ let currentCastingFilter = 'all';
         </label>
 
 
+        <!-- ЗАМЕТКИ -->
+
         <label>
 
             Заметки
@@ -1820,25 +1878,14 @@ let currentCastingFilter = 'all';
                 rows="4"
                 placeholder="Что важно помнить об этом кастинге..."
             ></textarea>
-<div
-    id="castingAIResult"
-    class="card"
-    style="display:none;margin-top:15px;"
->
 
-    <h3>
-        🧠 AI-анализ кастинга
-    </h3>
-
-    <div id="castingAIContent"></div>
-
-</div>
         </label>
 
 
         <div class="modal-buttons">
 
             <button
+                type="button"
                 class="btn light"
                 onclick="closeModal()"
             >
@@ -1847,6 +1894,7 @@ let currentCastingFilter = 'all';
 
 
             <button
+                type="button"
                 id="saveCastingButton"
                 class="btn"
                 onclick="saveCasting()"
@@ -1862,6 +1910,52 @@ let currentCastingFilter = 'all';
 
 
 <script>
+
+/* =====================================================
+   CASTINGS STATE
+===================================================== */
+
+let allCastings = [];
+
+let currentCastingFilter = 'all';
+
+
+/* =====================================================
+   FILTER CASTINGS
+===================================================== */
+
+function filterCastings(status) {
+
+    currentCastingFilter = status || 'all';
+
+    renderFilteredCastings();
+
+}
+
+
+/* =====================================================
+   RENDER FILTERED CASTINGS
+===================================================== */
+
+function renderFilteredCastings() {
+
+    let filtered = allCastings;
+
+    if (currentCastingFilter !== 'all') {
+
+        filtered =
+            allCastings.filter(
+                casting =>
+                    casting.status ===
+                    currentCastingFilter
+            );
+
+    }
+
+    renderCastings(filtered);
+
+}
+
 
 /* =====================================================
    SUPABASE
@@ -1885,85 +1979,92 @@ let actorId = null;
 
 
 /* =====================================================
-   NAVIGATION
+   LOAD CASTINGS
 ===================================================== */
 
-function showPage(id, button) {
+async function loadCastings() {
 
-    document
-        .querySelectorAll('.page')
-        .forEach(page => {
-
-            page.classList.remove('active');
-
-        });
+    setStatus(
+        'Подключение к памяти...'
+    );
 
 
-    const page =
-        document.getElementById(id);
+    if (!actorId) {
 
+        const id =
+            await findActor();
 
-    if (page) {
-
-        page.classList.add('active');
+        if (!id) {
+            return;
+        }
 
     }
 
 
-    document
-        .querySelectorAll('.nav button')
-        .forEach(btn => {
-
-            btn.classList.remove('active');
-
-        });
-
-
-    if (button) {
-
-        button.classList.add('active');
-
-    }
-
-
-    if (id === 'castings') {
-
-        loadCastings();
-
-    }
-
-}
+    const result =
+        await supabaseClient
+            .from('castings')
+            .select('*')
+            .eq(
+                'actor_id',
+                actorId
+            )
+            .order(
+                'created_at',
+                {
+                    ascending:false
+                }
+            );
 
 
-/* =====================================================
-   STATUS MESSAGE
-===================================================== */
+    if (result.error) {
 
-function setStatus(text, type = '') {
+        console.error(
+            'Supabase casting error:',
+            result.error
+        );
 
-    const el =
-        document.getElementById('dbStatus');
-
-
-    if (!el) {
+        setStatus(
+            'Ошибка загрузки кастингов: ' +
+            result.error.message,
+            'error'
+        );
 
         return;
 
     }
 
 
-    el.textContent = text;
+    allCastings =
+        result.data || [];
 
-    el.className = 'status';
+
+    renderFilteredCastings();
 
 
-    if (type) {
+    updateCounters(
+        allCastings
+    );
 
-        el.classList.add(type);
 
-    }
+    setStatus(
+        'Память подключена · ' +
+        allCastings.length +
+        ' кастингов',
+        'success'
+    );
 
 }
+
+
+/* =====================================================
+   CASTINGS STATE
+===================================================== */
+
+let allCastings = [];
+let currentCastingFilter = 'all';
+
+let currentCastingAI = null;
 
 
 /* =====================================================
@@ -1975,7 +2076,7 @@ async function findActor() {
     const result =
         await supabaseClient
             .from('actors')
-            .select('id,full_name')
+            .select('id, full_name, portfolio_analysis')
             .eq(
                 'full_name',
                 'Фролова Марина Сергеевна'
@@ -2025,25 +2126,46 @@ async function findActor() {
 
 }
 
+
+/* =====================================================
+   ANALYZE CURRENT CASTING
+===================================================== */
+
 async function analyzeCurrentCasting() {
 
+    const castingTextElement =
+        document.getElementById(
+            'castingText'
+        );
+
+    const directorMessageElement =
+        document.getElementById(
+            'castingDirectorMessage'
+        );
+
+    const roleNameElement =
+        document.getElementById(
+            'roleName'
+        );
+
+
     const castingText =
-        document
-            .getElementById('castingText')
-            .value
-            .trim();
+        castingTextElement
+            ? castingTextElement.value.trim()
+            : '';
+
 
     const directorMessage =
-        document
-            .getElementById('castingDirectorMessage')
-            .value
-            .trim();
+        directorMessageElement
+            ? directorMessageElement.value.trim()
+            : '';
+
 
     const roleName =
-        document
-            .getElementById('roleName')
-            .value
-            .trim();
+        roleNameElement
+            ? roleNameElement.value.trim()
+            : '';
+
 
     if (!castingText && !directorMessage) {
 
@@ -2055,15 +2177,21 @@ async function analyzeCurrentCasting() {
 
     }
 
+
     if (!actorId) {
 
-        const id = await findActor();
+        const id =
+            await findActor();
+
 
         if (!id) {
+
             return;
+
         }
 
     }
+
 
     const status =
         document.getElementById(
@@ -2080,21 +2208,34 @@ async function analyzeCurrentCasting() {
             'castingAIContent'
         );
 
-    status.style.display = 'block';
 
-    status.className = 'status';
+    if (status) {
 
-    status.textContent =
-        '🧠 AI анализирует кастинг...';
+        status.style.display =
+            'block';
 
-    resultBox.style.display = 'none';
+        status.className =
+            'status';
+
+        status.textContent =
+            '🧠 AI анализирует кастинг...';
+
+    }
+
+
+    if (resultBox) {
+
+        resultBox.style.display =
+            'none';
+
+    }
+
 
     try {
 
-        /*
-         * Сначала получаем СОХРАНЁННЫЙ
-         * анализ портфолио.
-         */
+        /* =================================================
+           PORTFOLIO ANALYSIS
+        ================================================= */
 
         const portfolioResult =
             await supabaseClient
@@ -2108,16 +2249,22 @@ async function analyzeCurrentCasting() {
                 )
                 .single();
 
+
         if (portfolioResult.error) {
+
             throw new Error(
+                'Не удалось получить анализ портфолио: ' +
                 portfolioResult.error.message
             );
+
         }
+
 
         const portfolioAnalysis =
             portfolioResult
                 .data
                 ?.portfolio_analysis;
+
 
         if (!portfolioAnalysis) {
 
@@ -2127,31 +2274,45 @@ async function analyzeCurrentCasting() {
 
         }
 
-        /*
-         * Получаем материалы.
-         */
+
+        /* =================================================
+           MATERIALS
+        ================================================= */
 
         const materialsResult =
             await supabaseClient
                 .from('materials')
-                .select('*')
+                .select(
+                    'id, title, name, type, url, file_url, analysis'
+                )
                 .eq(
                     'actor_id',
                     actorId
                 );
 
+
         if (materialsResult.error) {
+
             throw new Error(
+                'Не удалось загрузить материалы: ' +
                 materialsResult.error.message
             );
+
         }
+
 
         const materials =
             materialsResult.data || [];
 
+
+        /* =================================================
+           AI REQUEST
+        ================================================= */
+
         const response =
             await fetch(
-                'https://kavepxugysumhpcftzqy.supabase.co/functions/v1/analyze-casting',
+                SUPABASE_URL +
+                '/functions/v1/analyze-casting',
                 {
                     method: 'POST',
 
@@ -2168,6 +2329,8 @@ async function analyzeCurrentCasting() {
                     body:
                         JSON.stringify({
 
+                            actorId,
+
                             roleName,
 
                             castingText,
@@ -2183,48 +2346,110 @@ async function analyzeCurrentCasting() {
                 }
             );
 
-        const data =
-            await response.json();
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+        catch (jsonError) {
+
+            throw new Error(
+                'AI вернул некорректный ответ.'
+            );
+
+        }
+
 
         if (!response.ok) {
 
             throw new Error(
                 data?.error ||
+                data?.message ||
                 'Ошибка AI анализа'
             );
 
         }
 
-        if (!data.analysis) {
+
+        if (!data?.analysis) {
 
             throw new Error(
-                'AI не вернул анализ'
+                'AI не вернул анализ кастинга.'
             );
 
         }
 
-        resultContent.innerHTML =
-            formatAIText(
-                data.analysis
-            );
 
-        resultBox.style.display =
-            'block';
+        /* =================================================
+           SHOW RESULT
+        ================================================= */
 
-        status.className =
-            'status success';
+        if (resultContent) {
 
-        status.textContent =
-            '✓ Анализ кастинга готов';
+            resultContent.innerHTML =
+                typeof formatAIText === 'function'
+                    ? formatAIText(
+                        data.analysis
+                    )
+                    : escapeHtml(
+                        JSON.stringify(
+                            data.analysis,
+                            null,
+                            2
+                        )
+                    );
 
-        /*
-         * Сохраняем результат в форме,
-         * чтобы saveCasting() записал
-         * его в Supabase.
-         */
+        }
+
+
+        if (resultBox) {
+
+            resultBox.style.display =
+                'block';
+
+        }
+
+
+        if (status) {
+
+            status.className =
+                'status success';
+
+            status.textContent =
+                '✓ Анализ кастинга готов';
+
+        }
+
+
+        /* =================================================
+           KEEP AI RESULT IN MEMORY
+        ================================================= */
+
+        currentCastingAI =
+            data;
+
 
         window.currentCastingAI =
             data;
+
+
+        /*
+         * Если AI вернул дополнительные поля,
+         * они будут доступны через:
+         *
+         * currentCastingAI.analysis
+         * currentCastingAI.character
+         * currentCastingAI.recommendedMaterials
+         * currentCastingAI.applicationLetter
+         *
+         * в зависимости от структуры Edge Function.
+         */
+
 
     }
     catch (error) {
@@ -2234,18 +2459,24 @@ async function analyzeCurrentCasting() {
             error
         );
 
-        status.className =
-            'status error';
 
-        status.textContent =
-            error instanceof Error
-                ? error.message
-                : String(error);
+        if (status) {
+
+            status.className =
+                'status error';
+
+            status.textContent =
+                error instanceof Error
+                    ? error.message
+                    : String(error);
+
+        }
 
     }
 
 }
-      
+
+
 /* =====================================================
    OPEN NEW CASTING MODAL
 ===================================================== */
@@ -2255,40 +2486,70 @@ function openNewCastingModal() {
     resetCastingForm();
 
 
-    document
-        .getElementById('modalTitle')
-        .textContent =
-        'Новый кастинг';
+    const modalTitle =
+        document.getElementById(
+            'modalTitle'
+        );
 
 
-    document
-        .getElementById('saveCastingButton')
-        .textContent =
-        'Сохранить';
+    const saveButton =
+        document.getElementById(
+            'saveCastingButton'
+        );
 
 
-    document
-        .getElementById('modal')
-        .classList.add('open');
+    const modal =
+        document.getElementById(
+            'modal'
+        );
+
+
+    if (modalTitle) {
+
+        modalTitle.textContent =
+            'Новый кастинг';
+
+    }
+
+
+    if (saveButton) {
+
+        saveButton.textContent =
+            'Сохранить';
+
+    }
+
+
+    if (modal) {
+
+        modal.classList.add(
+            'open'
+        );
+
+    }
 
 }
 
-const directorMessage =
-    document
-        .getElementById(
-            'castingDirectorMessage'
-        )
-        .value
-        .trim();
+
 /* =====================================================
    CLOSE MODAL
 ===================================================== */
 
 function closeModal() {
 
-    document
-        .getElementById('modal')
-        .classList.remove('open');
+    const modal =
+        document.getElementById(
+            'modal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            'open'
+        );
+
+    }
 
 }
 
@@ -2299,61 +2560,116 @@ function closeModal() {
 
 function resetCastingForm() {
 
-    document
-        .getElementById('editingCastingId')
-        .value = '';
+    currentCastingAI =
+        null;
+
+    window.currentCastingAI =
+        null;
 
 
-    document
-        .getElementById('projectName')
-        .value = '';
+    const fields = {
+
+        editingCastingId: '',
+
+        projectName: '',
+
+        castingUrl: '',
+
+        roleName: '',
+
+        deadline: '',
+
+        appliedAt: '',
+
+        castingText: '',
+
+        castingDirectorMessage: '',
+
+        castingStatus: 'new',
+
+        castingNotes: ''
+
+    };
 
 
-    document
-        .getElementById('castingUrl')
-        .value = '';
+    Object.entries(fields)
+        .forEach(
+            ([id, value]) => {
+
+                const element =
+                    document.getElementById(
+                        id
+                    );
 
 
-    document
-        .getElementById('roleName')
-        .value = '';
+                if (element) {
+
+                    element.value =
+                        value;
+
+                }
+
+            }
+        );
 
 
-    document
-        .getElementById('deadline')
-        .value = '';
+    const modalTitle =
+        document.getElementById(
+            'modalTitle'
+        );
 
 
-    document
-        .getElementById('appliedAt')
-        .value = '';
+    const saveButton =
+        document.getElementById(
+            'saveCastingButton'
+        );
 
 
-    document
-        .getElementById('castingText')
-        .value = '';
+    const aiResult =
+        document.getElementById(
+            'castingAIResult'
+        );
 
 
-    document
-        .getElementById('castingStatus')
-        .value = 'new';
+    const aiStatus =
+        document.getElementById(
+            'castingAIStatus'
+        );
 
 
-    document
-        .getElementById('castingNotes')
-        .value = '';
+    if (modalTitle) {
+
+        modalTitle.textContent =
+            'Новый кастинг';
+
+    }
 
 
-    document
-        .getElementById('modalTitle')
-        .textContent =
-        'Новый кастинг';
+    if (saveButton) {
+
+        saveButton.textContent =
+            'Сохранить';
+
+    }
 
 
-    document
-        .getElementById('saveCastingButton')
-        .textContent =
-        'Сохранить';
+    if (aiResult) {
+
+        aiResult.style.display =
+            'none';
+
+    }
+
+
+    if (aiStatus) {
+
+        aiStatus.style.display =
+            'none';
+
+        aiStatus.textContent =
+            '';
+
+    }
 
 }
 
@@ -2420,28 +2736,33 @@ async function loadCastings() {
     }
 
 
-    const castings =
+    allCastings =
         result.data || [];
-allCastings = castings;
+
 
     renderCastings(
-    getFilteredCastings()
-);
+        getFilteredCastings()
+    );
 
 
     updateCounters(
-        castings
+        allCastings
     );
 
 
     setStatus(
         'Память подключена · ' +
-        castings.length +
+        allCastings.length +
         ' кастингов',
         'success'
     );
 
 }
+
+
+/* =====================================================
+   FILTER CASTINGS
+===================================================== */
 
 function getFilteredCastings() {
 
@@ -2454,10 +2775,16 @@ function getFilteredCastings() {
 
     }
 
+
     return allCastings.filter(
-        casting =>
-            casting.status ===
-            currentCastingFilter
+        casting => {
+
+            return (
+                casting.status ===
+                currentCastingFilter
+            );
+
+        }
     );
 
 }
@@ -2468,11 +2795,14 @@ function filterCastings(status) {
     currentCastingFilter =
         status;
 
+
     renderCastings(
         getFilteredCastings()
     );
 
 }
+
+
 /* =====================================================
    RENDER CASTINGS
 ===================================================== */
@@ -2485,19 +2815,33 @@ function renderCastings(castings) {
         );
 
 
+    if (!list) {
+
+        return;
+
+    }
+
+
     if (!castings.length) {
+
+        const message =
+            currentCastingFilter === 'all'
+                ? `
+                    Пока нет кастингов.
+                    <br><br>
+                    Нажми <b>＋ Добавить</b>,
+                    чтобы сохранить первый.
+                  `
+                : `
+                    В этой категории пока нет кастингов.
+                  `;
+
 
         list.innerHTML = `
 
             <div class="empty">
 
-                Пока нет кастингов.
-
-                <br><br>
-
-                Нажми
-                <b>＋ Добавить</b>,
-                чтобы сохранить первый.
+                ${message}
 
             </div>
 
@@ -2509,153 +2853,170 @@ function renderCastings(castings) {
     }
 
 
-    list.innerHTML = '';
+    list.innerHTML =
+        '';
 
 
-    castings.forEach(casting => {
+    castings.forEach(
+        casting => {
 
-        const item =
-            document.createElement('div');
-
-
-        item.className =
-            'casting';
-
-
-        const statusClass =
-            getStatusClass(
-                casting.status
-            );
+            const item =
+                document.createElement(
+                    'div'
+                );
 
 
-        item.innerHTML = `
-
-            <div style="flex:1;">
-
-                <h3>
-                    ${escapeHtml(
-                        casting.project_name
-                    )}
-                </h3>
+            item.className =
+                'casting';
 
 
-                <p>
+            const statusClass =
+                getStatusClass(
+                    casting.status
+                );
 
-                    ${escapeHtml(
-                        casting.role_name ||
-                        'Роль не указана'
-                    )}
+
+            item.innerHTML = `
+
+                <div style="flex:1;">
+
+                    <h3>
+                        ${escapeHtml(
+                            casting.project_name ||
+                            'Без названия'
+                        )}
+                    </h3>
+
+
+                    <p>
+
+                        ${escapeHtml(
+                            casting.role_name ||
+                            'Роль не указана'
+                        )}
+
+                        ${
+                            casting.deadline
+                            ? `
+                                · дедлайн
+                                ${escapeHtml(
+                                    casting.deadline
+                                )}
+                              `
+                            : ''
+                        }
+
+                    </p>
+
+
+                    <span class="
+                        badge
+                        ${statusClass}
+                    ">
+
+                        ${escapeHtml(
+                            getStatusLabel(
+                                casting.status
+                            )
+                        )}
+
+                    </span>
+
 
                     ${
-                        casting.deadline
+                        casting.applied_at
                         ? `
-                            · дедлайн
-                            ${escapeHtml(
-                                casting.deadline
-                            )}
+                            <p>
+                                📅 Подана:
+                                ${escapeHtml(
+                                    casting.applied_at
+                                )}
+                            </p>
                           `
                         : ''
                     }
 
-                </p>
+
+                    ${
+                        casting.notes
+                        ? `
+                            <p>
+                                📝
+                                ${escapeHtml(
+                                    casting.notes
+                                )}
+                            </p>
+                          `
+                        : ''
+                    }
 
 
-                <span class="
-                    badge
-                    ${statusClass}
-                ">
+                    ${
+                        casting.casting_url
+                        ? `
+                            <p class="castings-link">
 
-                    ${escapeHtml(
-                        getStatusLabel(
-                            casting.status
-                        )
-                    )}
+                                <a
+                                    href="${escapeHtml(
+                                        casting.casting_url
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Открыть кастинг →
+                                </a>
 
-                </span>
-
-
-                ${
-                    casting.applied_at
-                    ? `
-                        <p>
-                            📅 Подана:
-                            ${escapeHtml(
-                                casting.applied_at
-                            )}
-                        </p>
-                      `
-                    : ''
-                }
+                            </p>
+                          `
+                        : ''
+                    }
 
 
-                ${
-                    casting.notes
-                    ? `
-                        <p>
-                            📝
-                            ${escapeHtml(
-                                casting.notes
-                            )}
-                        </p>
-                      `
-                    : ''
-                }
+                    ${
+                        casting.ai_analysis
+                        ? `
+                            <p>
+                                🧠 AI-анализ сохранён
+                            </p>
+                          `
+                        : ''
+                    }
+
+                </div>
 
 
-                ${
-                    casting.casting_url
-                    ? `
-                        <p class="castings-link">
+                <div class="casting-actions">
 
-                            <a
-                                href="${escapeHtml(
-                                    casting.casting_url
-                                )}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Открыть кастинг →
-                            </a>
-
-                        </p>
-                      `
-                    : ''
-                }
-
-            </div>
+                    <button
+                        type="button"
+                        class="btn light small"
+                        onclick="editCasting('${escapeHtml(casting.id)}')"
+                    >
+                        ✏️ Изменить
+                    </button>
 
 
-            <div class="casting-actions">
+                    <button
+                        type="button"
+                        class="btn danger small"
+                        onclick="deleteCasting('${escapeHtml(casting.id)}')"
+                    >
+                        🗑️ Удалить
+                    </button>
 
-                <button
-                    class="btn light small"
-                    onclick="editCasting('${casting.id}')"
-                >
-                    ✏️ Изменить
-                </button>
+                </div>
 
-
-                <button
-                    class="btn danger small"
-                    onclick="deleteCasting('${casting.id}')"
-                >
-                    🗑️ Удалить
-                </button>
+            `;
 
 
+            list.appendChild(
+                item
+            );
 
-
-            </div>
-
-        `;
-
-
-        list.appendChild(item);
-
-    });
+        }
+    );
 
 }
-
 
 /* =====================================================
    GET STATUS LABEL
@@ -2694,7 +3055,6 @@ function getStatusLabel(status) {
 
     };
 
-
     return (
         labels[status] ||
         status ||
@@ -2710,14 +3070,11 @@ function getStatusLabel(status) {
 
 function getStatusClass(status) {
 
-    if (
-        status === 'approved'
-    ) {
+    if (status === 'approved') {
 
         return 'green';
 
     }
-
 
     if (
         status === 'audition' ||
@@ -2729,7 +3086,6 @@ function getStatusClass(status) {
 
     }
 
-
     if (
         status === 'rejected' ||
         status === 'cancelled'
@@ -2738,7 +3094,6 @@ function getStatusClass(status) {
         return 'red';
 
     }
-
 
     return '';
 
@@ -2756,13 +3111,11 @@ async function editCasting(id) {
         const actor =
             await findActor();
 
-
         if (!actor) {
 
             alert(
                 'Профиль Марины не найден.'
             );
-
 
             return;
 
@@ -2775,14 +3128,8 @@ async function editCasting(id) {
         await supabaseClient
             .from('castings')
             .select('*')
-            .eq(
-                'id',
-                id
-            )
-            .eq(
-                'actor_id',
-                actorId
-            )
+            .eq('id', id)
+            .eq('actor_id', actorId)
             .single();
 
 
@@ -2793,12 +3140,10 @@ async function editCasting(id) {
             result.error
         );
 
-
         alert(
             'Не удалось загрузить кастинг:\n\n' +
             result.error.message
         );
-
 
         return;
 
@@ -2807,6 +3152,47 @@ async function editCasting(id) {
 
     const casting =
         result.data;
+
+
+    /*
+     * Сбрасываем предыдущий AI-анализ,
+     * затем загружаем сохранённый анализ этого кастинга.
+     */
+
+    window.currentCastingAI = null;
+
+
+    if (
+        casting.ai_analysis ||
+        casting.ai_character ||
+        casting.ai_fit ||
+        casting.ai_recommended_materials ||
+        casting.ai_email
+    ) {
+
+        window.currentCastingAI = {
+
+            analysis:
+                casting.ai_analysis || null,
+
+            character:
+                casting.ai_character || null,
+
+            fit:
+                casting.ai_fit || null,
+
+            recommendedMaterials:
+                casting.ai_recommended_materials || null,
+
+            email:
+                casting.ai_email || null,
+
+            analyzedAt:
+                casting.ai_analyzed_at || null
+
+        };
+
+    }
 
 
     document
@@ -2851,6 +3237,23 @@ async function editCasting(id) {
         casting.casting_text || '';
 
 
+    /*
+     * Сообщение кастинг-директора
+     */
+
+    const directorMessageField =
+        document.getElementById(
+            'castingDirectorMessage'
+        );
+
+    if (directorMessageField) {
+
+        directorMessageField.value =
+            casting.casting_director_message || '';
+
+    }
+
+
     document
         .getElementById('castingStatus')
         .value =
@@ -2861,6 +3264,44 @@ async function editCasting(id) {
         .getElementById('castingNotes')
         .value =
         casting.notes || '';
+
+
+    /*
+     * Показываем сохранённый AI-анализ,
+     * если он существует.
+     */
+
+    const resultBox =
+        document.getElementById(
+            'castingAIResult'
+        );
+
+    const resultContent =
+        document.getElementById(
+            'castingAIContent'
+        );
+
+    if (
+        resultBox &&
+        resultContent &&
+        casting.ai_analysis
+    ) {
+
+        resultContent.innerHTML =
+            formatAIText(
+                casting.ai_analysis
+            );
+
+        resultBox.style.display =
+            'block';
+
+    }
+    else if (resultBox) {
+
+        resultBox.style.display =
+            'none';
+
+    }
 
 
     document
@@ -2890,86 +3331,80 @@ async function saveCasting() {
 
     const projectName =
         document
-            .getElementById(
-                'projectName'
-            )
+            .getElementById('projectName')
             .value
             .trim();
 
 
     const castingUrl =
         document
-            .getElementById(
-                'castingUrl'
-            )
+            .getElementById('castingUrl')
             .value
             .trim();
 
 
     const roleName =
         document
-            .getElementById(
-                'roleName'
-            )
+            .getElementById('roleName')
             .value
             .trim();
 
 
     const deadline =
         document
-            .getElementById(
-                'deadline'
-            )
+            .getElementById('deadline')
             .value ||
         null;
 
 
     const appliedAt =
         document
-            .getElementById(
-                'appliedAt'
-            )
+            .getElementById('appliedAt')
             .value ||
         null;
 
 
     const castingText =
         document
-            .getElementById(
-                'castingText'
-            )
+            .getElementById('castingText')
             .value
             .trim();
 
 
+    const directorMessageField =
+        document.getElementById(
+            'castingDirectorMessage'
+        );
+
+
+    const directorMessage =
+        directorMessageField
+            ? directorMessageField.value.trim()
+            : '';
+
+
     const castingStatus =
         document
-            .getElementById(
-                'castingStatus'
-            )
+            .getElementById('castingStatus')
             .value;
 
 
     const castingNotes =
         document
-            .getElementById(
-                'castingNotes'
-            )
+            .getElementById('castingNotes')
             .value
             .trim();
 
 
     const editingId =
         document
-            .getElementById(
-                'editingCastingId'
-            )
+            .getElementById('editingCastingId')
             .value;
 
 
-    /* =========================
+    /* =================================================
        VALIDATION
-    ========================= */
+    ================================================= */
 
     if (!projectName) {
 
@@ -2977,28 +3412,25 @@ async function saveCasting() {
             'Введите название проекта.'
         );
 
-
         return;
 
     }
 
 
-    /* =========================
+    /* =================================================
        ACTOR
-    ========================= */
+    ================================================= */
 
     if (!actorId) {
 
         const id =
             await findActor();
 
-
         if (!id) {
 
             alert(
                 'Профиль Марины не найден.'
             );
-
 
             return;
 
@@ -3007,9 +3439,49 @@ async function saveCasting() {
     }
 
 
-    /* =========================
+    /*
+     * Берём текущий AI-анализ.
+     *
+     * Если пользователь открыл старый кастинг,
+     * а новый анализ не запускал, старый анализ
+     * уже находится в window.currentCastingAI.
+     */
+
+    const ai =
+        window.currentCastingAI || null;
+
+
+    const aiData = {
+
+        ai_analysis:
+            ai?.analysis || null,
+
+        ai_character:
+            ai?.character || null,
+
+        ai_fit:
+            ai?.fit || null,
+
+        ai_recommended_materials:
+            ai?.recommendedMaterials || null,
+
+        ai_email:
+            ai?.email || null,
+
+        ai_analyzed_at:
+            ai
+                ? (
+                    ai.analyzedAt ||
+                    new Date().toISOString()
+                )
+                : null
+
+    };
+
+
+    /* =================================================
        UPDATE
-    ========================= */
+    ================================================= */
 
     if (editingId) {
 
@@ -3022,12 +3494,10 @@ async function saveCasting() {
                         projectName,
 
                     casting_url:
-                        castingUrl ||
-                        null,
+                        castingUrl || null,
 
                     role_name:
-                        roleName ||
-                        null,
+                        roleName || null,
 
                     deadline:
                         deadline,
@@ -3036,29 +3506,45 @@ async function saveCasting() {
                         appliedAt,
 
                     casting_text:
-                        castingText ||
-                        null,
+                        castingText || null,
+
+                    casting_director_message:
+                        directorMessage || null,
 
                     status:
                         castingStatus,
 
                     notes:
-                        castingNotes ||
-                        null,
+                        castingNotes || null,
+
+                    /*
+                     * Сохраняем AI-результаты
+                     */
+
+                    ai_analysis:
+                        aiData.ai_analysis,
+
+                    ai_character:
+                        aiData.ai_character,
+
+                    ai_fit:
+                        aiData.ai_fit,
+
+                    ai_recommended_materials:
+                        aiData.ai_recommended_materials,
+
+                    ai_email:
+                        aiData.ai_email,
+
+                    ai_analyzed_at:
+                        aiData.ai_analyzed_at,
 
                     updated_at:
-                        new Date()
-                            .toISOString()
+                        new Date().toISOString()
 
                 })
-                .eq(
-                    'id',
-                    editingId
-                )
-                .eq(
-                    'actor_id',
-                    actorId
-                );
+                .eq('id', editingId)
+                .eq('actor_id', actorId);
 
 
         if (result.error) {
@@ -3068,12 +3554,10 @@ async function saveCasting() {
                 result.error
             );
 
-
             alert(
                 'Ошибка изменения:\n\n' +
                 result.error.message
             );
-
 
             return;
 
@@ -3086,15 +3570,14 @@ async function saveCasting() {
 
         await loadCastings();
 
-
         return;
 
     }
 
 
-    /* =========================
+    /* =================================================
        INSERT
-    ========================= */
+    ================================================= */
 
     const result =
         await supabaseClient
@@ -3108,12 +3591,10 @@ async function saveCasting() {
                     projectName,
 
                 casting_url:
-                    castingUrl ||
-                    null,
+                    castingUrl || null,
 
                 role_name:
-                    roleName ||
-                    null,
+                    roleName || null,
 
                 deadline:
                     deadline,
@@ -3122,39 +3603,39 @@ async function saveCasting() {
                     appliedAt,
 
                 casting_text:
-                    castingText ||
-                    null,
+                    castingText || null,
+
+                casting_director_message:
+                    directorMessage || null,
 
                 status:
                     castingStatus,
 
                 notes:
-                    castingNotes ||
-                    null
-ai_analysis:
-    window.currentCastingAI
-        ?.analysis || null,
+                    castingNotes || null,
 
-ai_character:
-    window.currentCastingAI
-        ?.character || null,
+                /*
+                 * AI ANALYSIS
+                 */
 
-ai_fit:
-    window.currentCastingAI
-        ?.fit || null,
+                ai_analysis:
+                    aiData.ai_analysis,
 
-ai_recommended_materials:
-    window.currentCastingAI
-        ?.recommendedMaterials || null,
+                ai_character:
+                    aiData.ai_character,
 
-ai_email:
-    window.currentCastingAI
-        ?.email || null,
+                ai_fit:
+                    aiData.ai_fit,
 
-ai_analyzed_at:
-    window.currentCastingAI
-        ? new Date().toISOString()
-        : null
+                ai_recommended_materials:
+                    aiData.ai_recommended_materials,
+
+                ai_email:
+                    aiData.ai_email,
+
+                ai_analyzed_at:
+                    aiData.ai_analyzed_at
+
             });
 
 
@@ -3165,12 +3646,10 @@ ai_analyzed_at:
             result.error
         );
 
-
         alert(
             'Ошибка сохранения:\n\n' +
             result.error.message
         );
-
 
         return;
 
@@ -3186,8 +3665,6 @@ ai_analyzed_at:
 }
 
 
-
-      
 /* =====================================================
    DELETE CASTING
 ===================================================== */
@@ -3213,13 +3690,11 @@ async function deleteCasting(id) {
         const actor =
             await findActor();
 
-
         if (!actor) {
 
             alert(
                 'Профиль Марины не найден.'
             );
-
 
             return;
 
@@ -3232,14 +3707,8 @@ async function deleteCasting(id) {
         await supabaseClient
             .from('castings')
             .delete()
-            .eq(
-                'id',
-                id
-            )
-            .eq(
-                'actor_id',
-                actorId
-            );
+            .eq('id', id)
+            .eq('actor_id', actorId);
 
 
     if (result.error) {
@@ -3249,12 +3718,10 @@ async function deleteCasting(id) {
             result.error
         );
 
-
         alert(
             'Ошибка удаления:\n\n' +
             result.error.message
         );
-
 
         return;
 
@@ -3274,95 +3741,102 @@ function updateCounters(castings) {
 
     const active =
         castings.filter(
-            casting => {
-
-                return ![
+            casting =>
+                ![
                     'rejected',
                     'cancelled',
                     'approved'
                 ].includes(
                     casting.status
-                );
-
-            }
+                )
         ).length;
 
 
     const auditions =
         castings.filter(
-            casting => {
-
-                return [
+            casting =>
+                [
                     'audition',
                     'self-tape',
                     'callback'
                 ].includes(
                     casting.status
-                );
-
-            }
+                )
         ).length;
 
 
     const waiting =
         castings.filter(
-            casting => {
-
-                return (
-                    casting.status ===
-                    'no_response'
-                );
-
-            }
+            casting =>
+                casting.status ===
+                'no_response'
         ).length;
 
 
     const actions =
         castings.filter(
-            casting => {
-
-                return [
+            casting =>
+                [
                     'audition',
                     'self-tape',
                     'callback'
                 ].includes(
                     casting.status
-                );
-
-            }
+                )
         ).length;
 
 
-    document
-        .getElementById(
+    const activeCount =
+        document.getElementById(
             'activeCount'
-        )
-        .textContent =
-        active;
+        );
 
-
-    document
-        .getElementById(
+    const auditionCount =
+        document.getElementById(
             'auditionCount'
-        )
-        .textContent =
-        auditions;
+        );
 
-
-    document
-        .getElementById(
+    const waitingCount =
+        document.getElementById(
             'waitingCount'
-        )
-        .textContent =
-        waiting;
+        );
 
-
-    document
-        .getElementById(
+    const actionCount =
+        document.getElementById(
             'actionCount'
-        )
-        .textContent =
-        actions;
+        );
+
+
+    if (activeCount) {
+
+        activeCount.textContent =
+            active;
+
+    }
+
+
+    if (auditionCount) {
+
+        auditionCount.textContent =
+            auditions;
+
+    }
+
+
+    if (waitingCount) {
+
+        waitingCount.textContent =
+            waiting;
+
+    }
+
+
+    if (actionCount) {
+
+        actionCount.textContent =
+            actions;
+
+    }
 
 }
 
@@ -3377,6 +3851,13 @@ function sendMessage() {
         document.getElementById(
             'chatInput'
         );
+
+
+    if (!input) {
+
+        return;
+
+    }
 
 
     const text =
@@ -3394,6 +3875,13 @@ function sendMessage() {
         document.getElementById(
             'chat'
         );
+
+
+    if (!chat) {
+
+        return;
+
+    }
 
 
     chat.innerHTML += `
@@ -3418,11 +3906,9 @@ function sendMessage() {
             </b>
 
             <p>
-
                 Память подключена.
                 Настоящий AI-анализ
-                подключим следующим этапом.
-
+                будет работать через Supabase Edge Function.
             </p>
 
         </div>
@@ -3433,8 +3919,6 @@ function sendMessage() {
     input.value = '';
 
 }
-
-
 /* =====================================================
    HTML ESCAPE
 ===================================================== */
@@ -4511,7 +4995,11 @@ async function deleteMaterial(id) {
 
 }
 
-      async function analyzeAllMaterials() {
+     /* =====================================================
+   ANALYZE ALL MATERIALS
+===================================================== */
+
+async function analyzeAllMaterials(forceNew = false) {
 
     const button =
         document.getElementById(
@@ -4523,7 +5011,7 @@ async function deleteMaterial(id) {
             'allMaterialsLoading'
         );
 
-    const result =
+    const resultBox =
         document.getElementById(
             'allMaterialsResult'
         );
@@ -4534,20 +5022,30 @@ async function deleteMaterial(id) {
         );
 
 
-    errorBox.style.display =
-        'none';
+    if (errorBox) {
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
+    }
 
-    result.style.display =
-        'none';
+    if (resultBox) {
+        resultBox.style.display = 'none';
+        resultBox.innerHTML = '';
+    }
 
-    loading.style.display =
-        'block';
+    if (loading) {
+        loading.style.display = 'block';
+    }
 
-    button.disabled =
-        true;
+    if (button) {
+        button.disabled = true;
+    }
 
 
     try {
+
+        /* =========================
+           ACTOR
+        ========================= */
 
         if (!actorId) {
 
@@ -4555,20 +5053,103 @@ async function deleteMaterial(id) {
                 await findActor();
 
             if (!id) {
+
                 throw new Error(
                     'Профиль Марины не найден.'
                 );
+
             }
 
         }
 
 
+        /* =========================
+           ЕСЛИ НЕ НУЖЕН НОВЫЙ АНАЛИЗ —
+           ПОКАЗЫВАЕМ СОХРАНЁННЫЙ
+        ========================= */
+
+        if (!forceNew) {
+
+            const saved =
+                await supabaseClient
+                    .from('actors')
+                    .select(
+                        'portfolio_analysis,portfolio_analysis_at'
+                    )
+                    .eq(
+                        'id',
+                        actorId
+                    )
+                    .single();
+
+
+            if (saved.error) {
+                throw saved.error;
+            }
+
+
+            if (
+                saved.data &&
+                saved.data.portfolio_analysis
+            ) {
+
+                if (resultBox) {
+
+                    resultBox.innerHTML = `
+                        <div class="notice">
+
+                            <strong>
+                                🧠 Сохранённый анализ портфолио
+                            </strong>
+
+                            ${
+                                saved.data.portfolio_analysis_at
+                                ? `
+                                    <p style="opacity:.7">
+                                        Последний анализ:
+                                        ${escapeHtml(
+                                            new Date(
+                                                saved.data.portfolio_analysis_at
+                                            ).toLocaleString(
+                                                'ru-RU'
+                                            )
+                                        )}
+                                    </p>
+                                  `
+                                : ''
+                            }
+
+                        </div>
+
+                        <div style="margin-top:20px;">
+                            ${formatAIText(
+                                saved.data.portfolio_analysis
+                            )}
+                        </div>
+                    `;
+
+                    resultBox.style.display =
+                        'block';
+
+                }
+
+                return;
+
+            }
+
+        }
+
+
+        /* =========================
+           ПОЛУЧАЕМ МАТЕРИАЛЫ
+        ========================= */
+
         const response =
             await supabaseClient
                 .from('materials')
                 .select(
-    'id,title,image_url,analysis,created_at'
-)
+                    'id,title,image_url,analysis,created_at'
+                )
                 .eq(
                     'actor_id',
                     actorId
@@ -4599,6 +5180,10 @@ async function deleteMaterial(id) {
         }
 
 
+        /* =========================
+           AI
+        ========================= */
+
         const ai =
             await supabaseClient
                 .functions
@@ -4606,6 +5191,7 @@ async function deleteMaterial(id) {
                     'analyze-materials',
                     {
                         body: {
+                            actorId,
                             materials
                         }
                     }
@@ -4613,13 +5199,15 @@ async function deleteMaterial(id) {
 
 
         if (ai.error) {
-
             throw ai.error;
-
         }
 
 
-        if (!ai.data?.analysis) {
+        const analysis =
+            ai.data?.analysis;
+
+
+        if (!analysis) {
 
             throw new Error(
                 ai.data?.error ||
@@ -4629,53 +5217,120 @@ async function deleteMaterial(id) {
         }
 
 
-        result.textContent =
-            ai.data.analysis;
+        /* =========================
+           СОХРАНЯЕМ АНАЛИЗ
+        ========================= */
 
-        result.style.display =
-            'block';
-
-
-    } catch (err) {
-
-        console.error(
-            'All materials analysis error:',
-            err
+        await savePortfolioAnalysis(
+            analysis
         );
 
 
-        errorBox.textContent =
-            err.message ||
-            'Не удалось выполнить анализ.';
+        /* =========================
+           ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
+        ========================= */
 
-        errorBox.style.display =
-            'block';
+        if (resultBox) {
 
-    } finally {
+            resultBox.innerHTML = `
+                <div class="notice">
 
-        loading.style.display =
-            'none';
+                    <strong>
+                        🧠 Новый анализ портфолио
+                    </strong>
 
-        button.disabled =
-            false;
+                    <p style="opacity:.7">
+                        Анализ сохранён.
+                    </p>
+
+                </div>
+
+                <div style="margin-top:20px;">
+                    ${formatAIText(
+                        analysis
+                    )}
+                </div>
+            `;
+
+            resultBox.style.display =
+                'block';
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            'All materials analysis error:',
+            error
+        );
+
+
+        if (errorBox) {
+
+            errorBox.textContent =
+                error?.message ||
+                'Не удалось выполнить анализ.';
+
+            errorBox.style.display =
+                'block';
+
+        }
+
+    }
+    finally {
+
+        if (loading) {
+
+            loading.style.display =
+                'none';
+
+        }
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+        }
 
     }
 
 }
 
 
-      async function savePortfolioAnalysis(analysis) {
+/* =====================================================
+   SAVE PORTFOLIO ANALYSIS
+===================================================== */
+
+async function savePortfolioAnalysis(
+    analysis
+) {
+
+    if (!analysis) {
+
+        throw new Error(
+            'Нет анализа для сохранения.'
+        );
+
+    }
+
 
     if (!actorId) {
 
-        const id = await findActor();
+        const id =
+            await findActor();
 
         if (!id) {
+
             throw new Error(
-                'Профиль Марины не найден'
+                'Профиль Марины не найден.'
             );
+
         }
+
     }
+
 
     const result =
         await supabaseClient
@@ -4694,6 +5349,7 @@ async function deleteMaterial(id) {
                 actorId
             );
 
+
     if (result.error) {
 
         console.error(
@@ -4709,140 +5365,7 @@ async function deleteMaterial(id) {
     }
 
 }
-
-      await savePortfolioAnalysis(analysis);
-
-      async function loadSavedPortfolioAnalysis() {
-
-    if (!actorId) {
-
-        const id = await findActor();
-
-        if (!id) {
-            return;
-        }
-
-    }
-
-    const result =
-        await supabaseClient
-            .from('actors')
-            .select(
-                'portfolio_analysis,portfolio_analysis_at'
-            )
-            .eq(
-                'id',
-                actorId
-            )
-            .single();
-
-    if (result.error) {
-
-        console.error(
-            'Load portfolio analysis error:',
-            result.error
-        );
-
-        alert(
-            'Не удалось загрузить анализ портфолио:\n\n' +
-            result.error.message
-        );
-
-        return;
-
-    }
-
-    const analysis =
-        result.data?.portfolio_analysis;
-
-    const date =
-        result.data?.portfolio_analysis_at;
-
-    const container =
-        document.getElementById(
-            'allMaterialsResult'
-        );
-
-    if (!analysis) {
-
-        container.style.display = 'block';
-
-        container.innerHTML = `
-            <div class="empty">
-
-                Анализа портфолио пока нет.
-
-                <br><br>
-
-                Нажми
-                <b>«Новый анализ»</b>,
-                чтобы создать его.
-
-            </div>
-        `;
-
-        return;
-
-    }
-
-    container.style.display = 'block';
-
-    container.innerHTML = `
-        <div class="notice">
-
-            <strong>
-                🧠 Сохранённый анализ портфолио
-            </strong>
-
-            ${
-                date
-                ? `
-                    <p style="opacity:.7">
-                        Последний анализ:
-                        ${escapeHtml(
-                            new Date(date)
-                                .toLocaleString('ru-RU')
-                        )}
-                    </p>
-                  `
-                : ''
-            }
-
-        </div>
-
-        <div style="margin-top:20px;">
-            ${formatAIText(analysis)}
-        </div>
-    `;
-
-}
-
-      function formatAIText(text) {
-
-    if (!text) {
-        return '';
-    }
-
-    return escapeHtml(text)
-        .replace(/\n\n+/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(
-            /^# (.+)$/gm,
-            '<h2>$1</h2>'
-        )
-        .replace(
-            /^## (.+)$/gm,
-            '<h3>$1</h3>'
-        )
-        .replace(
-            /\*\*(.*?)\*\*/g,
-            '<strong>$1</strong>'
-        )
-        .replace(
-            /^- (.+)$/gm,
-            '• $1'
-        );
-}
+                  
 /* =====================================================
    FILE → DATA URL
    ===================================================== */
