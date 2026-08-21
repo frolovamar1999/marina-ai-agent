@@ -3418,47 +3418,57 @@ async function analyzeMaterial() {
 
 
         /*
-         * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
-         */
-const file = selectedMaterialFile;
+ * 8. СОХРАНЯЕМ МАТЕРИАЛ В БД
+ */
 
-if (!file) {
-    throw new Error('Фотография не выбрана.');
+const insert =
+    await supabaseClient
+        .from('materials')
+        .insert({
+            actor_id:
+                actorId,
+
+            material_type:
+                'photo',
+
+            title:
+                selectedMaterialFile.name,
+
+            file_path:
+                fileName,
+
+            image_url:
+                publicUrl,
+
+            original_name:
+                selectedMaterialFile.name,
+
+            analysis:
+                data.analysis,
+
+            is_primary:
+                false
+        });
+
+
+if (insert.error) {
+
+    /*
+     * Если запись БД не создалась,
+     * удаляем уже загруженный файл из Storage.
+     */
+
+    await supabaseClient
+        .storage
+        .from('materials')
+        .remove([
+            fileName
+        ]);
+
+    throw insert.error;
 }
-        const insert =
-            await supabaseClient
-                .from('materials')
-.insert({
-    actor_id: actorId,
-    material_type: 'photo',
-    title: selectedMaterialFile.name,
-    file_path: filePath,
-    image_url: imageUrl,
-    original_name: selectedMaterialFile.name,
-    analysis: data.analysis,
-    is_primary: false
-})
 
-
-        if (insert.error) {
-
-            /*
-             * Если БД не сохранила запись,
-             * удаляем уже загруженный файл.
-             */
-
-            await supabaseClient
-                .storage
-                .from('materials')
-                .remove([
-                    selectedMaterialFile
-                ]);
-
-            throw insert.error;
-
-        }
-
-
+          
         /*
          * 9. ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
          */
@@ -3783,81 +3793,115 @@ if (!file) {
 
 }
 
-      function showMaterialAnalysis(id) {
+      /* =====================================================
+   SHOW MATERIAL ANALYSIS
+===================================================== */
 
-    const element =
+function showMaterialAnalysis(id) {
+
+    const box =
         document.getElementById(
             `material-analysis-${id}`
         );
 
-    if (!element) {
+    if (!box) {
         return;
     }
 
-
     if (
-        element.style.display ===
-        'none'
+        box.style.display === 'none' ||
+        !box.style.display
     ) {
 
-        element.style.display =
+        box.style.display =
             'block';
 
     } else {
 
-        element.style.display =
+        box.style.display =
             'none';
 
     }
 
 }
 
-      async function deleteMaterial(id) {
+
+/* =====================================================
+   DELETE MATERIAL
+===================================================== */
+
+async function deleteMaterial(id) {
 
     const confirmed =
         confirm(
-            'Удалить этот материал?\n\nФотография и её анализ будут удалены.'
+            'Удалить этот материал?\n\n' +
+            'Фотография и её AI-анализ будут удалены.'
         );
-
 
     if (!confirmed) {
         return;
     }
 
 
-    try {
+    if (!actorId) {
 
-        const result =
-            await supabaseClient
-                .from('materials')
-                .select(
-                    'id,file_path'
-                )
-                .eq(
-                    'id',
-                    id
-                )
-                .eq(
-                    'actor_id',
-                    actorId
-                )
-                .single();
+        const found =
+            await findActor();
 
-
-        if (result.error) {
-            throw result.error;
+        if (!found) {
+            return;
         }
 
-
-        const material =
-            result.data;
+    }
 
 
-        /*
-         * Удаляем файл
-         */
+    /*
+     * Сначала получаем запись,
+     * чтобы узнать путь файла в Storage.
+     */
 
-        const storage =
+    const result =
+        await supabaseClient
+            .from('materials')
+            .select('id,file_path')
+            .eq(
+                'id',
+                id
+            )
+            .eq(
+                'actor_id',
+                actorId
+            )
+            .single();
+
+
+    if (result.error) {
+
+        console.error(
+            'Load material for deletion error:',
+            result.error
+        );
+
+        alert(
+            'Не удалось найти материал:\n\n' +
+            result.error.message
+        );
+
+        return;
+    }
+
+
+    const material =
+        result.data;
+
+
+    /*
+     * Удаляем файл из Storage.
+     */
+
+    if (material.file_path) {
+
+        const storageResult =
             await supabaseClient
                 .storage
                 .from('materials')
@@ -3866,54 +3910,60 @@ if (!file) {
                 ]);
 
 
-        if (storage.error) {
-            throw storage.error;
+        if (storageResult.error) {
+
+            console.error(
+                'Storage delete error:',
+                storageResult.error
+            );
+
+            alert(
+                'Не удалось удалить фотографию из Storage:\n\n' +
+                storageResult.error.message
+            );
+
+            return;
         }
-
-
-        /*
-         * Удаляем запись
-         */
-
-        const deleted =
-            await supabaseClient
-                .from('materials')
-                .delete()
-                .eq(
-                    'id',
-                    id
-                )
-                .eq(
-                    'actor_id',
-                    actorId
-                );
-
-
-        if (deleted.error) {
-            throw deleted.error;
-        }
-
-
-        await loadSavedMaterials();
-
-
-    } catch (error) {
-
-        console.error(
-            'Delete material error:',
-            error
-        );
-
-
-        showMaterialError(
-            'Не удалось удалить материал: ' +
-            (
-                error.message ||
-                error
-            )
-        );
 
     }
+
+
+    /*
+     * Удаляем запись из materials.
+     */
+
+    const deleteResult =
+        await supabaseClient
+            .from('materials')
+            .delete()
+            .eq(
+                'id',
+                id
+            )
+            .eq(
+                'actor_id',
+                actorId
+            );
+
+
+    if (deleteResult.error) {
+
+        console.error(
+            'Material database delete error:',
+            deleteResult.error
+        );
+
+        alert(
+            'Фотография удалена из Storage, ' +
+            'но не удалось удалить запись из базы:\n\n' +
+            deleteResult.error.message
+        );
+
+        return;
+    }
+
+
+    await loadSavedMaterials();
 
 }
 
