@@ -3416,36 +3416,6 @@ async function analyzeMaterial() {
 
         }
 
-/* =====================================================
-   СОЗДАЁМ НОМЕР ФОТО
-===================================================== */
-
-const countResult =
-    await supabaseClient
-        .from('materials')
-        .select(
-            'id',
-            {
-                count: 'exact',
-                head: true
-            }
-        )
-        .eq(
-            'actor_id',
-            actorId
-        );
-
-if (countResult.error) {
-
-    throw countResult.error;
-
-}
-
-const photoNumber =
-    (countResult.count || 0) + 1;
-
-const materialTitle =
-    `Фото ${photoNumber}`;
 
 /* =====================================================
    СОЗДАЁМ СЛЕДУЮЩИЙ НОМЕР ФОТО
@@ -3536,20 +3506,6 @@ const insert =
                 false
         });
 
-if (insert.error) {
-
-    await supabaseClient
-        .storage
-        .from('materials')
-        .remove([
-            fileName
-        ]);
-
-    throw insert.error;
-}
-
-
-if (insert.error) {
 
     /*
      * Если запись БД не создалась,
