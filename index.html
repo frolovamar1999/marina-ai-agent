@@ -2,1887 +2,1292 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Marina AI Agent</title>
-
-    <link
-        rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>"
-    >
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f3ef;
-            color: #252321;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* =========================
-           SIDEBAR
-        ========================= */
-
-        .sidebar {
-            width: 240px;
-            background: #252321;
-            color: white;
-            padding: 25px 15px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 21px;
-            font-weight: bold;
-            padding: 0 12px 30px;
-        }
-
-        .logo span {
-            display: block;
-            font-size: 12px;
-            color: #aaa;
-            font-weight: normal;
-            margin-top: 4px;
-        }
-
-        .nav button {
-            display: block;
-            width: 100%;
-            border: 0;
-            background: transparent;
-            color: #ccc;
-            text-align: left;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            cursor: pointer;
-        }
-
-        .nav button:hover,
-        .nav button.active {
-            background: #3b3936;
-            color: white;
-        }
-
-        /* =========================
-           CONTENT
-        ========================= */
-
-        .content {
-            margin-left: 240px;
-            padding: 30px;
-            width: calc(100% - 240px);
-            max-width: 1400px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 30px;
-        }
-
-        .header p {
-            color: #777;
-            margin-top: 5px;
-        }
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .btn {
-            border: 0;
-            background: #252321;
-            color: white;
-            padding: 11px 17px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity .2s, transform .1s;
-        }
-
-        .btn:hover {
-            opacity: .9;
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-        }
-
-        .btn.light {
-            background: #ebe8e2;
-            color: #222;
-        }
-
-        .btn.danger {
-            background: #8b3a32;
-        }
-
-        .btn.small {
-            padding: 8px 12px;
-            font-size: 13px;
-        }
-
-        .btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        /* =========================
-           CARDS
-        ========================= */
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #e5e1db;
-            border-radius: 14px;
-            padding: 20px;
-        }
-
-        .metric strong {
-            display: block;
-            font-size: 30px;
-            margin-bottom: 5px;
-        }
-
-        .metric span {
-            color: #777;
-        }
-
-        .two {
-            display: grid;
-            grid-template-columns: 1.4fr .6fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        /* =========================
-           SECTIONS
-        ========================= */
-
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .section-title h2 {
-            font-size: 18px;
-            margin: 0;
-        }
-
-        .section-title p {
-            color: #777;
-            margin: 6px 0 0;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           CASTINGS
-        ========================= */
-
-        .casting {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 18px 0;
-            border-top: 1px solid #eee;
-            gap: 20px;
-        }
-
-        .casting:first-child {
-            border-top: 0;
-        }
-
-        .casting h3 {
-            margin: 0 0 7px;
-            font-size: 17px;
-        }
-
-        .casting p {
-            margin: 5px 0;
-            color: #777;
-            line-height: 1.5;
-        }
-
-        .casting-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            flex-shrink: 0;
-        }
-
-        .casting-filters {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        /* =========================
-           BADGES
-        ========================= */
-
-        .badge {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            background: #eee;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-
-        .badge.green {
-            background: #e5f2e8;
-            color: #285c35;
-        }
-
-        .badge.yellow {
-            background: #f8eed3;
-            color: #705916;
-        }
-
-        .badge.red {
-            background: #f7e1de;
-            color: #7a3027;
-        }
-
-        /* =========================
-           PROFILE
-        ========================= */
-
-        .profile {
-            display: flex;
-            gap: 20px;
-        }
-
-        .profile img {
-            width: 120px;
-            height: 155px;
-            object-fit: cover;
-            border-radius: 10px;
-            background: #eee;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info h2 {
-            margin-top: 0;
-        }
-
-        .info {
-            display: grid;
-            grid-template-columns: 160px 1fr;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .info div:nth-child(odd) {
-            color: #777;
-        }
-
-        .tags {
-            margin-top: 15px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 7px 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin: 3px;
-            font-size: 13px;
-        }
-
-        /* =========================
-           NOTICE / STATUS
-        ========================= */
-
-        .notice {
-            background: #f1efeb;
-            border-radius: 9px;
-            padding: 12px;
-            margin: 10px 0;
-        }
-
-        .notice p {
-            line-height: 1.5;
-        }
-
-        .status {
-            margin-bottom: 15px;
-            padding: 11px;
-            border-radius: 9px;
-            background: #eee;
-            color: #555;
-        }
-
-        .status.success {
-            background: #e5f2e8;
-            color: #285c35;
-        }
-
-        .status.error {
-            background: #f7e1de;
-            color: #7a3027;
-        }
-
-        /* =========================
-           MODAL
-        ========================= */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        .modal.open {
-            display: flex;
-        }
-
-        .modal-box {
-            background: white;
-            width: 100%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.25);
-        }
-
-        .modal-box h2 {
-            margin-top: 0;
-        }
-
-        label {
-            display: block;
-            margin-top: 13px;
-            font-size: 14px;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 11px;
-            margin-top: 6px;
-            outline: none;
-            background: white;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #999;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            flex: 1;
-        }
-
-        /* =========================
-           EMPTY
-        ========================= */
-
-        .empty {
-            padding: 35px 10px;
-            text-align: center;
-            color: #777;
-        }
-
-        /* =========================
-           LINKS
-        ========================= */
-
-        .castings-link {
-            margin-top: 8px;
-        }
-
-        .castings-link a {
-            color: #333;
-        }
-
-        /* =========================
-           MATERIALS
-        ========================= */
-
-        .material-intro {
-            margin-bottom: 15px;
-        }
-
-        .material-intro h2,
-        .material-upload h2 {
-            margin-top: 0;
-            font-size: 20px;
-        }
-
-        .material-help {
-            color: #777;
-            line-height: 1.5;
-        }
-
-        .material-upload {
-            margin-bottom: 15px;
-        }
-
-        .material-upload input[type="file"] {
-            margin-bottom: 15px;
-        }
-
-        .material-preview {
-            margin: 15px 0;
-            display: none;
-        }
-
-        .material-preview img {
-            display: block;
-            max-width: 280px;
-            max-height: 380px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
-
-        .material-loading {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .material-spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #ddd;
-            border-top-color: #252321;
-            border-radius: 50%;
-            animation: materialSpin .8s linear infinite;
-            flex-shrink: 0;
-        }
-
-        @keyframes materialSpin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .material-result {
-            margin-top: 15px;
-        }
-
-        .material-analysis {
-            line-height: 1.65;
-            white-space: pre-wrap;
-            color: #333;
-        }
-
-        .material-analysis strong {
-            font-weight: 700;
-        }
-
-        /* =========================
-           INDIVIDUAL MATERIALS
-        ========================= */
-
-        .material-item {
-            border-top: 1px solid #eee;
-            padding: 18px 0;
-        }
-
-        .material-item:first-child {
-            border-top: 0;
-        }
-
-        .material-item-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .material-item-main {
-            display: flex;
-            gap: 15px;
-            min-width: 0;
-            flex: 1;
-        }
-
-        .material-thumb {
-            width: 95px;
-            height: 120px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: #eee;
-            border: 1px solid #ddd;
-            flex-shrink: 0;
-        }
-
-        .material-meta {
-            min-width: 0;
-        }
-
-        .material-meta h3 {
-            margin: 0 0 7px;
-            font-size: 17px;
-            word-break: break-word;
-        }
-
-        .material-meta p {
-            color: #777;
-            margin: 5px 0;
-        }
-
-        .material-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            flex-shrink: 0;
-        }
-
-        .material-analysis-panel {
-            display: none;
-            margin-top: 15px;
-            padding: 16px;
-            background: #f7f5f1;
-            border-radius: 10px;
-            border: 1px solid #e8e4dd;
-        }
-
-        .material-analysis-panel.open {
-            display: block;
-        }
-
-        .material-analysis-panel h4 {
-            margin: 0 0 10px;
-        }
-
-        .material-no-analysis {
-            color: #888;
-            font-style: italic;
-        }
-
-        /* =========================
-           CHAT
-        ========================= */
-
-        #chat {
-            min-height: 100px;
-            margin-bottom: 15px;
-        }
-
-        .chat-message {
-            background: #f1efeb;
-            border-radius: 10px;
-            padding: 12px;
-            margin: 8px 0;
-            line-height: 1.5;
-        }
-
-        .chat-message.user {
-            background: #252321;
-            color: white;
-        }
-
-        /* =========================
-           LOADING
-        ========================= */
-
-        .loading-text {
-            color: #777;
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 800px) {
-
-            .sidebar {
-                width: 70px;
-                padding: 20px 8px;
-            }
-
-            .logo {
-                font-size: 0;
-                text-align: center;
-                padding-left: 0;
-                padding-right: 0;
-            }
-
-            .logo::before {
-                content: "🎬";
-                font-size: 24px;
-            }
-
-            .logo span {
-                display: none;
-            }
-
-            .nav button {
-                font-size: 0;
-                text-align: center;
-                padding: 12px 5px;
-            }
-
-            .nav button::first-letter {
-                font-size: 20px;
-            }
-
-            .content {
-                margin-left: 70px;
-                width: calc(100% - 70px);
-                padding: 18px;
-            }
-
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .two {
-                grid-template-columns: 1fr;
-            }
-
-            .profile {
-                flex-direction: column;
-            }
-
-            .header {
-                align-items: flex-start;
-                gap: 15px;
-                flex-direction: column;
-            }
-
-            .casting {
-                flex-direction: column;
-            }
-
-            .casting-actions {
-                justify-content: flex-start;
-            }
-
-            .material-item-header {
-                flex-direction: column;
-            }
-
-            .material-actions {
-                justify-content: flex-start;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 550px) {
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .info {
-                grid-template-columns: 1fr;
-            }
-
-            .info div:nth-child(odd) {
-                margin-top: 7px;
-            }
-
-            .material-item-main {
-                flex-direction: column;
-            }
-
-            .material-thumb {
-                width: 100%;
-                max-width: 220px;
-                height: 260px;
-            }
-
-            .modal-box {
-                padding: 18px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marina AI Agent</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f3ef;
+    color: #252321;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 240px;
+    background: #252321;
+    color: white;
+    padding: 25px 15px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+    padding: 0 12px 30px;
+}
+
+.logo span {
+    display: block;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: normal;
+    margin-top: 4px;
+}
+
+.nav button {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #ccc;
+    text-align: left;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.nav button:hover,
+.nav button.active {
+    background: #3b3936;
+    color: white;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content {
+    margin-left: 240px;
+    padding: 30px;
+    width: calc(100% - 240px);
+    max-width: 1400px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.header p {
+    color: #777;
+    margin-top: 5px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn {
+    border: 0;
+    background: #252321;
+    color: white;
+    padding: 11px 17px;
+    border-radius: 8px;
+}
+
+.btn:hover {
+    opacity: .9;
+}
+
+.btn.light {
+    background: #ebe8e2;
+    color: #222;
+}
+
+.btn.danger {
+    background: #8b3a32;
+}
+
+.btn.small {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #e5e1db;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.metric strong {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.metric span {
+    color: #777;
+}
+
+.two {
+    display: grid;
+    grid-template-columns: 1.4fr .6fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.casting {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-top: 1px solid #eee;
+    gap: 20px;
+}
+
+.casting:first-child {
+    border-top: 0;
+}
+
+.casting h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+}
+
+.casting p {
+    margin: 5px 0;
+    color: #777;
+}
+
+.casting-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #eee;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.badge.green {
+    background: #e5f2e8;
+}
+
+.badge.yellow {
+    background: #f8eed3;
+}
+
+.badge.red {
+    background: #f7e1de;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile {
+    display: flex;
+    gap: 20px;
+}
+
+.profile img {
+    width: 120px;
+    height: 155px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    margin-top: 0;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.info div:nth-child(odd) {
+    color: #777;
+}
+
+.tags {
+    margin-top: 15px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 7px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 3px;
+    font-size: 13px;
+}
+
+/* =========================
+   NOTICE / STATUS
+========================= */
+
+.notice {
+    background: #f1efeb;
+    border-radius: 9px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.status {
+    margin-bottom: 15px;
+    padding: 11px;
+    border-radius: 9px;
+    background: #eee;
+    color: #555;
+}
+
+.status.success {
+    background: #e5f2e8;
+    color: #285c35;
+}
+
+.status.error {
+    background: #f7e1de;
+    color: #7a3027;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 25px;
+}
+
+.modal-box h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 13px;
+    font-size: 14px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 11px;
+    margin-top: 6px;
+    outline: none;
+    background: white;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex: 1;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty {
+    padding: 35px 10px;
+    text-align: center;
+    color: #777;
+}
+
+/* =========================
+   MATERIALS
+========================= */
+
+.material-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.material-card {
+    background: white;
+    border: 1px solid #e5e1db;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.material-image {
+    width: 100%;
+    height: 330px;
+    object-fit: cover;
+    display: block;
+    background: #eee;
+}
+
+.material-body {
+    padding: 16px;
+}
+
+.material-body h3 {
+    margin: 0 0 8px;
+}
+
+.material-body p {
+    color: #777;
+    font-size: 14px;
+}
+
+.material-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.material-preview {
+    display: none;
+    margin-top: 15px;
+}
+
+.material-preview img {
+    max-width: 280px;
+    max-height: 380px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.material-loading {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #f5f3ef;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.material-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #ddd;
+    border-top-color: #252321;
+    border-radius: 50%;
+    animation: materialSpin .8s linear infinite;
+}
+
+@keyframes materialSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   INDIVIDUAL ANALYSIS
+========================= */
+
+.analysis-box {
+    background: #f8f6f2;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    display: none;
+}
+
+.analysis-box.open {
+    display: block;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.analysis-header strong {
+    font-size: 16px;
+}
+
+/* =========================
+   PORTFOLIO ANALYSIS
+========================= */
+
+.portfolio-analysis {
+    background: white;
+    border: 1px solid #e5e1db;
+    border-radius: 14px;
+    padding: 25px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.portfolio-analysis h2 {
+    margin-top: 0;
+}
+
+.portfolio-loading {
+    display: none;
+    padding: 20px;
+    background: #f1efeb;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.portfolio-result {
+    margin-top: 20px;
+    display: none;
+}
+
+.portfolio-result.open {
+    display: block;
+}
+
+/* =========================
+   UPLOAD
+========================= */
+
+.upload-zone {
+    border: 2px dashed #d5d0c8;
+    border-radius: 14px;
+    padding: 30px;
+    text-align: center;
+    background: white;
+    margin-bottom: 20px;
+}
+
+.upload-zone input {
+    max-width: 500px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .material-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .sidebar {
+        width: 70px;
+    }
+
+    .logo {
+        font-size: 0;
+    }
+
+    .logo span {
+        display: none;
+    }
+
+    .nav button {
+        font-size: 0;
+        text-align: center;
+    }
+
+    .content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 18px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .two {
+        grid-template-columns: 1fr;
+    }
+
+    .profile {
+        flex-direction: column;
+    }
+
+    .header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .casting {
+        flex-direction: column;
+    }
+
+    .casting-actions {
+        justify-content: flex-start;
+    }
+
+    .material-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .content {
+        padding: 12px;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- =========================
-         SIDEBAR
-    ========================= -->
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="logo">
-            MARINA AI
+    <div class="logo">
+        MARINA AI
+        <span>личный агент</span>
+    </div>
 
-            <span>
-                личный агент
-            </span>
+    <div class="nav">
+
+        <button class="active" onclick="showPage('home', this)">
+            🏠 Главная
+        </button>
+
+        <button onclick="showPage('profile', this)">
+            👩 Профиль
+        </button>
+
+        <button onclick="showPage('castings', this)">
+            🎬 Кастинги
+        </button>
+
+        <button onclick="showPage('materials', this)">
+            📸 Материалы
+        </button>
+
+        <button onclick="showPage('career', this)">
+            📊 Карьера
+        </button>
+
+        <button onclick="showPage('agent', this)">
+            🧠 Агент
+        </button>
+
+    </div>
+
+</aside>
+
+<main class="content">
+
+<!-- =========================
+     HOME
+========================= -->
+
+<section id="home" class="page active">
+
+    <div class="header">
+
+        <div>
+            <h1>Добрый день, Марина</h1>
+            <p>Твой личный AI-агент</p>
         </div>
 
-        <div class="nav">
+        <button class="btn" onclick="openNewCastingModal()">
+            ＋ Новый кастинг
+        </button>
 
-            <button
-                class="active"
-                type="button"
-                onclick="showPage('home', this)"
-            >
-                🏠 Главная
-            </button>
+    </div>
 
-            <button
-                type="button"
-                onclick="showPage('profile', this)"
-            >
-                👩 Профиль
-            </button>
+    <div class="cards">
 
-            <button
-                type="button"
-                onclick="showPage('castings', this)"
-            >
-                🎬 Кастинги
-            </button>
-
-            <button
-                type="button"
-                onclick="showPage('materials', this)"
-            >
-                📸 Материалы
-            </button>
-
-            <button
-                type="button"
-                onclick="showPage('career', this)"
-            >
-                📊 Карьера
-            </button>
-
-            <button
-                type="button"
-                onclick="showPage('agent', this)"
-            >
-                🧠 Агент
-            </button>
-
+        <div class="card metric">
+            <strong id="activeCount">0</strong>
+            <span>активных кастингов</span>
         </div>
 
-    </aside>
+        <div class="card metric">
+            <strong id="auditionCount">0</strong>
+            <span>проб</span>
+        </div>
 
+        <div class="card metric">
+            <strong id="waitingCount">0</strong>
+            <span>без ответа</span>
+        </div>
 
-    <main class="content">
+        <div class="card metric">
+            <strong id="actionCount">0</strong>
+            <span>требуют действия</span>
+        </div>
 
-        <!-- =========================
-             HOME
-        ========================= -->
+    </div>
 
-        <section id="home" class="page active">
+    <div class="two">
 
-            <div class="header">
+        <div class="card">
 
-                <div>
-                    <h1>
-                        Добрый день, Марина
-                    </h1>
+            <div class="section-title">
+                <h2>🎯 Следующее действие</h2>
+                <span class="badge green">AI</span>
+            </div>
 
-                    <p>
-                        Твой личный AI-агент
-                    </p>
-                </div>
+            <div class="notice">
+
+                <b id="nextActionTitle">
+                    Добавь первый реальный кастинг
+                </b>
+
+                <p id="nextActionText">
+                    Агент сохранит его в память и сможет
+                    отслеживать статус кастинга.
+                </p>
 
                 <button
-                    type="button"
-                    class="btn"
+                    class="btn light"
                     onclick="openNewCastingModal()"
                 >
-                    ＋ Новый кастинг
+                    Добавить кастинг
                 </button>
 
             </div>
 
+        </div>
 
-            <div class="cards">
+        <div class="card">
 
-                <div class="card metric">
-                    <strong id="activeCount">0</strong>
-                    <span>активных кастингов</span>
-                </div>
+            <h2 style="font-size:18px">
+                🧠 Память
+            </h2>
 
-                <div class="card metric">
-                    <strong id="auditionCount">0</strong>
-                    <span>проб</span>
-                </div>
+            <p>
+                Твоя база постепенно собирает:
+            </p>
 
-                <div class="card metric">
-                    <strong id="waitingCount">0</strong>
-                    <span>без ответа</span>
-                </div>
+            <ul>
+                <li>кастинги</li>
+                <li>подачи</li>
+                <li>пробы</li>
+                <li>результаты</li>
+                <li>материалы</li>
+                <li>карьерную статистику</li>
+            </ul>
 
-                <div class="card metric">
-                    <strong id="actionCount">0</strong>
-                    <span>требуют действия</span>
-                </div>
+        </div>
 
-            </div>
+    </div>
 
+</section>
 
-            <div class="two">
+<!-- =========================
+     PROFILE
+========================= -->
 
-                <div class="card">
+<section id="profile" class="page">
 
-                    <div class="section-title">
+    <div class="header">
 
-                        <h2>
-                            🎯 Следующее действие
-                        </h2>
+        <div>
+            <h1>👩 Профиль</h1>
+            <p>Фролова Марина Сергеевна</p>
+        </div>
 
-                        <span class="badge green">
-                            AI
-                        </span>
+    </div>
 
-                    </div>
+    <div class="card profile">
 
-                    <div class="notice">
+        <img
+            src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
+            alt="Марина Фролова"
+        >
 
-                        <b>
-                            Добавь первый реальный кастинг
-                        </b>
+        <div class="profile-info">
 
-                        <p>
-                            Агент сохранит его в твою память,
-                            а позже сможет проанализировать
-                            соответствие роли твоему типажу.
-                        </p>
+            <h2>Фролова Марина Сергеевна</h2>
 
-                        <button
-                            type="button"
-                            class="btn light"
-                            onclick="openNewCastingModal()"
-                        >
-                            Добавить кастинг
-                        </button>
+            <p>
+                Актриса · Москва · самозанятая
+            </p>
 
-                    </div>
+            <div class="info">
 
-                </div>
+                <div>Возраст</div>
+                <div>27 лет</div>
 
+                <div>Рост</div>
+                <div>157 см</div>
 
-                <div class="card">
+                <div>Вес</div>
+                <div>45 кг</div>
 
-                    <h2 style="font-size:18px">
-                        🧠 Память
-                    </h2>
+                <div>Тип внешности</div>
+                <div>Европейский, славянский</div>
 
-                    <p>
-                        Твоя база будет постепенно собирать:
-                    </p>
+                <div>Волосы</div>
+                <div>Шатен</div>
 
-                    <ul>
-                        <li>кастинги</li>
-                        <li>подачи</li>
-                        <li>пробы</li>
-                        <li>результаты</li>
-                        <li>материалы</li>
-                        <li>карьерную статистику</li>
-                    </ul>
+                <div>Глаза</div>
+                <div>Серо-голубые</div>
 
+                <div>Образование</div>
+                <div>
+                    Институт театрального искусства им. И. Кобзона;
+                    Студия Иваны Чаббак;
+                    GOGOL SCHOOL;
+                    Актёрская мастерская О. Жирицкого
                 </div>
 
             </div>
 
-        </section>
+        </div>
 
+    </div>
 
-        <!-- =========================
-             PROFILE
-        ========================= -->
+    <div class="two">
 
-        <section id="profile" class="page">
+        <div class="card">
 
-            <div class="header">
+            <div class="section-title">
+                <h2>🎭 Типаж</h2>
+                <span class="badge yellow">AI</span>
+            </div>
+
+            <p>
+                Молодая драматическая героиня,
+                эмоциональная уязвимость,
+                внутренняя сила и романтическая природа.
+            </p>
+
+            <div class="tags">
+
+                <span class="tag">dramatic heroine</span>
+                <span class="tag">romantic</span>
+                <span class="tag">vulnerable</span>
+                <span class="tag">strong</span>
+                <span class="tag">psychological</span>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h2 style="font-size:18px">
+                🎬 Роли
+            </h2>
+
+            <div class="casting">
 
                 <div>
-
-                    <h1>
-                        👩 Профиль
-                    </h1>
-
-                    <p>
-                        Фролова Марина Сергеевна
-                    </p>
-
+                    <h3>Открытое сердце</h3>
+                    <p>Алевтина · главная роль</p>
                 </div>
+
+                <span class="badge green">2025</span>
 
             </div>
 
-
-            <div class="card profile">
-
-                <img
-                    src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
-                    alt="Марина Фролова"
-                >
-
-                <div class="profile-info">
-
-                    <h2>
-                        Фролова Марина Сергеевна
-                    </h2>
-
-                    <p>
-                        Актриса · Москва · самозанятая
-                    </p>
-
-
-                    <div class="info">
-
-                        <div>Возраст</div>
-                        <div>27 лет</div>
-
-                        <div>Рост</div>
-                        <div>157 см</div>
-
-                        <div>Вес</div>
-                        <div>45 кг</div>
-
-                        <div>Тип внешности</div>
-                        <div>Европейский, славянский</div>
-
-                        <div>Волосы</div>
-                        <div>Шатен</div>
-
-                        <div>Глаза</div>
-                        <div>Серо-голубые</div>
-
-                        <div>Образование</div>
-                        <div>
-                            Институт театрального искусства им. И. Кобзона;
-                            Студия Иваны Чаббак;
-                            GOGOL SCHOOL;
-                            Актёрская мастерская О. Жирицкого
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="two">
-
-                <div class="card">
-
-                    <div class="section-title">
-
-                        <h2>
-                            🎭 Типаж
-                        </h2>
-
-                        <span class="badge yellow">
-                            AI
-                        </span>
-
-                    </div>
-
-                    <p>
-                        Предварительная гипотеза:
-                        молодая драматическая героиня,
-                        сочетающая эмоциональную уязвимость,
-                        внутреннюю силу и романтическую природу.
-                    </p>
-
-                    <div class="tags">
-
-                        <span class="tag">dramatic heroine</span>
-                        <span class="tag">romantic</span>
-                        <span class="tag">vulnerable</span>
-                        <span class="tag">strong</span>
-                        <span class="tag">psychological</span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <h2 style="font-size:18px">
-                        🎬 Роли
-                    </h2>
-
-                    <div class="casting">
-
-                        <div>
-                            <h3>Открытое сердце</h3>
-                            <p>Алевтина · главная роль</p>
-                        </div>
-
-                        <span class="badge green">2025</span>
-
-                    </div>
-
-
-                    <div class="casting">
-
-                        <div>
-                            <h3>Невыполненное обещание</h3>
-                            <p>Нона · главная роль</p>
-                        </div>
-
-                        <span class="badge green">2026</span>
-
-                    </div>
-
-
-                    <div class="casting">
-
-                        <div>
-                            <h3>Врачебные истории</h3>
-                            <p>Русалка · эпизод</p>
-                        </div>
-
-                        <span class="badge">2026</span>
-
-                    </div>
-
-
-                    <div class="casting">
-
-                        <div>
-                            <h3>СашаТаня</h3>
-                            <p>Соседка</p>
-                        </div>
-
-                        <span class="badge">2025</span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             CASTINGS
-        ========================= -->
-
-        <section id="castings" class="page">
-
-            <div class="header">
+            <div class="casting">
 
                 <div>
-
-                    <h1>
-                        🎬 Кастинги
-                    </h1>
-
-                    <p>
-                        Твоя профессиональная память
-                    </p>
-
+                    <h3>Невыполненное обещание</h3>
+                    <p>Нона · главная роль</p>
                 </div>
 
-                <button
-                    type="button"
-                    class="btn"
-                    onclick="openNewCastingModal()"
-                >
-                    ＋ Добавить
-                </button>
+                <span class="badge green">2026</span>
 
             </div>
 
+            <div class="casting">
+
+                <div>
+                    <h3>Врачебные истории</h3>
+                    <p>Русалка · эпизод</p>
+                </div>
+
+                <span class="badge">2026</span>
+
+            </div>
+
+            <div class="casting">
+
+                <div>
+                    <h3>СашаТаня</h3>
+                    <p>Соседка</p>
+                </div>
+
+                <span class="badge">2025</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     CASTINGS
+========================= -->
+
+<section id="castings" class="page">
+
+    <div class="header">
+
+        <div>
+            <h1>🎬 Кастинги</h1>
+            <p>Все текущие и завершённые проекты</p>
+        </div>
+
+        <button class="btn" onclick="openNewCastingModal()">
+            ＋ Новый кастинг
+        </button>
+
+    </div>
+
+    <div id="castingStatus"></div>
+
+    <div class="card">
+
+        <div id="castingsList"></div>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     MATERIALS
+========================= -->
+
+<section id="materials" class="page">
+
+    <div class="header">
+
+        <div>
+            <h1>📸 Материалы</h1>
+            <p>
+                Анализ фотографий и стратегия портфолио
+            </p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+
+            <h2>
+                Добавить материалы
+            </h2>
+
+        </div>
+
+        <div class="upload-zone">
+
+            <p>
+                Выбери одну или несколько фотографий.
+            </p>
+
+            <input
+                id="materialFiles"
+                type="file"
+                accept="image/*"
+                multiple
+            >
 
             <div
-                id="dbStatus"
-                class="status"
-            >
-                Подключение к Supabase...
-            </div>
-
-
-            <div class="casting-filters">
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('all')"
-                >
-                    Все
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('new')"
-                >
-                    Новые
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('submitted')"
-                >
-                    Отправлены
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('audition')"
-                >
-                    Пробы
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('self-tape')"
-                >
-                    Пробы отправлены
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('callback')"
-                >
-                    Callback
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('approved')"
-                >
-                    Утверждены
-                </button>
-
-                <button
-                    type="button"
-                    class="btn light small"
-                    onclick="filterCastings('rejected')"
-                >
-                    Не утвердили
-                </button>
-
-            </div>
-
-
-            <div class="card">
-
-                <div id="castingList">
-
-                    <div class="empty">
-                        Загрузка...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             MATERIALS
-        ========================= -->
-
-        <section id="materials" class="page">
-
-            <div class="header">
-
-                <div>
-
-                    <h1>
-                        📸 Материалы
-                    </h1>
-
-                    <p>
-                        Профессиональный анализ актерских материалов
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="card material-intro">
-
-                <h2>
-                    Materials Director
-                </h2>
-
-                <p>
-                    Загрузи фотографию, и AI проанализирует,
-                    насколько она работает как кастинговый материал
-                    именно для твоего профессионального профиля.
-                </p>
-
-            </div>
-
-
-            <div class="card material-upload">
-
-                <h2>
-                    📷 Анализ фотографии
-                </h2>
-
-                <p class="material-help">
-                    Выбери фотографию с компьютера.
-                    Она будет отправлена на анализ.
-                </p>
-
-
-                <input
-                    type="file"
-                    id="materialFile"
-                    accept="image/jpeg,image/png,image/webp"
-                >
-
-
-                <div
-                    id="materialPreview"
-                    class="material-preview"
-                ></div>
-
-
-                <button
-                    type="button"
-                    class="btn"
-                    id="analyzeMaterialBtn"
-                    onclick="analyzeMaterial()"
-                    disabled
-                >
-                    🔍 Анализировать
-                </button>
-
-            </div>
-
+                id="materialPreview"
+                class="material-preview"
+            ></div>
 
             <div
                 id="materialLoading"
-                class="card"
-                style="display:none"
+                class="material-loading"
             >
 
-                <div class="material-loading">
+                <div class="material-spinner"></div>
 
-                    <div class="material-spinner"></div>
-
-                    <div>
-
-                        <strong>
-                            AI анализирует фотографию...
-                        </strong>
-
-                        <p>
-                            Оцениваем материал с точки зрения
-                            кастинговой пригодности.
-                        </p>
-
-                    </div>
-
-                </div>
+                <span id="materialLoadingText">
+                    Подготовка...
+                </span>
 
             </div>
 
+            <div style="margin-top:15px">
 
-            <div
-                id="materialError"
-                class="status error"
-                style="display:none"
-            ></div>
-
-
-            <div
-                id="materialResult"
-                class="card material-result"
-                style="display:none"
-            >
-
-                <div class="section-title">
-
-                    <h2>
-                        🧠 Результат анализа
-                    </h2>
-
-                    <span class="badge yellow">
-                        AI
-                    </span>
-
-                </div>
-
-                <div
-                    id="materialAnalysis"
-                    class="material-analysis"
-                ></div>
-
-            </div>
-
-
-            <!-- =========================
-                 PORTFOLIO ANALYSIS
-            ========================= -->
-
-            <div class="card" style="margin-top:15px">
-
-                <div class="section-title">
-
-                    <div>
-
-                        <h2>
-                            🧠 Анализ портфолио
-                        </h2>
-
-                        <p>
-                            Сохраненный анализ используется повторно.
-                            Новый анализ запускается только вручную.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    style="
-                        display:flex;
-                        gap:10px;
-                        flex-wrap:wrap;
-                        align-items:center;
-                    "
+                <button
+                    class="btn"
+                    onclick="uploadMaterials()"
                 >
-
-                    <button
-                        type="button"
-                        class="btn"
-                        onclick="loadSavedPortfolioAnalysis()"
-                        id="loadPortfolioAnalysisBtn"
-                    >
-                        🧠 Посмотреть анализ
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn light"
-                        onclick="analyzeAllMaterials(true)"
-                        id="newPortfolioAnalysisBtn"
-                    >
-                        🔄 Новый анализ
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="allMaterialsLoading"
-                    style="
-                        display:none;
-                        margin-top:15px;
-                    "
-                >
-                    Анализирую всю коллекцию материалов...
-                </div>
-
-
-                <div
-                    id="allMaterialsError"
-                    class="status error"
-                    style="
-                        display:none;
-                        margin-top:15px;
-                    "
-                ></div>
-
-
-                <div
-                    id="allMaterialsResult"
-                    class="material-analysis"
-                    style="
-                        display:none;
-                        margin-top:20px;
-                    "
-                ></div>
+                    Загрузить и анализировать
+                </button>
 
             </div>
 
+        </div>
 
-            <!-- =========================
-                 SAVED MATERIALS
-            ========================= -->
+    </div>
 
-            <div
-                id="savedMaterials"
-                class="card"
-                style="margin-top:15px"
-            >
+    <div class="card" style="margin-top:15px">
 
-                <h2>
-                    📁 Мои материалы
-                </h2>
+        <div class="section-title">
 
-                <div id="savedMaterialsList">
-                    Загрузка материалов...
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             CAREER
-        ========================= -->
-
-        <section id="career" class="page">
-
-            <div class="header">
-
-                <div>
-
-                    <h1>
-                        📊 Карьера
-                    </h1>
-
-                    <p>
-                        Weekly Agent и карьерная аналитика
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="cards">
-
-                <div class="card metric">
-                    <strong id="careerProjects">4</strong>
-                    <span>экранных проекта</span>
-                </div>
-
-                <div class="card metric">
-                    <strong id="careerMainRoles">2</strong>
-                    <span>главные роли</span>
-                </div>
-
-                <div class="card metric">
-                    <strong>2026</strong>
-                    <span>новые главные роли</span>
-                </div>
-
-                <div class="card metric">
-                    <strong>AI</strong>
-                    <span>анализ карьеры</span>
-                </div>
-
-            </div>
-
-
-            <div
-                class="card"
-                style="margin-top:15px"
-            >
-
-                <h2>
-                    Weekly Agent
-                </h2>
-
-                <p>
-                    Будущий агент будет раз в неделю анализировать:
+            <div>
+                <h2>Мои материалы</h2>
+                <p style="color:#777">
+                    У каждого фото есть отдельный анализ.
                 </p>
-
-                <ul>
-
-                    <li>какие кастинги появились;</li>
-                    <li>куда ты подавалась;</li>
-                    <li>где были пробы;</li>
-                    <li>какие заявки получили ответ;</li>
-                    <li>какие роли приводят к пробам;</li>
-                    <li>какие материалы работают;</li>
-                    <li>что делать на следующей неделе.</li>
-
-                </ul>
-
             </div>
 
-        </section>
+            <button
+                class="btn"
+                onclick="analyzePortfolio()"
+            >
+                🧠 Анализ портфолио
+            </button>
 
+        </div>
 
-        <!-- =========================
-             AGENT
-        ========================= -->
+        <div id="materialsList"></div>
 
-        <section id="agent" class="page">
+    </div>
 
-            <div class="header">
+    <div
+        id="portfolioResult"
+        class="portfolio-result"
+    >
 
-                <div>
+        <div class="portfolio-analysis">
 
-                    <h1>
-                        🧠 AI-агент
-                    </h1>
+            <div class="analysis-header">
 
-                    <p>
-                        Центр управления карьерой
-                    </p>
+                <strong>
+                    🧠 Агентский анализ портфолио
+                </strong>
 
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div id="chat">
-
-                    <div class="notice">
-
-                        <b>
-                            Агент:
-                        </b>
-
-                        <p>
-                            Я уже вижу твой профиль.
-                            Следующий этап — подключить
-                            реальный AI-анализ.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    style="
-                        display:flex;
-                        gap:10px;
-                    "
+                <button
+                    class="btn light small"
+                    onclick="closePortfolioAnalysis()"
                 >
-
-                    <input
-                        id="chatInput"
-                        placeholder="Например: стоит ли мне подаваться?"
-                    >
-
-                    <button
-                        type="button"
-                        class="btn"
-                        onclick="sendMessage()"
-                    >
-                        Отправить
-                    </button>
-
-                </div>
+                    Закрыть
+                </button>
 
             </div>
 
-        </section>
+            <div id="portfolioAnalysisText"></div>
 
-    </main>
+        </div>
 
+    </div>
+
+</section>
+
+<!-- =========================
+     CAREER
+========================= -->
+
+<section id="career" class="page">
+
+    <div class="header">
+
+        <div>
+            <h1>📊 Карьера</h1>
+            <p>Статистика и динамика работы</p>
+        </div>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="card metric">
+            <strong id="careerTotal">0</strong>
+            <span>всего кастингов</span>
+        </div>
+
+        <div class="card metric">
+            <strong id="careerAuditions">0</strong>
+            <span>проб</span>
+        </div>
+
+        <div class="card metric">
+            <strong id="careerBooked">0</strong>
+            <span>получено ролей</span>
+        </div>
+
+        <div class="card metric">
+            <strong id="careerWaiting">0</strong>
+            <span>ожидание</span>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- =========================
+     AGENT
+========================= -->
+
+<section id="agent" class="page">
+
+    <div class="header">
+
+        <div>
+            <h1>🧠 Агент</h1>
+            <p>Центр управления AI-агентом</p>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Статус системы</h2>
+
+        <div id="agentStatus" class="status">
+            Проверка подключения...
+        </div>
+
+        <p>
+            Агент использует отдельные функции для:
+        </p>
+
+        <ul>
+            <li>анализа фотографии;</li>
+            <li>анализа всего портфолио;</li>
+            <li>работы с кастингами;</li>
+            <li>построения карьерной стратегии.</li>
+        </ul>
+
+    </div>
+
+</section>
+
+</main>
 </div>
-
 
 <!-- =========================
      CASTING MODAL
 ========================= -->
 
 <div
-    id="modal"
+    id="castingModal"
     class="modal"
+    onclick="closeModalOnBackground(event)"
 >
 
     <div class="modal-box">
 
-        <input
-            type="hidden"
-            id="editingCastingId"
-        >
-
-
-        <h2 id="modalTitle">
+        <h2 id="castingModalTitle">
             Новый кастинг
         </h2>
 
+        <input
+            type="hidden"
+            id="castingEditId"
+        >
 
         <label>
             Название проекта
 
             <input
-                id="projectName"
+                id="castingTitle"
+                type="text"
                 placeholder="Например: Новый сериал"
             >
         </label>
-
-
-        <label>
-            Ссылка на кастинг
-
-            <input
-                id="castingUrl"
-                type="url"
-                placeholder="https://..."
-            >
-        </label>
-
 
         <label>
             Роль
 
             <input
-                id="roleName"
+                id="castingRole"
+                type="text"
                 placeholder="Например: главная роль"
             >
         </label>
 
-
-        <label>
-            Дедлайн
-
-            <input
-                id="deadline"
-                type="date"
-            >
-        </label>
-
-
-        <label>
-            Дата подачи
-
-            <input
-                id="appliedAt"
-                type="date"
-            >
-        </label>
-
-
-        <label>
-            Текст или описание кастинга
-
-            <textarea
-                id="castingText"
-                rows="7"
-                placeholder="Вставь сюда текст кастинга..."
-            ></textarea>
-        </label>
-
-
-        <div
-            style="
-                display:flex;
-                gap:10px;
-                margin-top:10px;
-                margin-bottom:15px;
-                flex-wrap:wrap;
-            "
-        >
-
-            <button
-                type="button"
-                class="btn light"
-                onclick="analyzeCurrentCasting()"
-                id="analyzeCastingBtn"
-            >
-                🧠 Проанализировать кастинг
-            </button>
-
-        </div>
-
-
-        <label>
-            Сообщение от кастинг-директора
-
-            <textarea
-                id="castingDirectorMessage"
-                rows="6"
-                placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
-            ></textarea>
-        </label>
-
-
-        <div
-            id="castingAIStatus"
-            class="status"
-            style="
-                display:none;
-                margin-top:10px;
-            "
-        ></div>
-
-
-        <div
-            id="castingAIResult"
-            class="card"
-            style="
-                display:none;
-                margin-top:15px;
-            "
-        >
-
-            <h3>
-                🧠 AI-анализ кастинга
-            </h3>
-
-            <div id="castingAIContent"></div>
-
-        </div>
-
-
         <label>
             Статус
 
-            <select id="castingStatus">
+            <select id="castingStatusSelect">
 
-                <option value="new">
-                    Новая подача
-                </option>
-
-                <option value="submitted">
-                    Отправлена
+                <option value="active">
+                    Активный
                 </option>
 
                 <option value="audition">
-                    Пригласили на пробы
+                    Пробы
                 </option>
 
-                <option value="self-tape">
-                    Пробы отправлены
+                <option value="waiting">
+                    Ожидание
                 </option>
 
-                <option value="callback">
-                    Callback
-                </option>
-
-                <option value="approved">
-                    Утверждена
+                <option value="booked">
+                    Получена роль
                 </option>
 
                 <option value="rejected">
-                    Не утвердили
-                </option>
-
-                <option value="no_response">
-                    Не ответили
-                </option>
-
-                <option value="cancelled">
-                    Отменён
+                    Отказ
                 </option>
 
             </select>
 
         </label>
 
+        <label>
+            Дата
+
+            <input
+                id="castingDate"
+                type="date"
+            >
+        </label>
 
         <label>
             Заметки
 
             <textarea
                 id="castingNotes"
-                rows="4"
-                placeholder="Что важно помнить об этом кастинге..."
+                placeholder="Дополнительная информация..."
             ></textarea>
-        </label>
 
+        </label>
 
         <div class="modal-buttons">
 
             <button
-                type="button"
                 class="btn light"
-                onclick="closeModal()"
+                onclick="closeCastingModal()"
             >
                 Отмена
             </button>
 
-
             <button
-                type="button"
-                id="saveCastingButton"
                 class="btn"
                 onclick="saveCasting()"
             >
@@ -1895,2520 +1300,1590 @@
 
 </div>
 
+<!-- =========================
+     ANALYSIS MODAL
+========================= -->
+
+<div
+    id="analysisModal"
+    class="modal"
+    onclick="closeAnalysisOnBackground(event)"
+>
+
+    <div class="modal-box">
+
+        <div class="analysis-header">
+
+            <h2 id="analysisModalTitle">
+                Анализ материала
+            </h2>
+
+            <button
+                class="btn light small"
+                onclick="closeAnalysisModal()"
+            >
+                Закрыть
+            </button>
+
+        </div>
+
+        <div
+            id="analysisModalText"
+            class="analysis-box"
+            style="display:block"
+        ></div>
+
+    </div>
+
+</div>
 
 <script>
-"use strict";
-
-/* =====================================================
-   SUPABASE
-===================================================== */
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
 
 const SUPABASE_URL =
-    "https://kavepxugysumhpcftzqy.supabase.co";
+    'https://kavepxugysumhpcftzqy.supabase.co';
 
 const SUPABASE_KEY =
-    "sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd";
+    'sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd';
 
+
+const ANALYZE_MATERIAL_FUNCTION = "analyze-material";
+const ANALYZE_PORTFOLIO_FUNCTION = "analyze-materials";
 
 let supabaseClient = null;
 
 if (
-    window.supabase &&
-    typeof window.supabase.createClient === "function"
+    SUPABASE_URL &&
+    SUPABASE_ANON_KEY &&
+    !SUPABASE_URL.includes("ТВОЙ_") &&
+    !SUPABASE_ANON_KEY.includes("ТВОЙ_")
 ) {
     supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY
+        SUPABASE_ANON_KEY
     );
 }
 
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
 
-/* =====================================================
-   GLOBAL STATE
-===================================================== */
+const STORAGE_KEYS = {
+    castings: "marina_ai_castings_v3",
+    materials: "marina_ai_materials_v3",
+    portfolioAnalysis: "marina_ai_portfolio_analysis_v3"
+};
 
-let actorId = null;
+let castings = [];
+let materials = [];
 
-let allCastings = [];
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
-let currentCastingFilter = "all";
+document.addEventListener("DOMContentLoaded", async () => {
 
-let currentCastingAI = null;
+    loadLocalData();
 
-let allMaterials = [];
+    renderCastings();
+    renderMaterials();
+    updateDashboard();
+    updateCareer();
 
-let selectedMaterialFile = null;
+    setupMaterialPreview();
 
+    checkAgentStatus();
+});
 
-/* =====================================================
-   BASIC HELPERS
-===================================================== */
-
-function escapeHtml(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-function formatAIText(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    if (typeof value === "object") {
-        return escapeHtml(
-            JSON.stringify(value, null, 2)
-        );
-    }
-
-    return escapeHtml(String(value))
-        .replace(/\n/g, "<br>");
-}
-
-
-function setStatus(message, type = "") {
-
-    const element =
-        document.getElementById("dbStatus");
-
-    if (!element) {
-        return;
-    }
-
-    element.className = "status";
-
-    if (type) {
-        element.classList.add(type);
-    }
-
-    element.textContent = message;
-}
-
-
-/* =====================================================
+/* =========================================================
    PAGE NAVIGATION
-===================================================== */
+========================================================= */
 
-function showPage(pageId, buttonElement) {
+function showPage(pageId, button) {
 
-    document
-        .querySelectorAll(".page")
-        .forEach(page => {
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
 
-            page.classList.remove("active");
-
-        });
-
-
-    const page =
-        document.getElementById(pageId);
+    const page = document.getElementById(pageId);
 
     if (page) {
         page.classList.add("active");
     }
 
+    document.querySelectorAll(".nav button").forEach(btn => {
+        btn.classList.remove("active");
+    });
 
-    document
-        .querySelectorAll(".nav button")
-        .forEach(button => {
-
-            button.classList.remove("active");
-
-        });
-
-
-    if (buttonElement) {
-        buttonElement.classList.add("active");
+    if (button) {
+        button.classList.add("active");
     }
-
-
-    if (pageId === "materials") {
-        loadMaterials();
-    }
-
 
     if (pageId === "castings") {
-        loadCastings();
+        renderCastings();
     }
 
+    if (pageId === "materials") {
+        renderMaterials();
+    }
+
+    updateDashboard();
+    updateCareer();
 }
 
+/* =========================================================
+   LOCAL DATA
+========================================================= */
 
-/* =====================================================
-   FIND ACTOR
-===================================================== */
+function loadLocalData() {
 
-async function findActor() {
+    try {
+        const savedCastings =
+            localStorage.getItem(STORAGE_KEYS.castings);
 
-    if (!supabaseClient) {
+        const savedMaterials =
+            localStorage.getItem(STORAGE_KEYS.materials);
 
-        setStatus(
-            "Supabase не подключен.",
-            "error"
-        );
+        castings = savedCastings
+            ? JSON.parse(savedCastings)
+            : [];
 
-        return null;
-    }
+        materials = savedMaterials
+            ? JSON.parse(savedMaterials)
+            : [];
 
-
-    const result =
-        await supabaseClient
-            .from("actors")
-            .select(
-                "id, full_name, portfolio_analysis"
-            )
-            .eq(
-                "full_name",
-                "Фролова Марина Сергеевна"
-            )
-            .limit(1)
-            .maybeSingle();
-
-
-    if (result.error) {
+    } catch (error) {
 
         console.error(
-            "Supabase actor error:",
-            result.error
+            "Ошибка загрузки локальных данных:",
+            error
         );
 
-        setStatus(
-            "Ошибка подключения к базе: " +
-            result.error.message,
-            "error"
-        );
-
-        return null;
+        castings = [];
+        materials = [];
     }
-
-
-    if (!result.data) {
-
-        setStatus(
-            "Профиль Марины не найден в таблице actors.",
-            "error"
-        );
-
-        return null;
-    }
-
-
-    actorId =
-        result.data.id;
-
-
-    return actorId;
 }
 
+function saveLocalData() {
 
-/* =====================================================
-   ENSURE ACTOR
-===================================================== */
-
-async function ensureActor() {
-
-    if (actorId) {
-        return actorId;
-    }
-
-    return await findActor();
-}
-
-
-/* =====================================================
-   CASTINGS
-===================================================== */
-
-async function loadCastings() {
-
-    setStatus(
-        "Подключение к памяти..."
+    localStorage.setItem(
+        STORAGE_KEYS.castings,
+        JSON.stringify(castings)
     );
 
+    localStorage.setItem(
+        STORAGE_KEYS.materials,
+        JSON.stringify(materials)
+    );
+}
+
+/* =========================================================
+   CASTINGS
+========================================================= */
+
+function openNewCastingModal() {
+
+    document.getElementById("castingModalTitle").textContent =
+        "Новый кастинг";
+
+    document.getElementById("castingEditId").value = "";
+
+    document.getElementById("castingTitle").value = "";
+    document.getElementById("castingRole").value = "";
+
+    document.getElementById("castingStatusSelect").value =
+        "active";
+
+    document.getElementById("castingDate").value =
+        new Date().toISOString().slice(0, 10);
+
+    document.getElementById("castingNotes").value = "";
+
+    document.getElementById("castingModal")
+        .classList.add("open");
+}
+
+function openEditCastingModal(id) {
+
+    const casting = castings.find(
+        item => item.id === id
+    );
+
+    if (!casting) {
+        showCastingStatus(
+            "Кастинг не найден.",
+            "error"
+        );
+        return;
+    }
+
+    document.getElementById("castingModalTitle").textContent =
+        "Изменить кастинг";
+
+    document.getElementById("castingEditId").value =
+        casting.id;
+
+    document.getElementById("castingTitle").value =
+        casting.title || "";
+
+    document.getElementById("castingRole").value =
+        casting.role || "";
+
+    document.getElementById("castingStatusSelect").value =
+        casting.status || "active";
+
+    document.getElementById("castingDate").value =
+        casting.date || "";
+
+    document.getElementById("castingNotes").value =
+        casting.notes || "";
+
+    document.getElementById("castingModal")
+        .classList.add("open");
+}
+
+function closeCastingModal() {
+
+    document.getElementById("castingModal")
+        .classList.remove("open");
+}
+
+function closeModalOnBackground(event) {
+
+    if (event.target === event.currentTarget) {
+        closeCastingModal();
+    }
+}
+
+function saveCasting() {
 
     const id =
-        await ensureActor();
+        document.getElementById("castingEditId").value;
 
+    const title =
+        document.getElementById("castingTitle").value.trim();
 
-    if (!id) {
+    const role =
+        document.getElementById("castingRole").value.trim();
+
+    const status =
+        document.getElementById("castingStatusSelect").value;
+
+    const date =
+        document.getElementById("castingDate").value;
+
+    const notes =
+        document.getElementById("castingNotes").value.trim();
+
+    if (!title) {
+        alert("Введите название проекта.");
         return;
     }
 
+    if (id) {
 
-    const result =
-        await supabaseClient
-            .from("castings")
-            .select("*")
-            .eq(
-                "actor_id",
-                id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (result.error) {
-
-        console.error(
-            "Supabase casting error:",
-            result.error
+        const index = castings.findIndex(
+            item => item.id === id
         );
 
-        setStatus(
-            "Ошибка загрузки кастингов: " +
-            result.error.message,
-            "error"
-        );
+        if (index !== -1) {
 
-        return;
+            castings[index] = {
+                ...castings[index],
+                title,
+                role,
+                status,
+                date,
+                notes,
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+    } else {
+
+        castings.unshift({
+            id: generateId(),
+            title,
+            role,
+            status,
+            date,
+            notes,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        });
     }
 
+    saveLocalData();
+    renderCastings();
+    updateDashboard();
+    updateCareer();
 
-    allCastings =
-        result.data || [];
+    closeCastingModal();
 
-
-    renderCastings(
-        getFilteredCastings()
-    );
-
-
-    updateCounters(
-        allCastings
-    );
-
-
-    setStatus(
-        "Память подключена · " +
-        allCastings.length +
-        " кастингов",
+    showCastingStatus(
+        id
+            ? "Кастинг успешно изменён."
+            : "Кастинг добавлен.",
         "success"
     );
 }
 
+function deleteCasting(id) {
 
-function getFilteredCastings() {
-
-    if (
-        currentCastingFilter === "all"
-    ) {
-
-        return allCastings;
-
-    }
-
-
-    return allCastings.filter(
-        casting =>
-            casting.status ===
-            currentCastingFilter
+    const casting = castings.find(
+        item => item.id === id
     );
-}
-
-
-function filterCastings(status) {
-
-    currentCastingFilter =
-        status;
-
-
-    renderCastings(
-        getFilteredCastings()
-    );
-}
-
-
-function getStatusLabel(status) {
-
-    const labels = {
-
-        new:
-            "Новая подача",
-
-        submitted:
-            "Отправлена",
-
-        audition:
-            "Пригласили на пробы",
-
-        "self-tape":
-            "Пробы отправлены",
-
-        callback:
-            "Callback",
-
-        approved:
-            "Утверждена",
-
-        rejected:
-            "Не утвердили",
-
-        no_response:
-            "Не ответили",
-
-        cancelled:
-            "Отменён"
-
-    };
-
-
-    return (
-        labels[status] ||
-        status ||
-        "Новая подача"
-    );
-}
-
-
-function getStatusClass(status) {
-
-    if (status === "approved") {
-        return "green";
-    }
-
-
-    if (
-        status === "audition" ||
-        status === "self-tape" ||
-        status === "callback"
-    ) {
-        return "yellow";
-    }
-
-
-    if (
-        status === "rejected" ||
-        status === "cancelled"
-    ) {
-        return "red";
-    }
-
-
-    return "";
-}
-
-
-/* =====================================================
-   RENDER CASTINGS
-===================================================== */
-
-function renderCastings(castings) {
-
-    const list =
-        document.getElementById(
-            "castingList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    if (!castings.length) {
-
-        const message =
-            currentCastingFilter === "all"
-                ? `
-                    Пока нет кастингов.
-                    <br><br>
-                    Нажми <b>＋ Добавить</b>,
-                    чтобы сохранить первый.
-                  `
-                :
-                  `
-                    В этой категории пока нет кастингов.
-                  `;
-
-
-        list.innerHTML = `
-            <div class="empty">
-                ${message}
-            </div>
-        `;
-
-        return;
-    }
-
-
-    list.innerHTML = "";
-
-
-    castings.forEach(
-        casting => {
-
-            const item =
-                document.createElement("div");
-
-
-            item.className =
-                "casting";
-
-
-            const statusClass =
-                getStatusClass(
-                    casting.status
-                );
-
-
-            const castingId =
-                JSON.stringify(
-                    casting.id
-                );
-
-
-            const projectName =
-                escapeHtml(
-                    casting.project_name ||
-                    "Без названия"
-                );
-
-
-            const roleName =
-                escapeHtml(
-                    casting.role_name ||
-                    "Роль не указана"
-                );
-
-
-            const deadline =
-                casting.deadline
-                    ? `
-                        · дедлайн
-                        ${escapeHtml(
-                            casting.deadline
-                        )}
-                      `
-                    : "";
-
-
-            const appliedAt =
-                casting.applied_at
-                    ? `
-                        <p>
-                            📅 Подана:
-                            ${escapeHtml(
-                                casting.applied_at
-                            )}
-                        </p>
-                      `
-                    : "";
-
-
-            const notes =
-                casting.notes
-                    ? `
-                        <p>
-                            📝
-                            ${escapeHtml(
-                                casting.notes
-                            )}
-                        </p>
-                      `
-                    : "";
-
-
-            const url =
-                casting.casting_url
-                    ? `
-                        <p class="castings-link">
-
-                            <a
-                                href="${escapeHtml(
-                                    casting.casting_url
-                                )}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Открыть кастинг →
-                            </a>
-
-                        </p>
-                      `
-                    : "";
-
-
-            const ai =
-                casting.ai_analysis
-                    ? `
-                        <p>
-                            🧠 AI-анализ сохранён
-                        </p>
-                      `
-                    : "";
-
-
-            item.innerHTML = `
-
-                <div style="flex:1;min-width:0;">
-
-                    <h3>
-                        ${projectName}
-                    </h3>
-
-
-                    <p>
-                        ${roleName}
-                        ${deadline}
-                    </p>
-
-
-                    <span class="badge ${statusClass}">
-                        ${escapeHtml(
-                            getStatusLabel(
-                                casting.status
-                            )
-                        )}
-                    </span>
-
-
-                    ${appliedAt}
-
-                    ${notes}
-
-                    ${url}
-
-                    ${ai}
-
-                </div>
-
-
-                <div class="casting-actions">
-
-                    <button
-                        type="button"
-                        class="btn light small"
-                        data-action="edit"
-                    >
-                        ✏️ Изменить
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn danger small"
-                        data-action="delete"
-                    >
-                        🗑️ Удалить
-                    </button>
-
-                </div>
-            `;
-
-
-            const editButton =
-                item.querySelector(
-                    '[data-action="edit"]'
-                );
-
-
-            const deleteButton =
-                item.querySelector(
-                    '[data-action="delete"]'
-                );
-
-
-            if (editButton) {
-
-                editButton.addEventListener(
-                    "click",
-                    () => {
-                        editCasting(
-                            casting.id
-                        );
-                    }
-                );
-
-            }
-
-
-            if (deleteButton) {
-
-                deleteButton.addEventListener(
-                    "click",
-                    () => {
-                        deleteCasting(
-                            casting.id
-                        );
-                    }
-                );
-
-            }
-
-
-            list.appendChild(item);
-
-        }
-    );
-}
-
-
-/* =====================================================
-   COUNTERS
-===================================================== */
-
-function updateCounters(castings) {
-
-    const activeCount =
-        castings.filter(
-            casting =>
-                ![
-                    "approved",
-                    "rejected",
-                    "cancelled"
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const auditionCount =
-        castings.filter(
-            casting =>
-                [
-                    "audition",
-                    "self-tape",
-                    "callback"
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const waitingCount =
-        castings.filter(
-            casting =>
-                casting.status ===
-                "no_response"
-        ).length;
-
-
-    const actionCount =
-        castings.filter(
-            casting =>
-                [
-                    "new",
-                    "audition",
-                    "callback"
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const activeElement =
-        document.getElementById(
-            "activeCount"
-        );
-
-
-    const auditionElement =
-        document.getElementById(
-            "auditionCount"
-        );
-
-
-    const waitingElement =
-        document.getElementById(
-            "waitingCount"
-        );
-
-
-    const actionElement =
-        document.getElementById(
-            "actionCount"
-        );
-
-
-    if (activeElement) {
-        activeElement.textContent =
-            activeCount;
-    }
-
-
-    if (auditionElement) {
-        auditionElement.textContent =
-            auditionCount;
-    }
-
-
-    if (waitingElement) {
-        waitingElement.textContent =
-            waitingCount;
-    }
-
-
-    if (actionElement) {
-        actionElement.textContent =
-            actionCount;
-    }
-}
-
-
-/* =====================================================
-   CASTING MODAL
-===================================================== */
-
-function openNewCastingModal() {
-
-    resetCastingForm();
-
-
-    const modalTitle =
-        document.getElementById(
-            "modalTitle"
-        );
-
-
-    const saveButton =
-        document.getElementById(
-            "saveCastingButton"
-        );
-
-
-    const modal =
-        document.getElementById(
-            "modal"
-        );
-
-
-    if (modalTitle) {
-        modalTitle.textContent =
-            "Новый кастинг";
-    }
-
-
-    if (saveButton) {
-        saveButton.textContent =
-            "Сохранить";
-    }
-
-
-    if (modal) {
-        modal.classList.add("open");
-    }
-}
-
-
-function closeModal() {
-
-    const modal =
-        document.getElementById(
-            "modal"
-        );
-
-
-    if (modal) {
-        modal.classList.remove("open");
-    }
-}
-
-
-function resetCastingForm() {
-
-    currentCastingAI =
-        null;
-
-
-    const fields = {
-
-        editingCastingId: "",
-
-        projectName: "",
-
-        castingUrl: "",
-
-        roleName: "",
-
-        deadline: "",
-
-        appliedAt: "",
-
-        castingText: "",
-
-        castingDirectorMessage: "",
-
-        castingStatus: "new",
-
-        castingNotes: ""
-
-    };
-
-
-    Object.entries(fields)
-        .forEach(
-            ([id, value]) => {
-
-                const element =
-                    document.getElementById(
-                        id
-                    );
-
-
-                if (element) {
-                    element.value =
-                        value;
-                }
-
-            }
-        );
-
-
-    const modalTitle =
-        document.getElementById(
-            "modalTitle"
-        );
-
-
-    const saveButton =
-        document.getElementById(
-            "saveCastingButton"
-        );
-
-
-    const aiResult =
-        document.getElementById(
-            "castingAIResult"
-        );
-
-
-    const aiStatus =
-        document.getElementById(
-            "castingAIStatus"
-        );
-
-
-    const aiContent =
-        document.getElementById(
-            "castingAIContent"
-        );
-
-
-    if (modalTitle) {
-        modalTitle.textContent =
-            "Новый кастинг";
-    }
-
-
-    if (saveButton) {
-        saveButton.textContent =
-            "Сохранить";
-    }
-
-
-    if (aiResult) {
-        aiResult.style.display =
-            "none";
-    }
-
-
-    if (aiStatus) {
-        aiStatus.style.display =
-            "none";
-
-        aiStatus.textContent =
-            "";
-    }
-
-
-    if (aiContent) {
-        aiContent.innerHTML =
-            "";
-    }
-}
-
-
-/* =====================================================
-   EDIT CASTING
-===================================================== */
-
-async function editCasting(castingId) {
-
-    const casting =
-        allCastings.find(
-            item =>
-                String(item.id) ===
-                String(castingId)
-        );
-
 
     if (!casting) {
-
-        alert(
-            "Кастинг не найден."
-        );
-
         return;
     }
 
-
-    const fields = {
-
-        editingCastingId:
-            casting.id || "",
-
-        projectName:
-            casting.project_name || "",
-
-        castingUrl:
-            casting.casting_url || "",
-
-        roleName:
-            casting.role_name || "",
-
-        deadline:
-            casting.deadline || "",
-
-        appliedAt:
-            casting.applied_at || "",
-
-        castingText:
-            casting.casting_text || "",
-
-        castingDirectorMessage:
-            casting.casting_director_message || "",
-
-        castingStatus:
-            casting.status || "new",
-
-        castingNotes:
-            casting.notes || ""
-
-    };
-
-
-    Object.entries(fields)
-        .forEach(
-            ([id, value]) => {
-
-                const element =
-                    document.getElementById(
-                        id
-                    );
-
-
-                if (element) {
-                    element.value =
-                        value;
-                }
-
-            }
-        );
-
-
-    currentCastingAI =
-        casting.ai_analysis || null;
-
-
-    const modalTitle =
-        document.getElementById(
-            "modalTitle"
-        );
-
-
-    const saveButton =
-        document.getElementById(
-            "saveCastingButton"
-        );
-
-
-    const aiResult =
-        document.getElementById(
-            "castingAIResult"
-        );
-
-
-    const aiContent =
-        document.getElementById(
-            "castingAIContent"
-        );
-
-
-    if (modalTitle) {
-        modalTitle.textContent =
-            "Редактировать кастинг";
-    }
-
-
-    if (saveButton) {
-        saveButton.textContent =
-            "Сохранить изменения";
-    }
-
-
-    if (
-        currentCastingAI &&
-        aiContent
-    ) {
-
-        aiContent.innerHTML =
-            formatAIText(
-                currentCastingAI
-            );
-
-        if (aiResult) {
-            aiResult.style.display =
-                "block";
-        }
-
-    }
-    else if (aiResult) {
-
-        aiResult.style.display =
-            "none";
-
-    }
-
-
-    const modal =
-        document.getElementById(
-            "modal"
-        );
-
-
-    if (modal) {
-        modal.classList.add("open");
-    }
-}
-
-
-/* =====================================================
-   SAVE CASTING
-===================================================== */
-
-async function saveCasting() {
-
-    const id =
-        document.getElementById(
-            "editingCastingId"
-        )?.value || "";
-
-
-    const projectName =
-        document.getElementById(
-            "projectName"
-        )?.value.trim() || "";
-
-
-    const castingUrl =
-        document.getElementById(
-            "castingUrl"
-        )?.value.trim() || "";
-
-
-    const roleName =
-        document.getElementById(
-            "roleName"
-        )?.value.trim() || "";
-
-
-    const deadline =
-        document.getElementById(
-            "deadline"
-        )?.value || null;
-
-
-    const appliedAt =
-        document.getElementById(
-            "appliedAt"
-        )?.value || null;
-
-
-    const castingText =
-        document.getElementById(
-            "castingText"
-        )?.value.trim() || "";
-
-
-    const directorMessage =
-        document.getElementById(
-            "castingDirectorMessage"
-        )?.value.trim() || "";
-
-
-    const status =
-        document.getElementById(
-            "castingStatus"
-        )?.value || "new";
-
-
-    const notes =
-        document.getElementById(
-            "castingNotes"
-        )?.value.trim() || "";
-
-
-    if (!projectName) {
-
-        alert(
-            "Укажи название проекта."
-        );
-
-        return;
-    }
-
-
-    const actor =
-        await ensureActor();
-
-
-    if (!actor) {
-        return;
-    }
-
-
-    const saveButton =
-        document.getElementById(
-            "saveCastingButton"
-        );
-
-
-    if (saveButton) {
-        saveButton.disabled =
-            true;
-
-        saveButton.textContent =
-            "Сохраняю...";
-    }
-
-
-    try {
-
-        const payload = {
-
-            actor_id:
-                actor,
-
-            project_name:
-                projectName,
-
-            casting_url:
-                castingUrl || null,
-
-            role_name:
-                roleName || null,
-
-            deadline:
-                deadline,
-
-            applied_at:
-                appliedAt,
-
-            casting_text:
-                castingText || null,
-
-            casting_director_message:
-                directorMessage || null,
-
-            status:
-                status,
-
-            notes:
-                notes || null
-
-        };
-
-
-        if (currentCastingAI) {
-
-            payload.ai_analysis =
-                currentCastingAI;
-
-        }
-
-
-        let result;
-
-
-        if (id) {
-
-            result =
-                await supabaseClient
-                    .from("castings")
-                    .update(payload)
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "actor_id",
-                        actor
-                    )
-                    .select()
-                    .single();
-
-        }
-        else {
-
-            result =
-                await supabaseClient
-                    .from("castings")
-                    .insert(
-                        payload
-                    )
-                    .select()
-                    .single();
-
-        }
-
-
-        if (result.error) {
-
-            throw new Error(
-                result.error.message
-            );
-        }
-
-
-        closeModal();
-
-
-        await loadCastings();
-
-
-    }
-    catch (error) {
-
-        console.error(
-            "Save casting error:",
-            error
-        );
-
-
-        alert(
-            "Не удалось сохранить кастинг:\n" +
-            (
-                error.message ||
-                error
-            )
-        );
-
-    }
-    finally {
-
-        if (saveButton) {
-
-            saveButton.disabled =
-                false;
-
-            saveButton.textContent =
-                id
-                    ? "Сохранить изменения"
-                    : "Сохранить";
-
-        }
-    }
-}
-
-
-/* =====================================================
-   DELETE CASTING
-===================================================== */
-
-async function deleteCasting(castingId) {
-
-    const casting =
-        allCastings.find(
-            item =>
-                String(item.id) ===
-                String(castingId)
-        );
-
-
-    if (!casting) {
-
-        alert(
-            "Кастинг не найден."
-        );
-
-        return;
-    }
-
-
-    const projectName =
-        casting.project_name ||
-        "этот кастинг";
-
-
-    const confirmed =
-        window.confirm(
-            `Удалить "${projectName}"?\n\nЭто действие нельзя отменить.`
-        );
-
+    const confirmed = confirm(
+        `Удалить кастинг «${casting.title}»?`
+    );
 
     if (!confirmed) {
         return;
     }
 
+    castings = castings.filter(
+        item => item.id !== id
+    );
 
-    const actor =
-        await ensureActor();
+    saveLocalData();
 
+    renderCastings();
+    updateDashboard();
+    updateCareer();
 
-    if (!actor) {
-        return;
-    }
-
-
-    try {
-
-        setStatus(
-            "Удаляю кастинг..."
-        );
-
-
-        const result =
-            await supabaseClient
-                .from("castings")
-                .delete()
-                .eq(
-                    "id",
-                    castingId
-                )
-                .eq(
-                    "actor_id",
-                    actor
-                );
-
-
-        if (result.error) {
-
-            throw new Error(
-                result.error.message
-            );
-        }
-
-
-        allCastings =
-            allCastings.filter(
-                item =>
-                    String(item.id) !==
-                    String(castingId)
-            );
-
-
-        renderCastings(
-            getFilteredCastings()
-        );
-
-
-        updateCounters(
-            allCastings
-        );
-
-
-        setStatus(
-            "Кастинг удалён.",
-            "success"
-        );
-
-
-    }
-    catch (error) {
-
-        console.error(
-            "Delete casting error:",
-            error
-        );
-
-
-        setStatus(
-            "Не удалось удалить кастинг: " +
-            (
-                error.message ||
-                error
-            ),
-            "error"
-        );
-
-    }
+    showCastingStatus(
+        "Кастинг удалён.",
+        "success"
+    );
 }
 
+function renderCastings() {
 
-/* =====================================================
-   ANALYZE CURRENT CASTING
-===================================================== */
+    const container =
+        document.getElementById("castingsList");
 
-async function analyzeCurrentCasting() {
-
-    const castingText =
-        document.getElementById(
-            "castingText"
-        )?.value.trim() || "";
-
-
-    const directorMessage =
-        document.getElementById(
-            "castingDirectorMessage"
-        )?.value.trim() || "";
-
-
-    const roleName =
-        document.getElementById(
-            "roleName"
-        )?.value.trim() || "";
-
-
-    if (
-        !castingText &&
-        !directorMessage
-    ) {
-
-        alert(
-            "Добавь текст кастинга или сообщение от кастинг-директора."
-        );
-
+    if (!container) {
         return;
     }
 
+    if (!castings.length) {
 
-    const actor =
-        await ensureActor();
-
-
-    if (!actor) {
-        return;
-    }
-
-
-    const status =
-        document.getElementById(
-            "castingAIStatus"
-        );
-
-
-    const resultBox =
-        document.getElementById(
-            "castingAIResult"
-        );
-
-
-    const resultContent =
-        document.getElementById(
-            "castingAIContent"
-        );
-
-
-    if (status) {
-
-        status.style.display =
-            "block";
-
-        status.className =
-            "status";
-
-        status.textContent =
-            "🧠 AI анализирует кастинг...";
-
-    }
-
-
-    if (resultBox) {
-        resultBox.style.display =
-            "none";
-    }
-
-
-    try {
-
-        const portfolioResult =
-            await supabaseClient
-                .from("actors")
-                .select(
-                    "portfolio_analysis"
-                )
-                .eq(
-                    "id",
-                    actor
-                )
-                .single();
-
-
-        if (portfolioResult.error) {
-
-            throw new Error(
-                "Не удалось получить анализ портфолио: " +
-                portfolioResult.error.message
-            );
-        }
-
-
-        const portfolioAnalysis =
-            portfolioResult.data
-                ?.portfolio_analysis;
-
-
-        if (!portfolioAnalysis) {
-
-            throw new Error(
-                "Сначала необходимо создать анализ портфолио."
-            );
-        }
-
-
-        const materialsResult =
-            await supabaseClient
-                .from("materials")
-                .select(
-                    "id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at"
-                )
-                .eq(
-                    "actor_id",
-                    actor
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (materialsResult.error) {
-
-            throw new Error(
-                "Не удалось загрузить материалы: " +
-                materialsResult.error.message
-            );
-        }
-
-
-        const materials =
-            materialsResult.data || [];
-
-
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/functions/v1/analyze-casting",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "apikey":
-                            SUPABASE_KEY,
-
-                        "Authorization":
-                            "Bearer " +
-                            SUPABASE_KEY
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            actorId:
-                                actor,
-
-                            roleName,
-
-                            castingText,
-
-                            directorMessage,
-
-                            portfolioAnalysis,
-
-                            materials
-
-                        })
-                }
-            );
-
-
-        let data = null;
-
-
-        try {
-
-            data =
-                await response.json();
-
-        }
-        catch (jsonError) {
-
-            throw new Error(
-                "AI вернул некорректный ответ."
-            );
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                "Ошибка AI анализа"
-            );
-        }
-
-
-        if (!data?.analysis) {
-
-            throw new Error(
-                "AI не вернул анализ кастинга."
-            );
-        }
-
-
-        if (resultContent) {
-
-            resultContent.innerHTML =
-                formatAIText(
-                    data.analysis
-                );
-
-        }
-
-
-        if (resultBox) {
-
-            resultBox.style.display =
-                "block";
-
-        }
-
-
-        if (status) {
-
-            status.className =
-                "status success";
-
-            status.textContent =
-                "✓ Анализ кастинга готов";
-
-        }
-
-
-        currentCastingAI =
-            data.analysis;
-
-
-    }
-    catch (error) {
-
-        console.error(
-            "Casting AI error:",
-            error
-        );
-
-
-        if (status) {
-
-            status.className =
-                "status error";
-
-            status.textContent =
-                error instanceof Error
-                    ? error.message
-                    : String(error);
-
-        }
-
-    }
-}
-
-
-/* =====================================================
-   MATERIALS
-===================================================== */
-
-async function loadMaterials() {
-
-    const list =
-        document.getElementById(
-            "savedMaterialsList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML =
-        `<div class="loading-text">Загрузка материалов...</div>`;
-
-
-    const actor =
-        await ensureActor();
-
-
-    if (!actor) {
-
-        list.innerHTML =
-            `<div class="material-no-analysis">
-                Не удалось определить профиль актёра.
-            </div>`;
-
-        return;
-    }
-
-
-    try {
-
-        const result =
-            await supabaseClient
-                .from("materials")
-                .select("*")
-                .eq(
-                    "actor_id",
-                    actor
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (result.error) {
-            throw new Error(
-                result.error.message
-            );
-        }
-
-
-        allMaterials =
-            result.data || [];
-
-
-        renderSavedMaterials(
-            allMaterials
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Load materials error:",
-            error
-        );
-
-
-        list.innerHTML = `
-            <div class="status error">
-                Не удалось загрузить материалы:
-                ${escapeHtml(
-                    error.message || error
-                )}
-            </div>
-        `;
-    }
-}
-
-
-/* =====================================================
-   GET MATERIAL IMAGE URL
-===================================================== */
-
-function getMaterialImageUrl(material) {
-
-    if (material.image_url) {
-        return material.image_url;
-    }
-
-
-    if (
-        material.file_path &&
-        supabaseClient
-    ) {
-
-        const result =
-            supabaseClient
-                .storage
-                .from("materials")
-                .getPublicUrl(
-                    material.file_path
-                );
-
-
-        return result.data?.publicUrl ||
-            "";
-    }
-
-
-    return "";
-}
-
-
-/* =====================================================
-   RENDER MATERIALS
-===================================================== */
-
-function renderSavedMaterials(materials) {
-
-    const list =
-        document.getElementById(
-            "savedMaterialsList"
-        );
-
-
-    if (!list) {
-        return;
-    }
-
-
-    if (!materials.length) {
-
-        list.innerHTML = `
+        container.innerHTML = `
             <div class="empty">
-                Пока нет сохранённых материалов.
+                Пока нет кастингов.
+                <br><br>
+                Добавь первый кастинг.
             </div>
         `;
 
         return;
     }
 
+    container.innerHTML =
+        castings.map(casting => {
 
-    list.innerHTML = "";
-
-
-    materials.forEach(
-        (material, index) => {
-
-            const item =
-                document.createElement(
-                    "div"
+            const statusText =
+                getCastingStatusText(
+                    casting.status
                 );
 
-
-            item.className =
-                "material-item";
-
-
-            const imageUrl =
-                getMaterialImageUrl(
-                    material
+            const badgeClass =
+                getCastingBadgeClass(
+                    casting.status
                 );
 
+            return `
+                <div class="casting">
 
-            const title =
-                material.title ||
-                material.original_name ||
-                `Материал ${index + 1}`;
+                    <div>
 
+                        <h3>
+                            ${escapeHtml(casting.title)}
+                        </h3>
 
-            const analysis =
-                material.analysis;
-
-
-            const panelId =
-                "material-analysis-" +
-                String(
-                    material.id ||
-                    index
-                ).replace(
-                    /[^a-zA-Z0-9_-]/g,
-                    "_"
-                );
-
-
-            const hasAnalysis =
-                analysis !== null &&
-                analysis !== undefined &&
-                String(analysis).trim() !== "";
-
-
-            item.innerHTML = `
-
-                <div class="material-item-header">
-
-                    <div class="material-item-main">
+                        <p>
+                            ${escapeHtml(
+                                casting.role || "Роль не указана"
+                            )}
+                        </p>
 
                         ${
-                            imageUrl
+                            casting.date
                                 ? `
-                                    <img
-                                        class="material-thumb"
-                                        src="${escapeHtml(
-                                            imageUrl
-                                        )}"
-                                        alt="${escapeHtml(
-                                            title
-                                        )}"
-                                    >
-                                  `
-                                :
-                                  `
-                                    <div
-                                        class="material-thumb"
-                                        style="
-                                            display:flex;
-                                            align-items:center;
-                                            justify-content:center;
-                                            font-size:30px;
-                                        "
-                                    >
-                                        📷
-                                    </div>
-                                  `
+                                <p>
+                                    ${formatDate(casting.date)}
+                                </p>
+                                `
+                                : ""
                         }
 
+                        ${
+                            casting.notes
+                                ? `
+                                <p>
+                                    ${escapeHtml(casting.notes)}
+                                </p>
+                                `
+                                : ""
+                        }
 
-                        <div class="material-meta">
-
-                            <h3>
-                                ${escapeHtml(
-                                    title
-                                )}
-                            </h3>
-
-
-                            ${
-                                material.material_type
-                                    ? `
-                                        <p>
-                                            Тип:
-                                            ${escapeHtml(
-                                                material.material_type
-                                            )}
-                                        </p>
-                                      `
-                                    : ""
-                            }
-
-
-                            ${
-                                material.original_name
-                                    ? `
-                                        <p>
-                                            ${escapeHtml(
-                                                material.original_name
-                                            )}
-                                        </p>
-                                      `
-                                    : ""
-                            }
-
-
-                            ${
-                                material.is_primary
-                                    ? `
-                                        <span class="badge green">
-                                            Основной материал
-                                        </span>
-                                      `
-                                    : ""
-                            }
-
-                        </div>
+                        <span class="badge ${badgeClass}">
+                            ${statusText}
+                        </span>
 
                     </div>
 
+                    <div class="casting-actions">
 
-                    <div class="material-actions">
+                        <button
+                            class="btn light small"
+                            onclick="openEditCastingModal('${casting.id}')"
+                        >
+                            Изменить
+                        </button>
 
-                        ${
-                            hasAnalysis
-                                ? `
-                                    <button
-                                        type="button"
-                                        class="btn light small"
-                                        data-material-toggle="${escapeHtml(
-                                            panelId
-                                        )}"
-                                    >
-                                        🧠 Посмотреть анализ
-                                    </button>
-                                  `
-                                :
-                                  `
-                                    <span class="badge">
-                                        Анализ не сохранён
-                                    </span>
-                                  `
-                        }
+                        <button
+                            class="btn danger small"
+                            onclick="deleteCasting('${casting.id}')"
+                        >
+                            Удалить
+                        </button>
 
                     </div>
-
-                </div>
-
-
-                <div
-                    id="${escapeHtml(panelId)}"
-                    class="material-analysis-panel"
-                >
-
-                    <h4>
-                        🧠 AI-анализ этой фотографии
-                    </h4>
-
-                    ${
-                        hasAnalysis
-                            ? `
-                                <div class="material-analysis">
-                                    ${formatAIText(
-                                        analysis
-                                    )}
-                                </div>
-                              `
-                            :
-                              `
-                                <div class="material-no-analysis">
-                                    Для этого материала пока нет сохранённого анализа.
-                                </div>
-                              `
-                    }
 
                 </div>
             `;
 
+        }).join("");
+}
 
-            const toggleButton =
-                item.querySelector(
-                    "[data-material-toggle]"
+function getCastingStatusText(status) {
+
+    const statuses = {
+        active: "Активный",
+        audition: "Пробы",
+        waiting: "Ожидание",
+        booked: "Получена роль",
+        rejected: "Отказ"
+    };
+
+    return statuses[status] || "Активный";
+}
+
+function getCastingBadgeClass(status) {
+
+    if (status === "booked") {
+        return "green";
+    }
+
+    if (status === "waiting") {
+        return "yellow";
+    }
+
+    if (status === "rejected") {
+        return "red";
+    }
+
+    return "";
+}
+
+function showCastingStatus(message, type) {
+
+    const container =
+        document.getElementById("castingStatus");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="status ${type}">
+            ${escapeHtml(message)}
+        </div>
+    `;
+
+    setTimeout(() => {
+        container.innerHTML = "";
+    }, 3000);
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function updateDashboard() {
+
+    const active =
+        castings.filter(
+            item => item.status === "active"
+        ).length;
+
+    const auditions =
+        castings.filter(
+            item => item.status === "audition"
+        ).length;
+
+    const waiting =
+        castings.filter(
+            item => item.status === "waiting"
+        ).length;
+
+    const actions =
+        active + auditions;
+
+    setText("activeCount", active);
+    setText("auditionCount", auditions);
+    setText("waitingCount", waiting);
+    setText("actionCount", actions);
+
+    const nextTitle =
+        document.getElementById("nextActionTitle");
+
+    const nextText =
+        document.getElementById("nextActionText");
+
+    if (!nextTitle || !nextText) {
+        return;
+    }
+
+    if (!castings.length) {
+
+        nextTitle.textContent =
+            "Добавь первый реальный кастинг";
+
+        nextText.textContent =
+            "Агент сохранит его в память и сможет отслеживать его статус.";
+
+        return;
+    }
+
+    const next =
+        castings.find(
+            item =>
+                item.status === "active" ||
+                item.status === "audition" ||
+                item.status === "waiting"
+        );
+
+    if (next) {
+
+        nextTitle.textContent =
+            next.title;
+
+        nextText.textContent =
+            `${getCastingStatusText(next.status)} · ${
+                next.role || "роль не указана"
+            }`;
+
+    } else {
+
+        nextTitle.textContent =
+            "Нет активных действий";
+
+        nextText.textContent =
+            "Добавь новый кастинг, чтобы продолжить.";
+    }
+}
+
+/* =========================================================
+   CAREER
+========================================================= */
+
+function updateCareer() {
+
+    setText(
+        "careerTotal",
+        castings.length
+    );
+
+    setText(
+        "careerAuditions",
+        castings.filter(
+            item => item.status === "audition"
+        ).length
+    );
+
+    setText(
+        "careerBooked",
+        castings.filter(
+            item => item.status === "booked"
+        ).length
+    );
+
+    setText(
+        "careerWaiting",
+        castings.filter(
+            item => item.status === "waiting"
+        ).length
+    );
+}
+
+/* =========================================================
+   MATERIAL PREVIEW
+========================================================= */
+
+function setupMaterialPreview() {
+
+    const input =
+        document.getElementById("materialFiles");
+
+    if (!input) {
+        return;
+    }
+
+    input.addEventListener(
+        "change",
+        () => {
+
+            const preview =
+                document.getElementById(
+                    "materialPreview"
                 );
 
+            preview.innerHTML = "";
 
-            if (toggleButton) {
+            const files =
+                Array.from(input.files || []);
 
-                toggleButton.addEventListener(
-                    "click",
-                    () => {
+            if (!files.length) {
 
-                        const targetId =
-                            toggleButton.dataset
-                                .materialToggle;
-
-
-                        const panel =
-                            document.getElementById(
-                                targetId
-                            );
-
-
-                        if (!panel) {
-                            return;
-                        }
-
-
-                        const isOpen =
-                            panel.classList.contains(
-                                "open"
-                            );
-
-
-                        panel.classList.toggle(
-                            "open"
-                        );
-
-
-                        toggleButton.textContent =
-                            isOpen
-                                ? "🧠 Посмотреть анализ"
-                                : "🔼 Скрыть анализ";
-
-                    }
-                );
-
+                preview.style.display = "none";
+                return;
             }
 
+            preview.style.display = "block";
 
-            list.appendChild(item);
+            files.forEach(file => {
 
+                if (!file.type.startsWith("image/")) {
+                    return;
+                }
+
+                const img =
+                    document.createElement("img");
+
+                img.src =
+                    URL.createObjectURL(file);
+
+                img.style.width = "100px";
+                img.style.height = "130px";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "8px";
+                img.style.margin = "5px";
+
+                preview.appendChild(img);
+            });
         }
     );
 }
 
+/* =========================================================
+   UPLOAD MATERIALS
+========================================================= */
 
-/* =====================================================
-   MATERIAL FILE SELECT
-===================================================== */
+async function uploadMaterials() {
 
-function initializeMaterialUpload() {
+    const input =
+        document.getElementById("materialFiles");
 
-    const fileInput =
-        document.getElementById(
-            "materialFile"
+    const files =
+        Array.from(input.files || []);
+
+    if (!files.length) {
+
+        alert(
+            "Сначала выбери хотя бы одну фотографию."
         );
 
-
-    if (!fileInput) {
         return;
     }
 
+    if (!supabaseClient) {
 
-    fileInput.addEventListener(
-        "change",
-        handleMaterialFileChange
+        alert(
+            "Сначала укажи SUPABASE_URL и SUPABASE_ANON_KEY в index.html."
+        );
+
+        return;
+    }
+
+    setMaterialLoading(
+        true,
+        "Загрузка фотографий..."
     );
-}
-
-
-function handleMaterialFileChange(event) {
-
-    const file =
-        event.target.files?.[0] ||
-        null;
-
-
-    selectedMaterialFile =
-        file;
-
-
-    const preview =
-        document.getElementById(
-            "materialPreview"
-        );
-
-
-    const analyzeButton =
-        document.getElementById(
-            "analyzeMaterialBtn"
-        );
-
-
-    if (!file) {
-
-        if (preview) {
-            preview.style.display =
-                "none";
-
-            preview.innerHTML =
-                "";
-        }
-
-
-        if (analyzeButton) {
-            analyzeButton.disabled =
-                true;
-        }
-
-
-        return;
-    }
-
-
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        alert(
-            "Можно загружать только изображения."
-        );
-
-
-        selectedMaterialFile =
-            null;
-
-
-        if (analyzeButton) {
-            analyzeButton.disabled =
-                true;
-        }
-
-
-        return;
-    }
-
-
-    if (preview) {
-
-        const url =
-            URL.createObjectURL(
-                file
-            );
-
-
-        preview.innerHTML = `
-            <img
-                src="${url}"
-                alt="Предпросмотр"
-            >
-        `;
-
-
-        preview.style.display =
-            "block";
-
-    }
-
-
-    if (analyzeButton) {
-        analyzeButton.disabled =
-            false;
-    }
-}
-
-
-/* =====================================================
-   ANALYZE MATERIAL
-===================================================== */
-
-async function analyzeMaterial() {
-
-    if (!selectedMaterialFile) {
-
-        alert(
-            "Сначала выбери фотографию."
-        );
-
-        return;
-    }
-
-
-    const actor =
-        await ensureActor();
-
-
-    if (!actor) {
-        return;
-    }
-
-
-    const loading =
-        document.getElementById(
-            "materialLoading"
-        );
-
-
-    const errorBox =
-        document.getElementById(
-            "materialError"
-        );
-
-
-    const resultBox =
-        document.getElementById(
-            "materialResult"
-        );
-
-
-    const resultContent =
-        document.getElementById(
-            "materialAnalysis"
-        );
-
-
-    const button =
-        document.getElementById(
-            "analyzeMaterialBtn"
-        );
-
-
-    if (errorBox) {
-
-        errorBox.style.display =
-            "none";
-
-        errorBox.textContent =
-            "";
-
-    }
-
-
-    if (resultBox) {
-        resultBox.style.display =
-            "none";
-    }
-
-
-    if (loading) {
-        loading.style.display =
-            "block";
-    }
-
-
-    if (button) {
-        button.disabled =
-            true;
-
-        button.textContent =
-            "Анализирую...";
-    }
-
 
     try {
 
-        /*
-         * Здесь используется Edge Function.
-         * Название функции:
-         * analyze-material
-         */
+        for (
+            let index = 0;
+            index < files.length;
+            index++
+        ) {
 
-        const base64 =
-            await fileToBase64(
-                selectedMaterialFile
+            const file = files[index];
+
+            if (!file.type.startsWith("image/")) {
+                continue;
+            }
+
+            setMaterialLoading(
+                true,
+                `Загрузка фото ${index + 1} из ${files.length}...`
             );
 
+            const material =
+                await createMaterialFromFile(file);
 
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/functions/v1/analyze-material",
-                {
-                    method: "POST",
+            materials.unshift(material);
 
-                    headers: {
+            saveLocalData();
 
-                        "Content-Type":
-                            "application/json",
+            renderMaterials();
 
-                        "apikey":
-                            SUPABASE_KEY,
+            setMaterialLoading(
+                true,
+                `Анализ фото ${index + 1} из ${files.length}...`
+            );
 
-                        "Authorization":
-                            "Bearer " +
-                            SUPABASE_KEY
+            try {
 
-                    },
+                const analysis =
+                    await analyzeSingleMaterial(
+                        material
+                    );
 
-                    body:
-                        JSON.stringify({
+                const stored =
+                    materials.find(
+                        item => item.id === material.id
+                    );
 
-                            actorId:
-                                actor,
+                if (stored) {
 
-                            fileName:
-                                selectedMaterialFile.name,
+                    stored.analysis =
+                        analysis;
 
-                            mimeType:
-                                selectedMaterialFile.type,
+                    stored.analysisStatus =
+                        "completed";
 
-                            imageBase64:
-                                base64
+                    stored.updatedAt =
+                        new Date().toISOString();
 
-                        })
+                    saveLocalData();
+                    renderMaterials();
                 }
+
+            } catch (analysisError) {
+
+                console.error(
+                    "Ошибка анализа материала:",
+                    analysisError
+                );
+
+                const stored =
+                    materials.find(
+                        item => item.id === material.id
+                    );
+
+                if (stored) {
+
+                    stored.analysisStatus =
+                        "error";
+
+                    stored.analysisError =
+                        getErrorMessage(
+                            analysisError
+                        );
+
+                    saveLocalData();
+                    renderMaterials();
+                }
+            }
+        }
+
+        setMaterialLoading(
+            false,
+            ""
+        );
+
+        input.value = "";
+
+        const preview =
+            document.getElementById(
+                "materialPreview"
             );
 
+        preview.innerHTML = "";
+        preview.style.display = "none";
 
-        let data = null;
+    } catch (error) {
 
+        console.error(
+            "Ошибка загрузки материалов:",
+            error
+        );
 
-        try {
-            data =
-                await response.json();
+        setMaterialLoading(
+            false,
+            ""
+        );
+
+        alert(
+            "Ошибка загрузки: " +
+            getErrorMessage(error)
+        );
+    }
+}
+
+/* =========================================================
+   CREATE MATERIAL
+========================================================= */
+
+async function createMaterialFromFile(file) {
+
+    const dataUrl =
+        await fileToDataURL(file);
+
+    const materialNumber =
+        materials.length + 1;
+
+    return {
+
+        id: generateId(),
+
+        title:
+            `Фото ${materialNumber}`,
+
+        fileName:
+            file.name,
+
+        imageUrl:
+            dataUrl,
+
+        analysis:
+            "",
+
+        analysisStatus:
+            "pending",
+
+        createdAt:
+            new Date().toISOString(),
+
+        updatedAt:
+            new Date().toISOString()
+    };
+}
+
+/* =========================================================
+   INDIVIDUAL MATERIAL ANALYSIS
+========================================================= */
+
+async function analyzeSingleMaterial(material) {
+
+    if (!material) {
+        throw new Error(
+            "Материал не найден."
+        );
+    }
+
+    if (!supabaseClient) {
+        throw new Error(
+            "Supabase не настроен."
+        );
+    }
+
+    const payload = {
+
+        title:
+            material.title,
+
+        image_url:
+            material.imageUrl,
+
+        image:
+            material.imageUrl,
+
+        file_name:
+            material.fileName,
+
+        material: {
+            title:
+                material.title,
+
+            image_url:
+                material.imageUrl,
+
+            image:
+                material.imageUrl,
+
+            file_name:
+                material.fileName
         }
-        catch (error) {
-            throw new Error(
-                "AI вернул некорректный ответ."
-            );
-        }
+    };
 
+    const result =
+        await invokeFunction(
+            ANALYZE_MATERIAL_FUNCTION,
+            payload
+        );
 
-        if (!response.ok) {
+    const analysis =
+        extractAnalysis(result);
 
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                "Ошибка AI анализа фотографии."
-            );
-        }
+    if (!analysis) {
 
+        throw new Error(
+            "Функция analyze-material не вернула текст анализа."
+        );
+    }
+
+    return analysis;
+}
+
+/* =========================================================
+   RENDER MATERIALS
+========================================================= */
+
+function renderMaterials() {
+
+    const container =
+        document.getElementById(
+            "materialsList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (!materials.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Пока нет фотографий.
+                <br><br>
+                Загрузи материалы выше.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        `<div class="material-grid">
+            ${
+                materials.map(
+                    material =>
+                        renderMaterialCard(material)
+                ).join("")
+            }
+        </div>`;
+}
+
+function renderMaterialCard(material) {
+
+    const status =
+        material.analysisStatus;
+
+    let statusHtml = "";
+
+    if (status === "completed") {
+
+        statusHtml = `
+            <span class="badge green">
+                Анализ готов
+            </span>
+        `;
+
+    } else if (status === "error") {
+
+        statusHtml = `
+            <span class="badge red">
+                Ошибка анализа
+            </span>
+        `;
+
+    } else {
+
+        statusHtml = `
+            <span class="badge yellow">
+                Анализируется
+            </span>
+        `;
+    }
+
+    return `
+        <div class="material-card">
+
+            <img
+                class="material-image"
+                src="${escapeAttribute(material.imageUrl)}"
+                alt="${escapeAttribute(material.title)}"
+            >
+
+            <div class="material-body">
+
+                <h3>
+                    ${escapeHtml(material.title)}
+                </h3>
+
+                <p>
+                    ${escapeHtml(
+                        material.fileName || ""
+                    )}
+                </p>
+
+                ${statusHtml}
+
+                <div class="material-actions">
+
+                    ${
+                        material.analysis
+                            ? `
+                                <button
+                                    class="btn small"
+                                    onclick="viewMaterialAnalysis('${material.id}')"
+                                >
+                                    Посмотреть анализ
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        status === "error"
+                            ? `
+                                <button
+                                    class="btn light small"
+                                    onclick="retryMaterialAnalysis('${material.id}')"
+                                >
+                                    Повторить анализ
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <button
+                        class="btn light small"
+                        onclick="deleteMaterial('${material.id}')"
+                    >
+                        Удалить
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+/* =========================================================
+   VIEW MATERIAL ANALYSIS
+========================================================= */
+
+function viewMaterialAnalysis(id) {
+
+    const material =
+        materials.find(
+            item => item.id === id
+        );
+
+    if (!material) {
+        return;
+    }
+
+    if (!material.analysis) {
+
+        alert(
+            "Для этого фото пока нет анализа."
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "analysisModalTitle"
+    ).textContent =
+        material.title;
+
+    document.getElementById(
+        "analysisModalText"
+    ).textContent =
+        material.analysis;
+
+    document.getElementById(
+        "analysisModal"
+    ).classList.add("open");
+}
+
+function closeAnalysisModal() {
+
+    document.getElementById(
+        "analysisModal"
+    ).classList.remove("open");
+}
+
+function closeAnalysisOnBackground(event) {
+
+    if (
+        event.target ===
+        event.currentTarget
+    ) {
+        closeAnalysisModal();
+    }
+}
+
+/* =========================================================
+   RETRY MATERIAL ANALYSIS
+========================================================= */
+
+async function retryMaterialAnalysis(id) {
+
+    const material =
+        materials.find(
+            item => item.id === id
+        );
+
+    if (!material) {
+        return;
+    }
+
+    material.analysisStatus =
+        "pending";
+
+    material.analysisError =
+        "";
+
+    saveLocalData();
+    renderMaterials();
+
+    try {
 
         const analysis =
-            data?.analysis ||
-            data?.result ||
-            data?.content;
+            await analyzeSingleMaterial(
+                material
+            );
 
+        material.analysis =
+            analysis;
+
+        material.analysisStatus =
+            "completed";
+
+        material.updatedAt =
+            new Date().toISOString();
+
+        saveLocalData();
+        renderMaterials();
+
+    } catch (error) {
+
+        console.error(error);
+
+        material.analysisStatus =
+            "error";
+
+        material.analysisError =
+            getErrorMessage(error);
+
+        saveLocalData();
+        renderMaterials();
+
+        alert(
+            "Ошибка анализа: " +
+            getErrorMessage(error)
+        );
+    }
+}
+
+/* =========================================================
+   DELETE MATERIAL
+========================================================= */
+
+function deleteMaterial(id) {
+
+    const material =
+        materials.find(
+            item => item.id === id
+        );
+
+    if (!material) {
+        return;
+    }
+
+    if (
+        !confirm(
+            `Удалить ${material.title}?`
+        )
+    ) {
+        return;
+    }
+
+    materials =
+        materials.filter(
+            item => item.id !== id
+        );
+
+    saveLocalData();
+    renderMaterials();
+}
+
+/* =========================================================
+   PORTFOLIO ANALYSIS
+========================================================= */
+
+async function analyzePortfolio() {
+
+    if (!materials.length) {
+
+        alert(
+            "Сначала добавь фотографии и дождись их индивидуального анализа."
+        );
+
+        return;
+    }
+
+    const readyMaterials =
+        materials.filter(
+            material =>
+                material.analysis &&
+                material.analysis.trim()
+        );
+
+    if (!readyMaterials.length) {
+
+        alert(
+            "Нет готовых индивидуальных анализов. Сначала проанализируй фотографии."
+        );
+
+        return;
+    }
+
+    if (!supabaseClient) {
+
+        alert(
+            "Сначала настрой Supabase в index.html."
+        );
+
+        return;
+    }
+
+    const button =
+        document.querySelector(
+            'button[onclick="analyzePortfolio()"]'
+        );
+
+    if (button) {
+        button.disabled = true;
+        button.textContent =
+            "⏳ Анализ портфолио...";
+    }
+
+    try {
+
+        const payload = {
+
+            materials:
+                readyMaterials.map(
+                    material => ({
+                        title:
+                            material.title,
+
+                        analysis:
+                            material.analysis,
+
+                        image_url:
+                            material.imageUrl,
+
+                        file_name:
+                            material.fileName
+                    })
+                )
+        };
+
+        const result =
+            await invokeFunction(
+                ANALYZE_PORTFOLIO_FUNCTION,
+                payload
+            );
+
+        const analysis =
+            extractAnalysis(result);
 
         if (!analysis) {
 
             throw new Error(
-                "AI не вернул анализ фотографии."
+                "analyze-materials не вернула анализ портфолио."
             );
         }
 
+        document.getElementById(
+            "portfolioAnalysisText"
+        ).textContent =
+            analysis;
 
-        if (resultContent) {
+        document.getElementById(
+            "portfolioResult"
+        ).classList.add("open");
 
-            resultContent.innerHTML =
-                formatAIText(
-                    analysis
-                );
+        localStorage.setItem(
+            STORAGE_KEYS.portfolioAnalysis,
+            analysis
+        );
 
-        }
+        setTimeout(() => {
 
+            document.getElementById(
+                "portfolioResult"
+            ).scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
 
-        if (resultBox) {
-            resultBox.style.display =
-                "block";
-        }
+        }, 100);
 
-
-        /*
-         * После анализа сохраняем материал.
-         */
-
-        await saveMaterialRecord({
-            actorId: actor,
-            file: selectedMaterialFile,
-            analysis: analysis,
-            aiData: data
-        });
-
-
-        await loadMaterials();
-
-
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "Material analysis error:",
+            "Portfolio analysis error:",
             error
         );
 
+        alert(
+            "Ошибка анализа портфолио:\n\n" +
+            getErrorMessage(error)
+        );
 
-        if (errorBox) {
-
-            errorBox.style.display =
-                "block";
-
-            errorBox.textContent =
-                error instanceof Error
-                    ? error.message
-                    : String(error);
-
-        }
-
-    }
-    finally {
-
-        if (loading) {
-            loading.style.display =
-                "none";
-        }
-
+    } finally {
 
         if (button) {
 
-            button.disabled =
-                !selectedMaterialFile;
+            button.disabled = false;
 
             button.textContent =
-                "🔍 Анализировать";
-
+                "🧠 Анализ портфолио";
         }
     }
 }
 
+function closePortfolioAnalysis() {
 
-/* =====================================================
-   FILE TO BASE64
-===================================================== */
+    document.getElementById(
+        "portfolioResult"
+    ).classList.remove("open");
+}
 
-function fileToBase64(file) {
+/* =========================================================
+   SUPABASE FUNCTION INVOCATION
+========================================================= */
+
+async function invokeFunction(
+    functionName,
+    payload
+) {
+
+    if (!supabaseClient) {
+
+        throw new Error(
+            "Supabase client не создан."
+        );
+    }
+
+    console.log(
+        "Calling Edge Function:",
+        functionName,
+        payload
+    );
+
+    let result;
+
+    try {
+
+        result =
+            await supabaseClient.functions.invoke(
+                functionName,
+                {
+                    body: payload
+                }
+            );
+
+    } catch (invokeError) {
+
+        console.error(
+            "Supabase invoke error:",
+            invokeError
+        );
+
+        throw new Error(
+            `Не удалось вызвать ${functionName}: ${
+                getErrorMessage(invokeError)
+            }`
+        );
+    }
+
+    if (result.error) {
+
+        console.error(
+            `Edge Function ${functionName} error:`,
+            result.error,
+            result.data
+        );
+
+        let details = "";
+
+        if (result.data) {
+
+            try {
+
+                details =
+                    typeof result.data === "string"
+                        ? result.data
+                        : JSON.stringify(
+                            result.data,
+                            null,
+                            2
+                        );
+
+            } catch (_) {
+                details = "";
+            }
+        }
+
+        throw new Error(
+            `${functionName}: ${
+                getErrorMessage(result.error)
+            }${
+                details
+                    ? "\n\nОтвет функции:\n" + details
+                    : ""
+            }`
+        );
+    }
+
+    return result.data;
+}
+
+/* =========================================================
+   EXTRACT ANALYSIS
+========================================================= */
+
+function extractAnalysis(data) {
+
+    if (!data) {
+        return "";
+    }
+
+    if (typeof data === "string") {
+        return data.trim();
+    }
+
+    if (
+        typeof data.analysis === "string"
+    ) {
+        return data.analysis.trim();
+    }
+
+    if (
+        typeof data.result === "string"
+    ) {
+        return data.result.trim();
+    }
+
+    if (
+        typeof data.content === "string"
+    ) {
+        return data.content.trim();
+    }
+
+    if (
+        data.data &&
+        typeof data.data === "string"
+    ) {
+        return data.data.trim();
+    }
+
+    if (
+        data.data &&
+        typeof data.data.analysis === "string"
+    ) {
+        return data.data.analysis.trim();
+    }
+
+    if (
+        data.choices &&
+        data.choices[0] &&
+        data.choices[0].message &&
+        typeof data.choices[0].message.content === "string"
+    ) {
+        return data
+            .choices[0]
+            .message
+            .content
+            .trim();
+    }
+
+    return "";
+}
+
+/* =========================================================
+   AGENT STATUS
+========================================================= */
+
+async function checkAgentStatus() {
+
+    const element =
+        document.getElementById(
+            "agentStatus"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    if (!supabaseClient) {
+
+        element.className =
+            "status error";
+
+        element.textContent =
+            "Supabase не настроен. Укажи SUPABASE_URL и SUPABASE_ANON_KEY.";
+
+        return;
+    }
+
+    element.className =
+        "status success";
+
+    element.textContent =
+        "Supabase подключён. Edge Functions готовы к вызову.";
+}
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function generateId() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+        return window.crypto.randomUUID();
+    }
+
+    return (
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2)
+    );
+}
+
+function fileToDataURL(file) {
 
     return new Promise(
         (resolve, reject) => {
@@ -4416,776 +2891,174 @@ function fileToBase64(file) {
             const reader =
                 new FileReader();
 
+            reader.onload = () =>
+                resolve(
+                    reader.result
+                );
 
-            reader.onload =
-                () => {
+            reader.onerror = () =>
+                reject(
+                    new Error(
+                        "Не удалось прочитать файл."
+                    )
+                );
 
-                    const result =
-                        String(
-                            reader.result || ""
-                        );
-
-
-                    const commaIndex =
-                        result.indexOf(",");
-
-
-                    if (
-                        commaIndex === -1
-                    ) {
-
-                        resolve(
-                            result
-                        );
-
-                        return;
-                    }
-
-
-                    resolve(
-                        result.slice(
-                            commaIndex + 1
-                        )
-                    );
-
-                };
-
-
-            reader.onerror =
-                () => {
-
-                    reject(
-                        new Error(
-                            "Не удалось прочитать файл."
-                        )
-                    );
-
-                };
-
-
-            reader.readAsDataURL(
-                file
-            );
-
+            reader.readAsDataURL(file);
         }
     );
 }
 
-
-/* =====================================================
-   SAVE MATERIAL RECORD
-===================================================== */
-
-async function saveMaterialRecord({
-    actorId,
-    file,
-    analysis,
-    aiData
-}) {
-
-    /*
-     * Сначала пытаемся загрузить файл
-     * в Storage bucket "materials".
-     */
-
-    let filePath =
-        null;
-
-    let imageUrl =
-        null;
-
-
-    try {
-
-        const safeName =
-            file.name
-                .replace(
-                    /[^a-zA-Z0-9._-]/g,
-                    "_"
-                );
-
-
-        const uniqueName =
-            Date.now() +
-            "_" +
-            Math.random()
-                .toString(36)
-                .slice(2) +
-            "_" +
-            safeName;
-
-
-        filePath =
-            actorId +
-            "/" +
-            uniqueName;
-
-
-        const uploadResult =
-            await supabaseClient
-                .storage
-                .from("materials")
-                .upload(
-                    filePath,
-                    file,
-                    {
-                        upsert: false,
-                        contentType:
-                            file.type
-                    }
-                );
-
-
-        if (uploadResult.error) {
-
-            console.warn(
-                "Storage upload error:",
-                uploadResult.error
-            );
-
-            filePath =
-                null;
-
-        }
-        else {
-
-            const publicResult =
-                supabaseClient
-                    .storage
-                    .from("materials")
-                    .getPublicUrl(
-                        filePath
-                    );
-
-
-            imageUrl =
-                publicResult
-                    .data
-                    ?.publicUrl ||
-                    null;
-
-        }
-
-    }
-    catch (storageError) {
-
-        console.warn(
-            "Storage unavailable:",
-            storageError
-        );
-
-    }
-
-
-    /*
-     * Сохраняем запись в таблицу materials.
-     */
-
-    const title =
-        file.name
-            .replace(
-                /\.[^/.]+$/,
-                ""
-            );
-
-
-    const payload = {
-
-        actor_id:
-            actorId,
-
-        title:
-            title || "Фотография",
-
-        material_type:
-            "photo",
-
-        original_name:
-            file.name,
-
-        file_path:
-            filePath,
-
-        image_url:
-            imageUrl,
-
-        analysis:
-            analysis,
-
-        is_primary:
-            false
-
-    };
-
-
-    /*
-     * aiData намеренно не записываем
-     * отдельным полем, потому что структура
-     * таблицы может его не содержать.
-     */
-
-    const result =
-        await supabaseClient
-            .from("materials")
-            .insert(
-                payload
-            );
-
-
-    if (result.error) {
-
-        console.error(
-            "Save material record error:",
-            result.error
-        );
-
-
-        /*
-         * Если Storage уже загрузился,
-         * а запись не сохранилась,
-         * пробуем удалить файл.
-         */
-
-        if (filePath) {
-
-            await supabaseClient
-                .storage
-                .from("materials")
-                .remove([
-                    filePath
-                ]);
-
-        }
-
-
-        throw new Error(
-            "Фото проанализировано, но не удалось сохранить его в базе: " +
-            result.error.message
-        );
-    }
-
-
-    return result.data;
-}
-
-
-/* =====================================================
-   PORTFOLIO ANALYSIS
-===================================================== */
-
-async function loadSavedPortfolioAnalysis() {
-
-    await analyzeAllMaterials(
-        false
-    );
-}
-
-
-async function analyzeAllMaterials(forceNew = false) {
-
-    const actor =
-        await ensureActor();
-
-
-    if (!actor) {
-        return;
-    }
-
+function setMaterialLoading(
+    visible,
+    text
+) {
 
     const loading =
         document.getElementById(
-            "allMaterialsLoading"
+            "materialLoading"
         );
 
-
-    const errorBox =
+    const textElement =
         document.getElementById(
-            "allMaterialsError"
+            "materialLoadingText"
         );
 
-
-    const resultBox =
-        document.getElementById(
-            "allMaterialsResult"
-        );
-
-
-    const newButton =
-        document.getElementById(
-            "newPortfolioAnalysisBtn"
-        );
-
-
-    if (loading) {
-        loading.style.display =
-            "block";
+    if (!loading) {
+        return;
     }
 
+    loading.style.display =
+        visible ? "flex" : "none";
 
-    if (errorBox) {
-
-        errorBox.style.display =
-            "none";
-
-        errorBox.textContent =
-            "";
-
+    if (textElement) {
+        textElement.textContent =
+            text || "";
     }
+}
 
+function setText(
+    id,
+    value
+) {
 
-    if (resultBox) {
-        resultBox.style.display =
-            "none";
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+        element.textContent =
+            String(value);
     }
+}
 
+function formatDate(date) {
 
-    if (newButton) {
-        newButton.disabled =
-            true;
+    if (!date) {
+        return "";
     }
-
 
     try {
 
-        /*
-         * Сначала проверяем сохранённый анализ.
-         */
-
-        const actorResult =
-            await supabaseClient
-                .from("actors")
-                .select(
-                    "portfolio_analysis"
-                )
-                .eq(
-                    "id",
-                    actor
-                )
-                .single();
-
-
-        if (actorResult.error) {
-
-            throw new Error(
-                actorResult.error.message
-            );
-        }
-
-
-        const savedAnalysis =
-            actorResult
-                .data
-                ?.portfolio_analysis;
-
-
-        if (
-            !forceNew &&
-            savedAnalysis
-        ) {
-
-            if (resultBox) {
-
-                resultBox.innerHTML =
-                    formatAIText(
-                        savedAnalysis
-                    );
-
-                resultBox.style.display =
-                    "block";
-
-            }
-
-
-            return;
-        }
-
-
-        /*
-         * Загружаем все материалы.
-         */
-
-        const materialsResult =
-            await supabaseClient
-                .from("materials")
-                .select("*")
-                .eq(
-                    "actor_id",
-                    actor
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (materialsResult.error) {
-
-            throw new Error(
-                materialsResult.error.message
-            );
-        }
-
-
-        const materials =
-            materialsResult.data || [];
-
-
-        if (!materials.length) {
-
-            throw new Error(
-                "Нет материалов для анализа."
-            );
-        }
-
-
-        /*
-         * Отправляем портфолио в Edge Function.
-         */
-
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                "/functions/v1/analyze-portfolio",
-                {
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "apikey":
-                            SUPABASE_KEY,
-
-                        "Authorization":
-                            "Bearer " +
-                            SUPABASE_KEY
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            actorId:
-                                actor,
-
-                            materials
-
-                        })
-                }
-            );
-
-
-        let data = null;
-
-
-        try {
-            data =
-                await response.json();
-        }
-        catch (error) {
-
-            throw new Error(
-                "AI вернул некорректный ответ."
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                "Ошибка анализа портфолио."
-            );
-
-        }
-
-
-        const analysis =
-            data?.analysis ||
-            data?.result;
-
-
-        if (!analysis) {
-
-            throw new Error(
-                "AI не вернул анализ портфолио."
-            );
-
-        }
-
-
-        /*
-         * Сохраняем анализ в actors.
-         */
-
-        const updateResult =
-            await supabaseClient
-                .from("actors")
-                .update({
-                    portfolio_analysis:
-                        analysis
-                })
-                .eq(
-                    "id",
-                    actor
-                );
-
-
-        if (updateResult.error) {
-
-            throw new Error(
-                "Анализ получен, но не удалось сохранить его: " +
-                updateResult.error.message
-            );
-
-        }
-
-
-        if (resultBox) {
-
-            resultBox.innerHTML =
-                formatAIText(
-                    analysis
-                );
-
-            resultBox.style.display =
-                "block";
-
-        }
-
-
+        return new Date(
+            date + "T00:00:00"
+        ).toLocaleDateString(
+            "ru-RU"
+        );
+
+    } catch (_) {
+
+        return date;
     }
-    catch (error) {
+}
 
-        console.error(
-            "Portfolio analysis error:",
+function getErrorMessage(error) {
+
+    if (!error) {
+        return "Неизвестная ошибка";
+    }
+
+    if (
+        typeof error === "string"
+    ) {
+        return error;
+    }
+
+    if (
+        error.message
+    ) {
+        return error.message;
+    }
+
+    if (
+        error.error_description
+    ) {
+        return error.error_description;
+    }
+
+    try {
+
+        return JSON.stringify(
             error
         );
 
+    } catch (_) {
 
-        if (errorBox) {
-
-            errorBox.style.display =
-                "block";
-
-            errorBox.textContent =
-                error instanceof Error
-                    ? error.message
-                    : String(error);
-
-        }
-
-    }
-    finally {
-
-        if (loading) {
-            loading.style.display =
-                "none";
-        }
-
-
-        if (newButton) {
-            newButton.disabled =
-                false;
-        }
+        return String(error);
     }
 }
 
+function escapeHtml(value) {
 
-/* =====================================================
-   AGENT CHAT
-===================================================== */
+    return String(
+        value ?? ""
+    )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-function sendMessage() {
+function escapeAttribute(value) {
 
-    const input =
-        document.getElementById(
-            "chatInput"
+    return escapeHtml(value);
+}
+
+/* =========================================================
+   RESTORE SAVED PORTFOLIO ANALYSIS
+========================================================= */
+
+(function restorePortfolioAnalysis() {
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEYS.portfolioAnalysis
         );
 
-
-    const chat =
-        document.getElementById(
-            "chat"
-        );
-
-
-    if (!input || !chat) {
+    if (!saved) {
         return;
     }
-
 
     const text =
-        input.value.trim();
-
-
-    if (!text) {
-        return;
-    }
-
-
-    const userMessage =
-        document.createElement(
-            "div"
-        );
-
-
-    userMessage.className =
-        "chat-message user";
-
-
-    userMessage.textContent =
-        text;
-
-
-    chat.appendChild(
-        userMessage
-    );
-
-
-    input.value =
-        "";
-
-
-    const agentMessage =
-        document.createElement(
-            "div"
-        );
-
-
-    agentMessage.className =
-        "chat-message";
-
-
-    agentMessage.innerHTML = `
-        <b>Агент:</b>
-        <div style="margin-top:6px">
-            Я сохраню этот вопрос в контексте.
-            Реальный AI-ответ можно подключить
-            через отдельную Edge Function.
-        </div>
-    `;
-
-
-    chat.appendChild(
-        agentMessage
-    );
-
-
-    chat.scrollTop =
-        chat.scrollHeight;
-}
-
-
-/* =====================================================
-   MODAL EVENTS
-===================================================== */
-
-function initializeModalEvents() {
-
-    const modal =
         document.getElementById(
-            "modal"
+            "portfolioAnalysisText"
         );
 
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target ===
-                modal
-            ) {
-
-                closeModal();
-
-            }
-
-        }
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                closeModal();
-
-            }
-
-        }
-    );
-}
-
-
-/* =====================================================
-   INITIALIZATION
-===================================================== */
-
-async function initializeApp() {
-
-    initializeMaterialUpload();
-
-    initializeModalEvents();
-
-
-    if (!supabaseClient) {
-
-        setStatus(
-            "Ошибка: библиотека Supabase не загрузилась.",
-            "error"
+    const result =
+        document.getElementById(
+            "portfolioResult"
         );
 
-        return;
+    if (text && result) {
+
+        text.textContent =
+            saved;
+
+        result.classList.add(
+            "open"
+        );
     }
 
-
-    /*
-     * На старте пытаемся найти актёра.
-     */
-
-    await findActor();
-
-
-    /*
-     * Загружаем кастинги.
-     */
-
-    if (actorId) {
-        await loadCastings();
-        await loadMaterials();
-    }
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        initializeApp();
-
-    }
-);
+})();
 </script>
 
 </body>
