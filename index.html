@@ -3900,50 +3900,70 @@ function handleMaterialFile(event) {
 
 
     if (error) {
-        error.style.display = 'none';
+
+        error.style.display =
+            'none';
+
+        error.textContent =
+            '';
+
     }
 
 
     if (!file) {
 
-        selectedMaterialFile = null;
+        selectedMaterialFile =
+            null;
 
         if (preview) {
-            preview.innerHTML = '';
-            preview.style.display = 'none';
+
+            preview.innerHTML =
+                '';
+
+            preview.style.display =
+                'none';
+
         }
 
         if (button) {
-            button.disabled = true;
+
+            button.disabled =
+                true;
+
         }
 
         return;
     }
 
 
-      
-
     if (!file.type.startsWith('image/')) {
 
-    showMaterialError(
-        'Можно выбрать только изображение.'
-    );
+        showMaterialError(
+            'Можно выбрать только изображение.'
+        );
 
-    selectedMaterialFile = null;
+        selectedMaterialFile =
+            null;
 
-    if (preview) {
-        preview.innerHTML = '';
-        preview.style.display = 'none';
+        if (preview) {
+
+            preview.innerHTML =
+                '';
+
+            preview.style.display =
+                'none';
+
+        }
+
+        if (button) {
+
+            button.disabled =
+                true;
+
+        }
+
+        return;
     }
-
-    if (button) {
-        button.disabled = true;
-    }
-
-    return;
-}
-
-      
 
 
     const maxSize =
@@ -3956,43 +3976,79 @@ function handleMaterialFile(event) {
             'Фотография слишком большая. Максимальный размер — 8 МБ.'
         );
 
-        selectedMaterialFile = null;
+        selectedMaterialFile =
+            null;
 
-        button.disabled = true;
+        if (preview) {
+
+            preview.innerHTML =
+                '';
+
+            preview.style.display =
+                'none';
+
+        }
+
+        if (button) {
+
+            button.disabled =
+                true;
+
+        }
 
         return;
     }
 
 
-   reader.onload = function(e) {
+    selectedMaterialFile =
+        file;
 
-    if (!preview) {
-        return;
-    }
 
-    preview.innerHTML = `
-        <img
-            src="${e.target.result}"
-            alt="Выбранная фотография"
-        >
-    `;
+    const reader =
+        new FileReader();
 
-    preview.style.display =
-        'block';
 
-};
-      
+    reader.onload =
+        function(event) {
+
+            if (!preview) {
+                return;
+            }
+
+            preview.innerHTML = `
+                <img
+                    src="${event.target.result}"
+                    alt="Выбранная фотография"
+                >
+            `;
+
+            preview.style.display =
+                'block';
+
+        };
+
+
+    reader.onerror =
+        function() {
+
+            showMaterialError(
+                'Не удалось прочитать фотографию.'
+            );
+
+        };
+
 
     reader.readAsDataURL(file);
 
 
-   if (button) {
+    if (button) {
 
-    button.disabled =
-        false;
+        button.disabled =
+            false;
+
+    }
 
 }
-
 
 /* =====================================================
    ANALYZE
@@ -4376,7 +4432,22 @@ async function analyzeMaterial() {
 
         }
 
+const preview =
+    document.getElementById(
+        'materialPreview'
+    );
 
+if (preview) {
+
+    preview.innerHTML =
+        '';
+
+    preview.style.display =
+        'none';
+
+}
+
+          
     } catch (error) {
 
         console.error(
