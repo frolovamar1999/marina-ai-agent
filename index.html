@@ -2989,8 +2989,7 @@ function editCasting(id) {
             casting.casting_text || '',
 
         castingDirectorMessage:
-            casting.casting_director_message || '',
-
+            casting.director_message
         castingStatus:
             casting.status || 'new',
 
@@ -3206,7 +3205,7 @@ async function saveCasting() {
         casting_text:
             castingText,
 
-        casting_director_message:
+        director_message:
             directorMessage,
 
         status:
@@ -3526,7 +3525,7 @@ async function analyzeCurrentCasting() {
 
                 directorMessage =
                     String(
-                        storedCasting.casting_director_message ||
+                        storedCasting.director_message ||
                         ''
                     ).trim();
 
