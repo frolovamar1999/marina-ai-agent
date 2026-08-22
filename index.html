@@ -3,581 +3,575 @@
 
 <head>
 
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>Marina AI Agent</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f3ef;
-    color: #252321;
-}
-
-button,
-input,
-textarea,
-select {
-    font: inherit;
-}
-
-.app {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* =========================
-   SIDEBAR
-========================= */
-
-.sidebar {
-    width: 240px;
-    background: #252321;
-    color: white;
-    padding: 25px 15px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-}
-
-.logo {
-    font-size: 21px;
-    font-weight: bold;
-    padding: 0 12px 30px;
-}
-
-.logo span {
-    display: block;
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-    margin-top: 4px;
-}
-
-.nav button {
-    display: block;
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: #ccc;
-    text-align: left;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 4px;
-    cursor: pointer;
-}
-
-.nav button:hover,
-.nav button.active {
-    background: #3b3936;
-    color: white;
-}
-
-/* =========================
-   CONTENT
-========================= */
-
-.content {
-    margin-left: 240px;
-    padding: 30px;
-    width: calc(100% - 240px);
-    max-width: 1400px;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 30px;
-}
-
-.header p {
-    color: #777;
-    margin-top: 5px;
-}
-
-/* =========================
-   BUTTONS
-========================= */
-
-.btn {
-    border: 0;
-    background: #252321;
-    color: white;
-    padding: 11px 17px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.btn:hover {
-    opacity: .9;
-}
-
-.btn.light {
-    background: #ebe8e2;
-    color: #222;
-}
-
-.btn.danger {
-    background: #8b3a32;
-}
-
-.btn.small {
-    padding: 8px 12px;
-    font-size: 13px;
-}
-
-/* =========================
-   CARDS
-========================= */
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-}
-
-.card {
-    background: white;
-    border: 1px solid #e5e1db;
-    border-radius: 14px;
-    padding: 20px;
-}
-
-.metric strong {
-    display: block;
-    font-size: 30px;
-    margin-bottom: 5px;
-}
-
-.metric span {
-    color: #777;
-}
-
-.two {
-    display: grid;
-    grid-template-columns: 1.4fr .6fr;
-    gap: 15px;
-    margin-top: 15px;
-}
-
-/* =========================
-   SECTIONS
-========================= */
-
-.section-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.section-title h2 {
-    font-size: 18px;
-    margin: 0;
-}
-
-.casting {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 18px 0;
-    border-top: 1px solid #eee;
-    gap: 20px;
-}
-
-.casting:first-child {
-    border-top: 0;
-}
-
-.casting h3 {
-    margin: 0 0 7px;
-    font-size: 17px;
-}
-
-.casting p {
-    margin: 5px 0;
-    color: #777;
-}
-
-.casting-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-/* =========================
-   BADGES
-========================= */
-
-.badge {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    background: #eee;
-    font-size: 12px;
-    margin-top: 8px;
-}
-
-.badge.green {
-    background: #e5f2e8;
-}
-
-.badge.yellow {
-    background: #f8eed3;
-}
-
-.badge.red {
-    background: #f7e1de;
-}
-
-/* =========================
-   PROFILE
-========================= */
-
-.profile {
-    display: flex;
-    gap: 20px;
-}
-
-.profile img {
-    width: 120px;
-    height: 155px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.profile-info {
-    flex: 1;
-}
-
-.profile-info h2 {
-    margin-top: 0;
-}
-
-.info {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.info div:nth-child(odd) {
-    color: #777;
-}
-
-.tags {
-    margin-top: 15px;
-}
-
-.tag {
-    display: inline-block;
-    padding: 7px 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 3px;
-    font-size: 13px;
-}
-
-/* =========================
-   NOTICE / STATUS
-========================= */
-
-.notice {
-    background: #f1efeb;
-    border-radius: 9px;
-    padding: 12px;
-    margin: 10px 0;
-}
-
-.status {
-    margin-bottom: 15px;
-    padding: 11px;
-    border-radius: 9px;
-    background: #eee;
-    color: #555;
-}
-
-.status.success {
-    background: #e5f2e8;
-    color: #285c35;
-}
-
-.status.error {
-    background: #f7e1de;
-    color: #7a3027;
-}
-
-/* =========================
-   MODAL
-========================= */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, .55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 1000;
-}
-
-.modal.open {
-    display: flex;
-}
-
-.modal-box {
-    background: white;
-    width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 15px;
-    padding: 25px;
-}
-
-.modal-box h2 {
-    margin-top: 0;
-}
-
-label {
-    display: block;
-    margin-top: 13px;
-    font-size: 14px;
-}
-
-input,
-textarea,
-select {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 11px;
-    margin-top: 6px;
-    outline: none;
-    background: white;
-}
-
-textarea {
-    resize: vertical;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.modal-buttons button {
-    flex: 1;
-}
-
-/* =========================
-   EMPTY
-========================= */
-
-.empty {
-    padding: 35px 10px;
-    text-align: center;
-    color: #777;
-}
-
-/* =========================
-   LINKS
-========================= */
-
-.castings-link {
-    margin-top: 8px;
-}
-
-.castings-link a {
-    color: #333;
-}
-/* =====================================================
-   MATERIALS ANALYSIS
-   ===================================================== */
-
-.material-intro {
-    margin-bottom: 15px;
-}
-
-.material-intro h2 {
-    margin-top: 0;
-    font-size: 20px;
-}
-
-.material-help {
-    color: #777;
-    line-height: 1.5;
-}
-
-.material-upload {
-    margin-bottom: 15px;
-}
-
-.material-upload h2 {
-    margin-top: 0;
-    font-size: 20px;
-}
-
-.material-upload input[type="file"] {
-    margin-bottom: 15px;
-}
-
-.material-preview {
-    margin: 15px 0;
-    display: none;
-}
-
-.material-preview img {
-    display: block;
-    max-width: 280px;
-    max-height: 380px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-}
-
-.material-loading {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.material-spinner {
-    width: 30px;
-    height: 30px;
-    border: 3px solid #ddd;
-    border-top-color: #252321;
-    border-radius: 50%;
-    animation: materialSpin .8s linear infinite;
-}
-
-@keyframes materialSpin {
-
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-
-}
-
-.material-result {
-    margin-top: 15px;
-}
-
-.material-analysis {
-    line-height: 1.65;
-    white-space: pre-wrap;
-    color: #333;
-}
-
-.material-analysis strong {
-    font-weight: 700;
-}
-
-@media (max-width: 800px) {
-
-    .material-preview img {
-        max-width: 100%;
-    }
-
-}
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 800px) {
-
-    .sidebar {
-        width: 70px;
-    }
-
-    .logo {
-        font-size: 0;
-    }
-
-    .logo span {
-        display: none;
-    }
-
-    .nav button {
-        font-size: 0;
-        text-align: center;
-    }
-
-    .content {
-        margin-left: 70px;
-        width: calc(100% - 70px);
-        padding: 18px;
-    }
-
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .two {
-        grid-template-columns: 1fr;
-    }
-
-    .profile {
-        flex-direction: column;
-    }
-
-    .header {
-        align-items: flex-start;
-        gap: 15px;
-        flex-direction: column;
-    }
-
-    .casting {
-        flex-direction: column;
-    }
-
-    .casting-actions {
-        justify-content: flex-start;
-    }
-}
-
-</style>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Marina AI Agent</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f3ef;
+            color: #252321;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 240px;
+            background: #252321;
+            color: white;
+            padding: 25px 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            padding: 0 12px 30px;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            font-weight: normal;
+            margin-top: 4px;
+        }
+
+        .nav button {
+            display: block;
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: #ccc;
+            text-align: left;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .nav button:hover,
+        .nav button.active {
+            background: #3b3936;
+            color: white;
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            margin-left: 240px;
+            padding: 30px;
+            width: calc(100% - 240px);
+            max-width: 1400px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            border: 0;
+            background: #252321;
+            color: white;
+            padding: 11px 17px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        .btn.light {
+            background: #ebe8e2;
+            color: #222;
+        }
+
+        .btn.danger {
+            background: #8b3a32;
+        }
+
+        .btn.small {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e1db;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        .metric span {
+            color: #777;
+        }
+
+        .two {
+            display: grid;
+            grid-template-columns: 1.4fr .6fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .casting {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 18px 0;
+            border-top: 1px solid #eee;
+            gap: 20px;
+        }
+
+        .casting:first-child {
+            border-top: 0;
+        }
+
+        .casting h3 {
+            margin: 0 0 7px;
+            font-size: 17px;
+        }
+
+        .casting p {
+            margin: 5px 0;
+            color: #777;
+        }
+
+        .casting-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        /* =========================
+           BADGES
+        ========================= */
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #eee;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .badge.green {
+            background: #e5f2e8;
+        }
+
+        .badge.yellow {
+            background: #f8eed3;
+        }
+
+        .badge.red {
+            background: #f7e1de;
+        }
+
+        /* =========================
+           PROFILE
+        ========================= */
+
+        .profile {
+            display: flex;
+            gap: 20px;
+        }
+
+        .profile img {
+            width: 120px;
+            height: 155px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            margin-top: 0;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .info div:nth-child(odd) {
+            color: #777;
+        }
+
+        .tags {
+            margin-top: 15px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 7px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 3px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           NOTICE / STATUS
+        ========================= */
+
+        .notice {
+            background: #f1efeb;
+            border-radius: 9px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .status {
+            margin-bottom: 15px;
+            padding: 11px;
+            border-radius: 9px;
+            background: #eee;
+            color: #555;
+        }
+
+        .status.success {
+            background: #e5f2e8;
+            color: #285c35;
+        }
+
+        .status.error {
+            background: #f7e1de;
+            color: #7a3027;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .modal-box h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 13px;
+            font-size: 14px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 11px;
+            margin-top: 6px;
+            outline: none;
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            padding: 35px 10px;
+            text-align: center;
+            color: #777;
+        }
+
+        /* =========================
+           LINKS
+        ========================= */
+
+        .castings-link {
+            margin-top: 8px;
+        }
+
+        .castings-link a {
+            color: #333;
+        }
+
+        /* =========================
+           MATERIALS ANALYSIS
+        ========================= */
+
+        .material-intro {
+            margin-bottom: 15px;
+        }
+
+        .material-intro h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .material-help {
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .material-upload {
+            margin-bottom: 15px;
+        }
+
+        .material-upload h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .material-upload input[type="file"] {
+            margin-bottom: 15px;
+        }
+
+        .material-preview {
+            margin: 15px 0;
+            display: none;
+        }
+
+        .material-preview img {
+            display: block;
+            max-width: 280px;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .material-loading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .material-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #ddd;
+            border-top-color: #252321;
+            border-radius: 50%;
+            animation: materialSpin .8s linear infinite;
+        }
+
+        @keyframes materialSpin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .material-result {
+            margin-top: 15px;
+        }
+
+        .material-analysis {
+            line-height: 1.65;
+            white-space: pre-wrap;
+            color: #333;
+        }
+
+        .material-analysis strong {
+            font-weight: 700;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo {
+                font-size: 0;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .nav button {
+                font-size: 0;
+                text-align: center;
+            }
+
+            .content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: 18px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two {
+                grid-template-columns: 1fr;
+            }
+
+            .profile {
+                flex-direction: column;
+            }
+
+            .header {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+
+            .casting {
+                flex-direction: column;
+            }
+
+            .casting-actions {
+                justify-content: flex-start;
+            }
+
+            .material-preview img {
+                max-width: 100%;
+            }
+        }
+
+    </style>
 
 </head>
 
-
 <body>
-
-
-<div class="app">
 
 
 <!-- =========================
@@ -2894,9 +2888,7 @@ function renderCastings(castings) {
 
 
     if (!list) {
-
         return;
-
     }
 
 
@@ -2925,14 +2917,11 @@ function renderCastings(castings) {
 
         `;
 
-
         return;
-
     }
 
 
-    list.innerHTML =
-        '';
+    list.innerHTML = '';
 
 
     castings.forEach(
@@ -2975,24 +2964,22 @@ function renderCastings(castings) {
 
                         ${
                             casting.deadline
-                                ? `
-                                    · дедлайн
-                                    ${escapeHtml(
-                                        casting.deadline
-                                    )}
-                                  `
-                                : ''
+                            ? `
+                                · дедлайн
+                                ${escapeHtml(
+                                    casting.deadline
+                                )}
+                              `
+                            : ''
                         }
 
                     </p>
 
 
-                    <span
-                        class="
-                            badge
-                            ${statusClass}
-                        "
-                    >
+                    <span class="
+                        badge
+                        ${statusClass}
+                    ">
 
                         ${escapeHtml(
                             getStatusLabel(
@@ -3005,61 +2992,61 @@ function renderCastings(castings) {
 
                     ${
                         casting.applied_at
-                            ? `
-                                <p>
-                                    📅 Подана:
-                                    ${escapeHtml(
-                                        casting.applied_at
-                                    )}
-                                </p>
-                              `
-                            : ''
+                        ? `
+                            <p>
+                                📅 Подана:
+                                ${escapeHtml(
+                                    casting.applied_at
+                                )}
+                            </p>
+                          `
+                        : ''
                     }
 
 
                     ${
                         casting.notes
-                            ? `
-                                <p>
-                                    📝
-                                    ${escapeHtml(
-                                        casting.notes
-                                    )}
-                                </p>
-                              `
-                            : ''
+                        ? `
+                            <p>
+                                📝
+                                ${escapeHtml(
+                                    casting.notes
+                                )}
+                            </p>
+                          `
+                        : ''
                     }
 
 
                     ${
                         casting.casting_url
-                            ? `
-                                <p class="castings-link">
+                        ? `
+                            <p class="castings-link">
 
-                                    <a
-                                        href="${escapeHtml(
-                                            casting.casting_url
-                                        )}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Открыть кастинг →
-                                    </a>
+                                <a
+                                    href="${escapeHtml(
+                                        casting.casting_url
+                                    )}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Открыть кастинг →
+                                </a>
 
-                                </p>
-                              `
-                            : ''
+                            </p>
+                          `
+                        : ''
                     }
 
 
                     ${
                         casting.ai_analysis
-                            ? `
-                                <p>
-                                    🧠 AI-анализ сохранён
-                                </p>
-                              `
-                            : ''
+                        ? `
+                            <p>
+                                🧠 AI-анализ сохранён
+                            </p>
+                          `
+                        : ''
                     }
 
                 </div>
@@ -3070,9 +3057,7 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn light small"
-                        onclick="editCasting(${JSON.stringify(
-                            casting.id
-                        )})"
+                        onclick="editCasting(${JSON.stringify(casting.id)})"
                     >
                         ✏️ Изменить
                     </button>
@@ -3081,9 +3066,7 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn danger small"
-                        onclick="deleteCasting(${JSON.stringify(
-                            casting.id
-                        )})"
+                        onclick="deleteCasting(${JSON.stringify(casting.id)})"
                     >
                         🗑️ Удалить
                     </button>
@@ -3104,7 +3087,7 @@ function renderCastings(castings) {
 
 
 /* =====================================================
-   GET STATUS LABEL
+   STATUS LABEL
 ===================================================== */
 
 function getStatusLabel(status) {
@@ -3156,13 +3139,8 @@ function getStatusLabel(status) {
 
 function getStatusClass(status) {
 
-    if (
-        status ===
-        'approved'
-    ) {
-
+    if (status === 'approved') {
         return 'green';
-
     }
 
 
@@ -3171,9 +3149,7 @@ function getStatusClass(status) {
         status === 'self-tape' ||
         status === 'callback'
     ) {
-
         return 'yellow';
-
     }
 
 
@@ -3181,16 +3157,13 @@ function getStatusClass(status) {
         status === 'rejected' ||
         status === 'cancelled'
     ) {
-
         return 'red';
-
     }
 
 
     return '';
 
 }
-
 
 
 
