@@ -2322,7 +2322,7 @@ async function analyzeCurrentCasting() {
             data;
 
 
-        window.currentCastingAI =
+        currentCastingAI =
             data;
 
 
@@ -2451,7 +2451,7 @@ function resetCastingForm() {
     currentCastingAI =
         null;
 
-    window.currentCastingAI =
+    currentCastingAI =
         null;
 
 
@@ -2878,7 +2878,7 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn light small"
-                        onclick="editCasting('${escapeHtml(casting.id)}')"
+                        onclick="editCasting(${JSON.stringify(casting.id)})"
                     >
                         ✏️ Изменить
                     </button>
@@ -2887,7 +2887,7 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn danger small"
-                        onclick="deleteCasting('${escapeHtml(casting.id)}')"
+                        onclick="editCasting(${JSON.stringify(casting.id)})"
                     >
                         🗑️ Удалить
                     </button>
@@ -3047,7 +3047,7 @@ async function editCasting(id) {
      * затем загружаем сохранённый анализ этого кастинга.
      */
 
-    window.currentCastingAI = null;
+    currentCastingAI = null;
 
 
     if (
@@ -3058,7 +3058,7 @@ async function editCasting(id) {
         casting.ai_email
     ) {
 
-        window.currentCastingAI = {
+        currentCastingAI = {
 
             analysis:
                 casting.ai_analysis || null,
@@ -3332,11 +3332,11 @@ async function saveCasting() {
      *
      * Если пользователь открыл старый кастинг,
      * а новый анализ не запускал, старый анализ
-     * уже находится в window.currentCastingAI.
+     * уже находится в currentCastingAI.
      */
 
     const ai =
-        window.currentCastingAI || null;
+        currentCastingAI || null;
 
 
     const aiData = {
@@ -3847,16 +3847,15 @@ function escapeHtml(value) {
    MODAL CLICK OUTSIDE
 ===================================================== */
 
-document
-    .getElementById('modal')
-    .addEventListener(
+const modal = document.getElementById('modal');
+
+if (modal) {
+
+    modal.addEventListener(
         'click',
         function(event) {
 
-            if (
-                event.target ===
-                this
-            ) {
+            if (event.target === this) {
 
                 closeModal();
 
@@ -3865,37 +3864,14 @@ document
         }
     );
 
+}
+
 /* =====================================================
    MATERIALS AI ANALYSIS
    ===================================================== */
 
 let selectedMaterialFile = null;
 
-
-/* =====================================================
-   FILE SELECT
-   ===================================================== */
-
-document.addEventListener(
-    'DOMContentLoaded',
-    () => {
-
-        const fileInput =
-            document.getElementById(
-                'materialFile'
-            );
-
-        if (!fileInput) {
-            return;
-        }
-
-        fileInput.addEventListener(
-            'change',
-            handleMaterialFile
-        );
-
-    }
-);
 
 
 /* =====================================================
@@ -3923,35 +3899,51 @@ function handleMaterialFile(event) {
         );
 
 
-    error.style.display = 'none';
+    if (error) {
+        error.style.display = 'none';
+    }
 
 
     if (!file) {
 
         selectedMaterialFile = null;
 
-        preview.innerHTML = '';
+        if (preview) {
+            preview.innerHTML = '';
+            preview.style.display = 'none';
+        }
 
-        preview.style.display = 'none';
-
-        button.disabled = true;
+        if (button) {
+            button.disabled = true;
+        }
 
         return;
     }
 
+
+      
 
     if (!file.type.startsWith('image/')) {
 
-        showMaterialError(
-            'Можно выбрать только изображение.'
-        );
+    showMaterialError(
+        'Можно выбрать только изображение.'
+    );
 
-        selectedMaterialFile = null;
+    selectedMaterialFile = null;
 
-        button.disabled = true;
-
-        return;
+    if (preview) {
+        preview.innerHTML = '';
+        preview.style.display = 'none';
     }
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    return;
+}
+
+      
 
 
     const maxSize =
@@ -3972,31 +3964,32 @@ function handleMaterialFile(event) {
     }
 
 
-    selectedMaterialFile = file;
+   reader.onload = function(e) {
 
+    if (!preview) {
+        return;
+    }
 
-    const reader =
-        new FileReader();
+    preview.innerHTML = `
+        <img
+            src="${e.target.result}"
+            alt="Выбранная фотография"
+        >
+    `;
 
+    preview.style.display =
+        'block';
 
-    reader.onload = function(e) {
-
-        preview.innerHTML = `
-            <img
-                src="${e.target.result}"
-                alt="Выбранная фотография"
-            >
-        `;
-
-        preview.style.display = 'block';
-
-    };
-
+};
+      
 
     reader.readAsDataURL(file);
 
 
-    button.disabled = false;
+   if (button) {
+
+    button.disabled =
+        false;
 
 }
 
@@ -4425,28 +4418,47 @@ async function analyzeMaterial() {
     const maxHeight = 1400;
     const quality = 0.78;
 
-    const image =
-        await new Promise(
-            (resolve, reject) => {
+   const image =
+    await new Promise(
+        (resolve, reject) => {
 
-                const img =
-                    new Image();
+            const img =
+                new Image();
 
-                img.onload =
-                    () => resolve(img);
+            const objectUrl =
+                URL.createObjectURL(file);
 
-                img.onerror =
-                    () => reject(
+            img.onload =
+                () => {
+
+                    URL.revokeObjectURL(
+                        objectUrl
+                    );
+
+                    resolve(img);
+
+                };
+
+            img.onerror =
+                () => {
+
+                    URL.revokeObjectURL(
+                        objectUrl
+                    );
+
+                    reject(
                         new Error(
                             'Не удалось открыть фотографию.'
                         )
                     );
 
-                img.src =
-                    URL.createObjectURL(file);
+                };
 
-            }
-        );
+            img.src =
+                objectUrl;
+
+        }
+    );
 
 
     let width =
@@ -5379,6 +5391,20 @@ window.addEventListener(
     'DOMContentLoaded',
     async function() {
 
+        const fileInput =
+            document.getElementById(
+                'materialFile'
+            );
+
+        if (fileInput) {
+
+            fileInput.addEventListener(
+                'change',
+                handleMaterialFile
+            );
+
+        }
+
         await findActor();
 
         await loadCastings();
@@ -5387,7 +5413,7 @@ window.addEventListener(
 
     }
 );
-
+      
 </script>
 
 </body>
