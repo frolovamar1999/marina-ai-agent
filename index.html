@@ -2697,11 +2697,8 @@ function renderCastings(castings) {
             'castingList'
         );
 
-
     if (!list) {
-
         return;
-
     }
 
 
@@ -2730,14 +2727,12 @@ function renderCastings(castings) {
 
         `;
 
-
         return;
 
     }
 
 
-    list.innerHTML =
-        '';
+    list.innerHTML = '';
 
 
     castings.forEach(
@@ -2870,25 +2865,22 @@ function renderCastings(castings) {
 
                 <div class="casting-actions">
 
-                    <div class="casting-actions">
+                    <button
+                        type="button"
+                        class="btn light small"
+                        onclick="editCasting(${JSON.stringify(casting.id)})"
+                    >
+                        ✏️ Изменить
+                    </button>
 
-    <button
-        type="button"
-        class="btn light small"
-        onclick="editCasting('${casting.id}')"
-    >
-        ✏️ Изменить
-    </button>
 
-    <button
-        type="button"
-        class="btn danger small"
-        onclick="deleteCasting('${casting.id}')"
-    >
-        🗑️ Удалить
-    </button>
-
-</div>
+                    <button
+                        type="button"
+                        class="btn danger small"
+                        onclick="deleteCasting(${JSON.stringify(casting.id)})"
+                    >
+                        🗑️ Удалить
+                    </button>
 
                 </div>
 
@@ -2992,222 +2984,321 @@ function getStatusClass(status) {
 
 async function editCasting(id) {
 
-    if (!actorId) {
+    try {
 
-        const actor =
-            await findActor();
+        /* =================================================
+           1. ACTOR
+        ================================================= */
 
-        if (!actor) {
+        if (!actorId) {
+
+            const actor =
+                await findActor();
+
+            if (!actor) {
+
+                alert(
+                    'Профиль Марины не найден.'
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* =================================================
+           2. LOAD CASTING
+        ================================================= */
+
+        const result =
+            await supabaseClient
+                .from('castings')
+                .select('*')
+                .eq(
+                    'id',
+                    id
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                )
+                .single();
+
+
+        if (result.error) {
+
+            console.error(
+                'Load casting for edit error:',
+                result.error
+            );
 
             alert(
-                'Профиль Марины не найден.'
+                'Не удалось загрузить кастинг:\n\n' +
+                result.error.message
             );
 
             return;
 
         }
 
+
+        if (!result.data) {
+
+            alert(
+                'Кастинг не найден.'
+            );
+
+            return;
+
+        }
+
+
+        const casting =
+            result.data;
+
+
+        /* =================================================
+           3. RESET CURRENT AI
+        ================================================= */
+
+        currentCastingAI =
+            null;
+
+
+        /* =================================================
+           4. LOAD SAVED AI
+        ================================================= */
+
+        if (
+            casting.ai_analysis ||
+            casting.ai_character ||
+            casting.ai_fit ||
+            casting.ai_recommended_materials ||
+            casting.ai_email ||
+            casting.ai_analyzed_at
+        ) {
+
+            currentCastingAI = {
+
+                analysis:
+                    casting.ai_analysis || null,
+
+                character:
+                    casting.ai_character || null,
+
+                fit:
+                    casting.ai_fit || null,
+
+                recommendedMaterials:
+                    casting.ai_recommended_materials || null,
+
+                email:
+                    casting.ai_email || null,
+
+                analyzedAt:
+                    casting.ai_analyzed_at || null
+
+            };
+
+        }
+
+
+        /* =================================================
+           5. HELPER
+        ================================================= */
+
+        function setField(
+            id,
+            value
+        ) {
+
+            const element =
+                document.getElementById(
+                    id
+                );
+
+            if (element) {
+
+                element.value =
+                    value ?? '';
+
+            }
+
+        }
+
+
+        /* =================================================
+           6. FILL FORM
+        ================================================= */
+
+        setField(
+            'editingCastingId',
+            casting.id
+        );
+
+        setField(
+            'projectName',
+            casting.project_name
+        );
+
+        setField(
+            'castingUrl',
+            casting.casting_url
+        );
+
+        setField(
+            'roleName',
+            casting.role_name
+        );
+
+        setField(
+            'deadline',
+            casting.deadline
+        );
+
+        setField(
+            'appliedAt',
+            casting.applied_at
+        );
+
+        setField(
+            'castingText',
+            casting.casting_text
+        );
+
+        setField(
+            'castingDirectorMessage',
+            casting.casting_director_message
+        );
+
+        setField(
+            'castingStatus',
+            casting.status || 'new'
+        );
+
+        setField(
+            'castingNotes',
+            casting.notes
+        );
+
+
+        /* =================================================
+           7. AI RESULT
+        ================================================= */
+
+        const resultBox =
+            document.getElementById(
+                'castingAIResult'
+            );
+
+        const resultContent =
+            document.getElementById(
+                'castingAIContent'
+            );
+
+
+        if (
+            resultBox &&
+            resultContent &&
+            casting.ai_analysis
+        ) {
+
+            resultContent.innerHTML =
+                typeof formatAIText === 'function'
+                    ? formatAIText(
+                        casting.ai_analysis
+                    )
+                    : escapeHtml(
+                        String(
+                            casting.ai_analysis
+                        )
+                    );
+
+
+            resultBox.style.display =
+                'block';
+
+        }
+        else if (resultBox) {
+
+            resultBox.style.display =
+                'none';
+
+        }
+
+
+        /* =================================================
+           8. MODAL TITLE
+        ================================================= */
+
+        const modalTitle =
+            document.getElementById(
+                'modalTitle'
+            );
+
+        if (modalTitle) {
+
+            modalTitle.textContent =
+                'Редактировать кастинг';
+
+        }
+
+
+        /* =================================================
+           9. SAVE BUTTON
+        ================================================= */
+
+        const saveButton =
+            document.getElementById(
+                'saveCastingButton'
+            );
+
+        if (saveButton) {
+
+            saveButton.textContent =
+                'Сохранить изменения';
+
+        }
+
+
+        /* =================================================
+           10. OPEN MODAL
+        ================================================= */
+
+        const modal =
+            document.getElementById(
+                'modal'
+            );
+
+        if (modal) {
+
+            modal.classList.add(
+                'open'
+            );
+
+        }
+
     }
-
-
-    const result =
-        await supabaseClient
-            .from('castings')
-            .select('*')
-            .eq('id', id)
-            .eq('actor_id', actorId)
-            .single();
-
-
-    if (result.error) {
+    catch (error) {
 
         console.error(
-            'Load casting for edit error:',
-            result.error
+            'Edit casting error:',
+            error
         );
 
         alert(
-            'Не удалось загрузить кастинг:\n\n' +
-            result.error.message
+            'Ошибка открытия кастинга:\n\n' +
+            (
+                error?.message ||
+                String(error)
+            )
         );
 
-        return;
-
     }
-
-
-    const casting =
-        result.data;
-
-
-    /*
-     * Сбрасываем предыдущий AI-анализ,
-     * затем загружаем сохранённый анализ этого кастинга.
-     */
-
-    currentCastingAI = null;
-
-
-    if (
-        casting.ai_analysis ||
-        casting.ai_character ||
-        casting.ai_fit ||
-        casting.ai_recommended_materials ||
-        casting.ai_email
-    ) {
-
-        currentCastingAI = {
-
-            analysis:
-                casting.ai_analysis || null,
-
-            character:
-                casting.ai_character || null,
-
-            fit:
-                casting.ai_fit || null,
-
-            recommendedMaterials:
-                casting.ai_recommended_materials || null,
-
-            email:
-                casting.ai_email || null,
-
-            analyzedAt:
-                casting.ai_analyzed_at || null
-
-        };
-
-    }
-
-
-    document
-        .getElementById('editingCastingId')
-        .value =
-        casting.id || '';
-
-
-    document
-        .getElementById('projectName')
-        .value =
-        casting.project_name || '';
-
-
-    document
-        .getElementById('castingUrl')
-        .value =
-        casting.casting_url || '';
-
-
-    document
-        .getElementById('roleName')
-        .value =
-        casting.role_name || '';
-
-
-    document
-        .getElementById('deadline')
-        .value =
-        casting.deadline || '';
-
-
-    document
-        .getElementById('appliedAt')
-        .value =
-        casting.applied_at || '';
-
-
-    document
-        .getElementById('castingText')
-        .value =
-        casting.casting_text || '';
-
-
-    /*
-     * Сообщение кастинг-директора
-     */
-
-    const directorMessageField =
-        document.getElementById(
-            'castingDirectorMessage'
-        );
-
-    if (directorMessageField) {
-
-        directorMessageField.value =
-            casting.casting_director_message || '';
-
-    }
-
-
-    document
-        .getElementById('castingStatus')
-        .value =
-        casting.status || 'new';
-
-
-    document
-        .getElementById('castingNotes')
-        .value =
-        casting.notes || '';
-
-
-    /*
-     * Показываем сохранённый AI-анализ,
-     * если он существует.
-     */
-
-    const resultBox =
-        document.getElementById(
-            'castingAIResult'
-        );
-
-    const resultContent =
-        document.getElementById(
-            'castingAIContent'
-        );
-
-    if (
-        resultBox &&
-        resultContent &&
-        casting.ai_analysis
-    ) {
-
-        resultContent.innerHTML =
-            formatAIText(
-                casting.ai_analysis
-            );
-
-        resultBox.style.display =
-            'block';
-
-    }
-    else if (resultBox) {
-
-        resultBox.style.display =
-            'none';
-
-    }
-
-
-    document
-        .getElementById('modalTitle')
-        .textContent =
-        'Редактировать кастинг';
-
-
-    document
-        .getElementById('saveCastingButton')
-        .textContent =
-        'Сохранить изменения';
-
-
-    document
-        .getElementById('modal')
-        .classList.add('open');
 
 }
-
 
 /* =====================================================
    SAVE CASTING
@@ -3215,155 +3306,352 @@ async function editCasting(id) {
 
 async function saveCasting() {
 
-    const projectName =
-        document
-            .getElementById('projectName')
-            .value
-            .trim();
+    try {
+
+        /* =================================================
+           1. READ FORM
+        ================================================= */
+
+        const getValue =
+            id => {
+
+                const element =
+                    document.getElementById(
+                        id
+                    );
+
+                return element
+                    ? element.value.trim()
+                    : '';
+
+            };
 
 
-    const castingUrl =
-        document
-            .getElementById('castingUrl')
-            .value
-            .trim();
+        const projectName =
+            getValue(
+                'projectName'
+            );
 
 
-    const roleName =
-        document
-            .getElementById('roleName')
-            .value
-            .trim();
+        const castingUrl =
+            getValue(
+                'castingUrl'
+            );
 
 
-    const deadline =
-        document
-            .getElementById('deadline')
-            .value ||
-        null;
+        const roleName =
+            getValue(
+                'roleName'
+            );
 
 
-    const appliedAt =
-        document
-            .getElementById('appliedAt')
-            .value ||
-        null;
+        const castingText =
+            getValue(
+                'castingText'
+            );
 
 
-    const castingText =
-        document
-            .getElementById('castingText')
-            .value
-            .trim();
+        const directorMessage =
+            getValue(
+                'castingDirectorMessage'
+            );
 
 
-    const directorMessageField =
-        document.getElementById(
-            'castingDirectorMessage'
-        );
+        const castingNotes =
+            getValue(
+                'castingNotes'
+            );
 
 
-    const directorMessage =
-        directorMessageField
-            ? directorMessageField.value.trim()
-            : '';
+        const deadlineElement =
+            document.getElementById(
+                'deadline'
+            );
 
 
-    const castingStatus =
-        document
-            .getElementById('castingStatus')
-            .value;
+        const deadline =
+            deadlineElement?.value ||
+            null;
 
 
-    const castingNotes =
-        document
-            .getElementById('castingNotes')
-            .value
-            .trim();
+        const appliedAtElement =
+            document.getElementById(
+                'appliedAt'
+            );
 
 
-    const editingId =
-        document
-            .getElementById('editingCastingId')
-            .value;
+        const appliedAt =
+            appliedAtElement?.value ||
+            null;
 
 
-    /* =================================================
-       VALIDATION
-    ================================================= */
-
-    if (!projectName) {
-
-        alert(
-            'Введите название проекта.'
-        );
-
-        return;
-
-    }
+        const statusElement =
+            document.getElementById(
+                'castingStatus'
+            );
 
 
-    /* =================================================
-       ACTOR
-    ================================================= */
+        const castingStatus =
+            statusElement?.value ||
+            'new';
 
-    if (!actorId) {
 
-        const id =
-            await findActor();
+        const editingElement =
+            document.getElementById(
+                'editingCastingId'
+            );
 
-        if (!id) {
+
+        const editingId =
+            editingElement?.value ||
+            '';
+
+
+        /* =================================================
+           2. VALIDATION
+        ================================================= */
+
+        if (!projectName) {
 
             alert(
-                'Профиль Марины не найден.'
+                'Введите название проекта.'
             );
 
             return;
 
         }
 
+
+        /* =================================================
+           3. ACTOR
+        ================================================= */
+
+        if (!actorId) {
+
+            const id =
+                await findActor();
+
+            if (!id) {
+
+                alert(
+                    'Профиль Марины не найден.'
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* =================================================
+           4. AI DATA
+        ================================================= */
+
+        const ai =
+            currentCastingAI || null;
+
+
+        const aiData = {
+
+            ai_analysis:
+                ai?.analysis ?? null,
+
+            ai_character:
+                ai?.character ?? null,
+
+            ai_fit:
+                ai?.fit ?? null,
+
+            ai_recommended_materials:
+                ai?.recommendedMaterials ?? null,
+
+            ai_email:
+                ai?.email ?? null,
+
+            ai_analyzed_at:
+                ai
+                    ? (
+                        ai.analyzedAt ||
+                        new Date().toISOString()
+                    )
+                    : null
+
+        };
+
+
+        /* =================================================
+           5. DATA FOR DATABASE
+        ================================================= */
+
+        const castingData = {
+
+            project_name:
+                projectName,
+
+            casting_url:
+                castingUrl || null,
+
+            role_name:
+                roleName || null,
+
+            deadline:
+                deadline,
+
+            applied_at:
+                appliedAt,
+
+            casting_text:
+                castingText || null,
+
+            casting_director_message:
+                directorMessage || null,
+
+            status:
+                castingStatus,
+
+            notes:
+                castingNotes || null,
+
+            ai_analysis:
+                aiData.ai_analysis,
+
+            ai_character:
+                aiData.ai_character,
+
+            ai_fit:
+                aiData.ai_fit,
+
+            ai_recommended_materials:
+                aiData.ai_recommended_materials,
+
+            ai_email:
+                aiData.ai_email,
+
+            ai_analyzed_at:
+                aiData.ai_analyzed_at
+
+        };
+
+
+        /* =================================================
+           6. UPDATE EXISTING
+        ================================================= */
+
+        if (editingId) {
+
+            const result =
+                await supabaseClient
+                    .from('castings')
+                    .update({
+
+                        ...castingData,
+
+                        updated_at:
+                            new Date().toISOString()
+
+                    })
+                    .eq(
+                        'id',
+                        editingId
+                    )
+                    .eq(
+                        'actor_id',
+                        actorId
+                    );
+
+
+            if (result.error) {
+
+                console.error(
+                    'Update casting error:',
+                    result.error
+                );
+
+                alert(
+                    'Ошибка изменения:\n\n' +
+                    result.error.message
+                );
+
+                return;
+
+            }
+
+
+            closeModal();
+
+            resetCastingForm();
+
+            await loadCastings();
+
+            return;
+
+        }
+
+
+        /* =================================================
+           7. INSERT NEW
+        ================================================= */
+
+        const result =
+            await supabaseClient
+                .from('castings')
+                .insert({
+
+                    actor_id:
+                        actorId,
+
+                    ...castingData
+
+                });
+
+
+        if (result.error) {
+
+            console.error(
+                'Insert casting error:',
+                result.error
+            );
+
+            alert(
+                'Ошибка сохранения:\n\n' +
+                result.error.message
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           8. FINISH
+        ================================================= */
+
+        closeModal();
+
+        resetCastingForm();
+
+        await loadCastings();
+
+    }
+    catch (error) {
+
+        console.error(
+            'Save casting error:',
+            error
+        );
+
+        alert(
+            'Не удалось сохранить кастинг:\n\n' +
+            (
+                error?.message ||
+                String(error)
+            )
+        );
+
     }
 
-
-    /*
-     * Берём текущий AI-анализ.
-     *
-     * Если пользователь открыл старый кастинг,
-     * а новый анализ не запускал, старый анализ
-     * уже находится в currentCastingAI.
-     */
-
-    const ai =
-        currentCastingAI || null;
-
-
-    const aiData = {
-
-        ai_analysis:
-            ai?.analysis || null,
-
-        ai_character:
-            ai?.character || null,
-
-        ai_fit:
-            ai?.fit || null,
-
-        ai_recommended_materials:
-            ai?.recommendedMaterials || null,
-
-        ai_email:
-            ai?.email || null,
-
-        ai_analyzed_at:
-            ai
-                ? (
-                    ai.analyzedAt ||
-                    new Date().toISOString()
-                )
-                : null
-
-    };
-
+}
 
     /* =================================================
        UPDATE
@@ -3571,50 +3859,108 @@ async function deleteCasting(id) {
     }
 
 
-    if (!actorId) {
+    try {
 
-        const actor =
-            await findActor();
+        /* =================================================
+           1. ACTOR
+        ================================================= */
 
-        if (!actor) {
+        if (!actorId) {
+
+            const found =
+                await findActor();
+
+            if (!found) {
+
+                alert(
+                    'Профиль Марины не найден.'
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* =================================================
+           2. DELETE
+        ================================================= */
+
+        const result =
+            await supabaseClient
+                .from('castings')
+                .delete()
+                .eq(
+                    'id',
+                    id
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                )
+                .select();
+
+
+        if (result.error) {
+
+            console.error(
+                'Delete casting error:',
+                result.error
+            );
 
             alert(
-                'Профиль Марины не найден.'
+                'Ошибка удаления:\n\n' +
+                result.error.message
             );
 
             return;
 
         }
 
+
+        /* =================================================
+           3. CHECK
+        ================================================= */
+
+        if (
+            !result.data ||
+            !result.data.length
+        ) {
+
+            alert(
+                'Кастинг не был удалён.\n\n' +
+                'Возможно, запись не найдена или нет прав на удаление.'
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           4. REFRESH
+        ================================================= */
+
+        await loadCastings();
+
     }
-
-
-    const result =
-        await supabaseClient
-            .from('castings')
-            .delete()
-            .eq('id', id)
-            .eq('actor_id', actorId);
-
-
-    if (result.error) {
+    catch (error) {
 
         console.error(
-            'Delete casting error:',
-            result.error
+            'Delete casting exception:',
+            error
         );
 
         alert(
             'Ошибка удаления:\n\n' +
-            result.error.message
+            (
+                error?.message ||
+                String(error)
+            )
         );
 
-        return;
-
     }
-
-
-    await loadCastings();
 
 }
 
