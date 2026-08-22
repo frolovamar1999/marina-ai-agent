@@ -1,26 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Marina AI Agent</title>
 
     <link
         rel="icon"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>"
     >
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -44,7 +38,7 @@
         }
 
         button {
-            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
         }
 
         .app {
@@ -126,7 +120,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            gap: 20px;
         }
 
         .header h1 {
@@ -137,7 +130,6 @@
         .header p {
             color: #777;
             margin-top: 5px;
-            margin-bottom: 0;
         }
 
         /* =========================
@@ -151,15 +143,15 @@
             padding: 11px 17px;
             border-radius: 8px;
             cursor: pointer;
+            transition: opacity .2s, transform .1s;
         }
 
         .btn:hover {
             opacity: .9;
         }
 
-        .btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
+        .btn:active {
+            transform: translateY(1px);
         }
 
         .btn.light {
@@ -174,6 +166,11 @@
         .btn.small {
             padding: 8px 12px;
             font-size: 13px;
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
         }
 
         /* =========================
@@ -230,6 +227,7 @@
         .section-title p {
             color: #777;
             margin: 6px 0 0;
+            line-height: 1.5;
         }
 
         /* =========================
@@ -290,14 +288,17 @@
 
         .badge.green {
             background: #e5f2e8;
+            color: #285c35;
         }
 
         .badge.yellow {
             background: #f8eed3;
+            color: #705916;
         }
 
         .badge.red {
             background: #f7e1de;
+            color: #7a3027;
         }
 
         /* =========================
@@ -404,11 +405,12 @@
         .modal-box {
             background: white;
             width: 100%;
-            max-width: 650px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
             border-radius: 15px;
             padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
         }
 
         .modal-box h2 {
@@ -436,7 +438,7 @@
         input:focus,
         textarea:focus,
         select:focus {
-            border-color: #aaa;
+            border-color: #999;
         }
 
         textarea {
@@ -533,7 +535,6 @@
         }
 
         @keyframes materialSpin {
-
             from {
                 transform: rotate(0deg);
             }
@@ -541,7 +542,6 @@
             to {
                 transform: rotate(360deg);
             }
-
         }
 
         .material-result {
@@ -558,38 +558,86 @@
             font-weight: 700;
         }
 
-        .saved-material {
+        /* =========================
+           INDIVIDUAL MATERIALS
+        ========================= */
+
+        .material-item {
             border-top: 1px solid #eee;
             padding: 18px 0;
         }
 
-        .saved-material:first-child {
+        .material-item:first-child {
             border-top: 0;
         }
 
-        .saved-material-header {
+        .material-item-header {
             display: flex;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 15px;
-            align-items: flex-start;
         }
 
-        .saved-material h3 {
-            margin: 0 0 5px;
+        .material-item-main {
+            display: flex;
+            gap: 15px;
+            min-width: 0;
+            flex: 1;
         }
 
-        .saved-material p {
+        .material-thumb {
+            width: 95px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #eee;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .material-meta {
+            min-width: 0;
+        }
+
+        .material-meta h3 {
+            margin: 0 0 7px;
+            font-size: 17px;
+            word-break: break-word;
+        }
+
+        .material-meta p {
             color: #777;
             margin: 5px 0;
         }
 
-        .saved-material img {
-            display: block;
-            max-width: 180px;
-            max-height: 240px;
-            object-fit: cover;
+        .material-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .material-analysis-panel {
+            display: none;
+            margin-top: 15px;
+            padding: 16px;
+            background: #f7f5f1;
             border-radius: 10px;
-            margin-top: 12px;
+            border: 1px solid #e8e4dd;
+        }
+
+        .material-analysis-panel.open {
+            display: block;
+        }
+
+        .material-analysis-panel h4 {
+            margin: 0 0 10px;
+        }
+
+        .material-no-analysis {
+            color: #888;
+            font-style: italic;
         }
 
         /* =========================
@@ -597,23 +645,21 @@
         ========================= */
 
         #chat {
-            min-height: 150px;
+            min-height: 100px;
             margin-bottom: 15px;
         }
 
         .chat-message {
-            padding: 12px;
+            background: #f1efeb;
             border-radius: 10px;
+            padding: 12px;
             margin: 8px 0;
             line-height: 1.5;
         }
 
         .chat-message.user {
-            background: #ebe8e2;
-        }
-
-        .chat-message.agent {
-            background: #f1efeb;
+            background: #252321;
+            color: white;
         }
 
         /* =========================
@@ -622,7 +668,6 @@
 
         .loading-text {
             color: #777;
-            padding: 10px 0;
         }
 
         /* =========================
@@ -644,8 +689,8 @@
             }
 
             .logo::before {
-                content: "M";
-                font-size: 22px;
+                content: "🎬";
+                font-size: 24px;
             }
 
             .logo span {
@@ -655,7 +700,7 @@
             .nav button {
                 font-size: 0;
                 text-align: center;
-                padding: 12px 4px;
+                padding: 12px 5px;
             }
 
             .nav button::first-letter {
@@ -694,34 +739,46 @@
                 justify-content: flex-start;
             }
 
+            .material-item-header {
+                flex-direction: column;
+            }
+
+            .material-actions {
+                justify-content: flex-start;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
             .info {
                 grid-template-columns: 1fr;
-                gap: 4px;
             }
 
             .info div:nth-child(odd) {
-                margin-top: 8px;
+                margin-top: 7px;
             }
 
-            .material-preview img {
-                max-width: 100%;
+            .material-item-main {
+                flex-direction: column;
             }
 
-            .modal {
-                padding: 10px;
+            .material-thumb {
+                width: 100%;
+                max-width: 220px;
+                height: 260px;
             }
 
             .modal-box {
-                max-height: 95vh;
                 padding: 18px;
             }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
@@ -734,15 +791,12 @@
     <aside class="sidebar">
 
         <div class="logo">
-
             MARINA AI
 
             <span>
                 личный агент
             </span>
-
         </div>
-
 
         <div class="nav">
 
@@ -754,14 +808,12 @@
                 🏠 Главная
             </button>
 
-
             <button
                 type="button"
                 onclick="showPage('profile', this)"
             >
                 👩 Профиль
             </button>
-
 
             <button
                 type="button"
@@ -770,7 +822,6 @@
                 🎬 Кастинги
             </button>
 
-
             <button
                 type="button"
                 onclick="showPage('materials', this)"
@@ -778,14 +829,12 @@
                 📸 Материалы
             </button>
 
-
             <button
                 type="button"
                 onclick="showPage('career', this)"
             >
                 📊 Карьера
             </button>
-
 
             <button
                 type="button"
@@ -805,15 +854,11 @@
              HOME
         ========================= -->
 
-        <section
-            id="home"
-            class="page active"
-        >
+        <section id="home" class="page active">
 
             <div class="header">
 
                 <div>
-
                     <h1>
                         Добрый день, Марина
                     </h1>
@@ -821,9 +866,7 @@
                     <p>
                         Твой личный AI-агент
                     </p>
-
                 </div>
-
 
                 <button
                     type="button"
@@ -839,54 +882,23 @@
             <div class="cards">
 
                 <div class="card metric">
-
-                    <strong id="activeCount">
-                        0
-                    </strong>
-
-                    <span>
-                        активных кастингов
-                    </span>
-
+                    <strong id="activeCount">0</strong>
+                    <span>активных кастингов</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong id="auditionCount">
-                        0
-                    </strong>
-
-                    <span>
-                        проб
-                    </span>
-
+                    <strong id="auditionCount">0</strong>
+                    <span>проб</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong id="waitingCount">
-                        0
-                    </strong>
-
-                    <span>
-                        без ответа
-                    </span>
-
+                    <strong id="waitingCount">0</strong>
+                    <span>без ответа</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong id="actionCount">
-                        0
-                    </strong>
-
-                    <span>
-                        требуют действия
-                    </span>
-
+                    <strong id="actionCount">0</strong>
+                    <span>требуют действия</span>
                 </div>
 
             </div>
@@ -908,7 +920,6 @@
 
                     </div>
 
-
                     <div class="notice">
 
                         <b>
@@ -920,7 +931,6 @@
                             а позже сможет проанализировать
                             соответствие роли твоему типажу.
                         </p>
-
 
                         <button
                             type="button"
@@ -946,14 +956,12 @@
                     </p>
 
                     <ul>
-
                         <li>кастинги</li>
                         <li>подачи</li>
                         <li>пробы</li>
                         <li>результаты</li>
                         <li>материалы</li>
                         <li>карьерную статистику</li>
-
                     </ul>
 
                 </div>
@@ -967,10 +975,7 @@
              PROFILE
         ========================= -->
 
-        <section
-            id="profile"
-            class="page"
-        >
+        <section id="profile" class="page">
 
             <div class="header">
 
@@ -994,9 +999,7 @@
                 <img
                     src="https://trailers.filmtoolz.ru/images/photos_people/hq/1112811.jpg"
                     alt="Марина Фролова"
-                    onerror="this.style.display='none'"
                 >
-
 
                 <div class="profile-info">
 
@@ -1011,64 +1014,25 @@
 
                     <div class="info">
 
-                        <div>
-                            Возраст
-                        </div>
+                        <div>Возраст</div>
+                        <div>27 лет</div>
 
-                        <div>
-                            27 лет
-                        </div>
+                        <div>Рост</div>
+                        <div>157 см</div>
 
+                        <div>Вес</div>
+                        <div>45 кг</div>
 
-                        <div>
-                            Рост
-                        </div>
+                        <div>Тип внешности</div>
+                        <div>Европейский, славянский</div>
 
-                        <div>
-                            157 см
-                        </div>
+                        <div>Волосы</div>
+                        <div>Шатен</div>
 
+                        <div>Глаза</div>
+                        <div>Серо-голубые</div>
 
-                        <div>
-                            Вес
-                        </div>
-
-                        <div>
-                            45 кг
-                        </div>
-
-
-                        <div>
-                            Тип внешности
-                        </div>
-
-                        <div>
-                            Европейский, славянский
-                        </div>
-
-
-                        <div>
-                            Волосы
-                        </div>
-
-                        <div>
-                            Шатен
-                        </div>
-
-
-                        <div>
-                            Глаза
-                        </div>
-
-                        <div>
-                            Серо-голубые
-                        </div>
-
-
-                        <div>
-                            Образование
-                        </div>
-
+                        <div>Образование</div>
                         <div>
                             Институт театрального искусства им. И. Кобзона;
                             Студия Иваны Чаббак;
@@ -1099,7 +1063,6 @@
 
                     </div>
 
-
                     <p>
                         Предварительная гипотеза:
                         молодая драматическая героиня,
@@ -1107,28 +1070,13 @@
                         внутреннюю силу и романтическую природу.
                     </p>
 
-
                     <div class="tags">
 
-                        <span class="tag">
-                            dramatic heroine
-                        </span>
-
-                        <span class="tag">
-                            romantic
-                        </span>
-
-                        <span class="tag">
-                            vulnerable
-                        </span>
-
-                        <span class="tag">
-                            strong
-                        </span>
-
-                        <span class="tag">
-                            psychological
-                        </span>
+                        <span class="tag">dramatic heroine</span>
+                        <span class="tag">romantic</span>
+                        <span class="tag">vulnerable</span>
+                        <span class="tag">strong</span>
+                        <span class="tag">psychological</span>
 
                     </div>
 
@@ -1141,24 +1089,14 @@
                         🎬 Роли
                     </h2>
 
-
                     <div class="casting">
 
                         <div>
-
-                            <h3>
-                                Открытое сердце
-                            </h3>
-
-                            <p>
-                                Алевтина · главная роль
-                            </p>
-
+                            <h3>Открытое сердце</h3>
+                            <p>Алевтина · главная роль</p>
                         </div>
 
-                        <span class="badge green">
-                            2025
-                        </span>
+                        <span class="badge green">2025</span>
 
                     </div>
 
@@ -1166,20 +1104,11 @@
                     <div class="casting">
 
                         <div>
-
-                            <h3>
-                                Невыполненное обещание
-                            </h3>
-
-                            <p>
-                                Нона · главная роль
-                            </p>
-
+                            <h3>Невыполненное обещание</h3>
+                            <p>Нона · главная роль</p>
                         </div>
 
-                        <span class="badge green">
-                            2026
-                        </span>
+                        <span class="badge green">2026</span>
 
                     </div>
 
@@ -1187,20 +1116,11 @@
                     <div class="casting">
 
                         <div>
-
-                            <h3>
-                                Врачебные истории
-                            </h3>
-
-                            <p>
-                                Русалка · эпизод
-                            </p>
-
+                            <h3>Врачебные истории</h3>
+                            <p>Русалка · эпизод</p>
                         </div>
 
-                        <span class="badge">
-                            2026
-                        </span>
+                        <span class="badge">2026</span>
 
                     </div>
 
@@ -1208,20 +1128,11 @@
                     <div class="casting">
 
                         <div>
-
-                            <h3>
-                                СашаТаня
-                            </h3>
-
-                            <p>
-                                Соседка
-                            </p>
-
+                            <h3>СашаТаня</h3>
+                            <p>Соседка</p>
                         </div>
 
-                        <span class="badge">
-                            2025
-                        </span>
+                        <span class="badge">2025</span>
 
                     </div>
 
@@ -1236,10 +1147,7 @@
              CASTINGS
         ========================= -->
 
-        <section
-            id="castings"
-            class="page"
-        >
+        <section id="castings" class="page">
 
             <div class="header">
 
@@ -1254,7 +1162,6 @@
                     </p>
 
                 </div>
-
 
                 <button
                     type="button"
@@ -1363,10 +1270,7 @@
              MATERIALS
         ========================= -->
 
-        <section
-            id="materials"
-            class="page"
-        >
+        <section id="materials" class="page">
 
             <div class="header">
 
@@ -1491,7 +1395,6 @@
 
                 </div>
 
-
                 <div
                     id="materialAnalysis"
                     class="material-analysis"
@@ -1500,7 +1403,11 @@
             </div>
 
 
-            <div class="card">
+            <!-- =========================
+                 PORTFOLIO ANALYSIS
+            ========================= -->
+
+            <div class="card" style="margin-top:15px">
 
                 <div class="section-title">
 
@@ -1584,9 +1491,14 @@
             </div>
 
 
+            <!-- =========================
+                 SAVED MATERIALS
+            ========================= -->
+
             <div
                 id="savedMaterials"
                 class="card"
+                style="margin-top:15px"
             >
 
                 <h2>
@@ -1606,10 +1518,7 @@
              CAREER
         ========================= -->
 
-        <section
-            id="career"
-            class="page"
-        >
+        <section id="career" class="page">
 
             <div class="header">
 
@@ -1631,54 +1540,23 @@
             <div class="cards">
 
                 <div class="card metric">
-
-                    <strong>
-                        4
-                    </strong>
-
-                    <span>
-                        экранных проекта
-                    </span>
-
+                    <strong id="careerProjects">4</strong>
+                    <span>экранных проекта</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong>
-                        2
-                    </strong>
-
-                    <span>
-                        главные роли
-                    </span>
-
+                    <strong id="careerMainRoles">2</strong>
+                    <span>главные роли</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong>
-                        2026
-                    </strong>
-
-                    <span>
-                        новые главные роли
-                    </span>
-
+                    <strong>2026</strong>
+                    <span>новые главные роли</span>
                 </div>
 
-
                 <div class="card metric">
-
-                    <strong>
-                        AI
-                    </strong>
-
-                    <span>
-                        анализ карьеры
-                    </span>
-
+                    <strong>AI</strong>
+                    <span>анализ карьеры</span>
                 </div>
 
             </div>
@@ -1718,10 +1596,7 @@
              AGENT
         ========================= -->
 
-        <section
-            id="agent"
-            class="page"
-        >
+        <section id="agent" class="page">
 
             <div class="header">
 
@@ -1793,7 +1668,7 @@
 
 
 <!-- =========================
-     MODAL CASTING
+     CASTING MODAL
 ========================= -->
 
 <div
@@ -1815,19 +1690,16 @@
 
 
         <label>
-
             Название проекта
 
             <input
                 id="projectName"
                 placeholder="Например: Новый сериал"
             >
-
         </label>
 
 
         <label>
-
             Ссылка на кастинг
 
             <input
@@ -1835,48 +1707,40 @@
                 type="url"
                 placeholder="https://..."
             >
-
         </label>
 
 
         <label>
-
             Роль
 
             <input
                 id="roleName"
                 placeholder="Например: главная роль"
             >
-
         </label>
 
 
         <label>
-
             Дедлайн
 
             <input
                 id="deadline"
                 type="date"
             >
-
         </label>
 
 
         <label>
-
             Дата подачи
 
             <input
                 id="appliedAt"
                 type="date"
             >
-
         </label>
 
 
         <label>
-
             Текст или описание кастинга
 
             <textarea
@@ -1884,7 +1748,6 @@
                 rows="7"
                 placeholder="Вставь сюда текст кастинга..."
             ></textarea>
-
         </label>
 
 
@@ -1911,7 +1774,6 @@
 
 
         <label>
-
             Сообщение от кастинг-директора
 
             <textarea
@@ -1919,7 +1781,6 @@
                 rows="6"
                 placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
             ></textarea>
-
         </label>
 
 
@@ -1952,7 +1813,6 @@
 
 
         <label>
-
             Статус
 
             <select id="castingStatus">
@@ -1999,7 +1859,6 @@
 
 
         <label>
-
             Заметки
 
             <textarea
@@ -2007,7 +1866,6 @@
                 rows="4"
                 placeholder="Что важно помнить об этом кастинге..."
             ></textarea>
-
         </label>
 
 
@@ -2039,32 +1897,29 @@
 
 
 <script>
+"use strict";
 
 /* =====================================================
    SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
-    'https://kavepxugysumhpcftzqy.supabase.co';
+    "https://kavepxugysumhpcftzqy.supabase.co";
 
 const SUPABASE_KEY =
-    'sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd';
+    "sb_publishable_V9ONkpipNWyCC2BLEJnwcg_8bP1tRqd";
 
 
 let supabaseClient = null;
 
-
 if (
     window.supabase &&
-    typeof window.supabase.createClient === 'function'
+    typeof window.supabase.createClient === "function"
 ) {
-
-    supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 }
 
 
@@ -2076,126 +1931,81 @@ let actorId = null;
 
 let allCastings = [];
 
-let currentCastingFilter = 'all';
+let currentCastingFilter = "all";
 
 let currentCastingAI = null;
 
-let selectedMaterialFile = null;
+let allMaterials = [];
 
-let currentMaterialPreviewUrl = null;
+let selectedMaterialFile = null;
 
 
 /* =====================================================
-   SAFE HELPERS
+   BASIC HELPERS
 ===================================================== */
 
 function escapeHtml(value) {
 
     if (value === null || value === undefined) {
-        return '';
+        return "";
     }
 
     return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-
-}
-
-
-function setStatus(message, type = '') {
-
-    const element =
-        document.getElementById('dbStatus');
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent =
-        message || '';
-
-    element.className =
-        'status' +
-        (type ? ' ' + type : '');
-
-}
-
-
-function safeJson(value) {
-
-    try {
-
-        return JSON.stringify(value);
-
-    }
-    catch (error) {
-
-        return '{}';
-
-    }
-
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 function formatAIText(value) {
 
     if (value === null || value === undefined) {
-        return '';
+        return "";
     }
 
-    if (typeof value === 'string') {
-
-        return escapeHtml(value)
-            .replace(/\n/g, '<br>');
-
+    if (typeof value === "object") {
+        return escapeHtml(
+            JSON.stringify(value, null, 2)
+        );
     }
 
-    if (Array.isArray(value)) {
+    return escapeHtml(String(value))
+        .replace(/\n/g, "<br>");
+}
 
-        return value
-            .map(item => formatAIText(item))
-            .join('<br>');
 
+function setStatus(message, type = "") {
+
+    const element =
+        document.getElementById("dbStatus");
+
+    if (!element) {
+        return;
     }
 
-    if (typeof value === 'object') {
+    element.className = "status";
 
-        return Object.entries(value)
-            .map(([key, val]) => {
-
-                return `
-                    <div style="margin-bottom:12px;">
-                        <strong>${escapeHtml(key)}</strong>
-                        <div style="margin-top:4px;">
-                            ${formatAIText(val)}
-                        </div>
-                    </div>
-                `;
-
-            })
-            .join('');
-
+    if (type) {
+        element.classList.add(type);
     }
 
-    return escapeHtml(value);
-
+    element.textContent = message;
 }
 
 
 /* =====================================================
-   NAVIGATION
+   PAGE NAVIGATION
 ===================================================== */
 
-function showPage(pageId, button) {
+function showPage(pageId, buttonElement) {
 
     document
-        .querySelectorAll('.page')
+        .querySelectorAll(".page")
         .forEach(page => {
 
-            page.classList.remove('active');
+            page.classList.remove("active");
 
         });
 
@@ -2203,56 +2013,32 @@ function showPage(pageId, button) {
     const page =
         document.getElementById(pageId);
 
-
-    if (!page) {
-
-        console.error(
-            'Страница не найдена:',
-            pageId
-        );
-
-        return;
-
+    if (page) {
+        page.classList.add("active");
     }
 
 
-    page.classList.add('active');
-
-
     document
-        .querySelectorAll('.nav button')
-        .forEach(navButton => {
+        .querySelectorAll(".nav button")
+        .forEach(button => {
 
-            navButton.classList.remove('active');
+            button.classList.remove("active");
 
         });
 
 
-    if (button) {
-
-        button.classList.add('active');
-
+    if (buttonElement) {
+        buttonElement.classList.add("active");
     }
 
 
-    if (pageId === 'castings') {
+    if (pageId === "materials") {
+        loadMaterials();
+    }
 
+
+    if (pageId === "castings") {
         loadCastings();
-
-    }
-
-
-    if (pageId === 'materials') {
-
-        loadSavedMaterials();
-
-    }
-
-
-    if (pageId === 'career') {
-
-        updateCounters(allCastings);
-
     }
 
 }
@@ -2267,24 +2053,23 @@ async function findActor() {
     if (!supabaseClient) {
 
         setStatus(
-            'Supabase не загрузился.',
-            'error'
+            "Supabase не подключен.",
+            "error"
         );
 
         return null;
-
     }
 
 
     const result =
         await supabaseClient
-            .from('actors')
+            .from("actors")
             .select(
-                'id, full_name, portfolio_analysis'
+                "id, full_name, portfolio_analysis"
             )
             .eq(
-                'full_name',
-                'Фролова Марина Сергеевна'
+                "full_name",
+                "Фролова Марина Сергеевна"
             )
             .limit(1)
             .maybeSingle();
@@ -2293,33 +2078,28 @@ async function findActor() {
     if (result.error) {
 
         console.error(
-            'Supabase actor error:',
+            "Supabase actor error:",
             result.error
         );
 
-
         setStatus(
-            'Ошибка подключения к базе: ' +
+            "Ошибка подключения к базе: " +
             result.error.message,
-            'error'
+            "error"
         );
 
-
         return null;
-
     }
 
 
     if (!result.data) {
 
         setStatus(
-            'Профиль Марины не найден в таблице actors.',
-            'error'
+            "Профиль Марины не найден в таблице actors.",
+            "error"
         );
 
-
         return null;
-
     }
 
 
@@ -2328,7 +2108,20 @@ async function findActor() {
 
 
     return actorId;
+}
 
+
+/* =====================================================
+   ENSURE ACTOR
+===================================================== */
+
+async function ensureActor() {
+
+    if (actorId) {
+        return actorId;
+    }
+
+    return await findActor();
 }
 
 
@@ -2339,45 +2132,29 @@ async function findActor() {
 async function loadCastings() {
 
     setStatus(
-        'Подключение к памяти...'
+        "Подключение к памяти..."
     );
 
 
-    if (!supabaseClient) {
+    const id =
+        await ensureActor();
 
-        setStatus(
-            'Supabase не загрузился.',
-            'error'
-        );
 
+    if (!id) {
         return;
-
-    }
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-
-        if (!id) {
-            return;
-        }
-
     }
 
 
     const result =
         await supabaseClient
-            .from('castings')
-            .select('*')
+            .from("castings")
+            .select("*")
             .eq(
-                'actor_id',
-                actorId
+                "actor_id",
+                id
             )
             .order(
-                'created_at',
+                "created_at",
                 {
                     ascending: false
                 }
@@ -2387,20 +2164,17 @@ async function loadCastings() {
     if (result.error) {
 
         console.error(
-            'Supabase casting error:',
+            "Supabase casting error:",
             result.error
         );
 
-
         setStatus(
-            'Ошибка загрузки кастингов: ' +
+            "Ошибка загрузки кастингов: " +
             result.error.message,
-            'error'
+            "error"
         );
 
-
         return;
-
     }
 
 
@@ -2419,19 +2193,18 @@ async function loadCastings() {
 
 
     setStatus(
-        'Память подключена · ' +
+        "Память подключена · " +
         allCastings.length +
-        ' кастингов',
-        'success'
+        " кастингов",
+        "success"
     );
-
 }
 
 
 function getFilteredCastings() {
 
     if (
-        currentCastingFilter === 'all'
+        currentCastingFilter === "all"
     ) {
 
         return allCastings;
@@ -2440,16 +2213,10 @@ function getFilteredCastings() {
 
 
     return allCastings.filter(
-        casting => {
-
-            return (
-                casting.status ===
-                currentCastingFilter
-            );
-
-        }
+        casting =>
+            casting.status ===
+            currentCastingFilter
     );
-
 }
 
 
@@ -2462,15 +2229,88 @@ function filterCastings(status) {
     renderCastings(
         getFilteredCastings()
     );
-
 }
 
+
+function getStatusLabel(status) {
+
+    const labels = {
+
+        new:
+            "Новая подача",
+
+        submitted:
+            "Отправлена",
+
+        audition:
+            "Пригласили на пробы",
+
+        "self-tape":
+            "Пробы отправлены",
+
+        callback:
+            "Callback",
+
+        approved:
+            "Утверждена",
+
+        rejected:
+            "Не утвердили",
+
+        no_response:
+            "Не ответили",
+
+        cancelled:
+            "Отменён"
+
+    };
+
+
+    return (
+        labels[status] ||
+        status ||
+        "Новая подача"
+    );
+}
+
+
+function getStatusClass(status) {
+
+    if (status === "approved") {
+        return "green";
+    }
+
+
+    if (
+        status === "audition" ||
+        status === "self-tape" ||
+        status === "callback"
+    ) {
+        return "yellow";
+    }
+
+
+    if (
+        status === "rejected" ||
+        status === "cancelled"
+    ) {
+        return "red";
+    }
+
+
+    return "";
+}
+
+
+/* =====================================================
+   RENDER CASTINGS
+===================================================== */
 
 function renderCastings(castings) {
 
     const list =
         document.getElementById(
-            'castingList'
+            "castingList"
         );
 
 
@@ -2479,17 +2319,18 @@ function renderCastings(castings) {
     }
 
 
-    if (!castings || !castings.length) {
+    if (!castings.length) {
 
         const message =
-            currentCastingFilter === 'all'
+            currentCastingFilter === "all"
                 ? `
                     Пока нет кастингов.
                     <br><br>
                     Нажми <b>＋ Добавить</b>,
                     чтобы сохранить первый.
                   `
-                : `
+                :
+                  `
                     В этой категории пока нет кастингов.
                   `;
 
@@ -2500,24 +2341,22 @@ function renderCastings(castings) {
             </div>
         `;
 
-
         return;
-
     }
 
 
-    list.innerHTML = '';
+    list.innerHTML = "";
 
 
     castings.forEach(
         casting => {
 
             const item =
-                document.createElement('div');
+                document.createElement("div");
 
 
             item.className =
-                'casting';
+                "casting";
 
 
             const statusClass =
@@ -2526,108 +2365,124 @@ function renderCastings(castings) {
                 );
 
 
+            const castingId =
+                JSON.stringify(
+                    casting.id
+                );
+
+
+            const projectName =
+                escapeHtml(
+                    casting.project_name ||
+                    "Без названия"
+                );
+
+
+            const roleName =
+                escapeHtml(
+                    casting.role_name ||
+                    "Роль не указана"
+                );
+
+
+            const deadline =
+                casting.deadline
+                    ? `
+                        · дедлайн
+                        ${escapeHtml(
+                            casting.deadline
+                        )}
+                      `
+                    : "";
+
+
+            const appliedAt =
+                casting.applied_at
+                    ? `
+                        <p>
+                            📅 Подана:
+                            ${escapeHtml(
+                                casting.applied_at
+                            )}
+                        </p>
+                      `
+                    : "";
+
+
+            const notes =
+                casting.notes
+                    ? `
+                        <p>
+                            📝
+                            ${escapeHtml(
+                                casting.notes
+                            )}
+                        </p>
+                      `
+                    : "";
+
+
+            const url =
+                casting.casting_url
+                    ? `
+                        <p class="castings-link">
+
+                            <a
+                                href="${escapeHtml(
+                                    casting.casting_url
+                                )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Открыть кастинг →
+                            </a>
+
+                        </p>
+                      `
+                    : "";
+
+
+            const ai =
+                casting.ai_analysis
+                    ? `
+                        <p>
+                            🧠 AI-анализ сохранён
+                        </p>
+                      `
+                    : "";
+
+
             item.innerHTML = `
 
-                <div style="flex:1;">
+                <div style="flex:1;min-width:0;">
 
                     <h3>
-                        ${escapeHtml(
-                            casting.project_name ||
-                            'Без названия'
-                        )}
+                        ${projectName}
                     </h3>
 
 
                     <p>
-
-                        ${escapeHtml(
-                            casting.role_name ||
-                            'Роль не указана'
-                        )}
-
-                        ${
-                            casting.deadline
-                            ? `
-                                · дедлайн
-                                ${escapeHtml(
-                                    casting.deadline
-                                )}
-                              `
-                            : ''
-                        }
-
+                        ${roleName}
+                        ${deadline}
                     </p>
 
 
                     <span class="badge ${statusClass}">
-
                         ${escapeHtml(
                             getStatusLabel(
                                 casting.status
                             )
                         )}
-
                     </span>
 
 
-                    ${
-                        casting.applied_at
-                        ? `
-                            <p>
-                                📅 Подана:
-                                ${escapeHtml(
-                                    casting.applied_at
-                                )}
-                            </p>
-                          `
-                        : ''
-                    }
+                    ${appliedAt}
 
+                    ${notes}
 
-                    ${
-                        casting.notes
-                        ? `
-                            <p>
-                                📝
-                                ${escapeHtml(
-                                    casting.notes
-                                )}
-                            </p>
-                          `
-                        : ''
-                    }
+                    ${url}
 
-
-                    ${
-                        casting.casting_url
-                        ? `
-                            <p class="castings-link">
-
-                                <a
-                                    href="${escapeHtml(
-                                        casting.casting_url
-                                    )}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Открыть кастинг →
-                                </a>
-
-                            </p>
-                          `
-                        : ''
-                    }
-
-
-                    ${
-                        casting.ai_analysis
-                        ? `
-                            <p>
-                                🧠 AI-анализ сохранён
-                            </p>
-                          `
-                        : ''
-                    }
+                    ${ai}
 
                 </div>
 
@@ -2637,9 +2492,7 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn light small"
-                        onclick="editCasting(${JSON.stringify(
-                            casting.id
-                        )})"
+                        data-action="edit"
                     >
                         ✏️ Изменить
                     </button>
@@ -2648,101 +2501,161 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn danger small"
-                        onclick="deleteCasting(${JSON.stringify(
-                            casting.id
-                        )})"
+                        data-action="delete"
                     >
                         🗑️ Удалить
                     </button>
 
                 </div>
-
             `;
+
+
+            const editButton =
+                item.querySelector(
+                    '[data-action="edit"]'
+                );
+
+
+            const deleteButton =
+                item.querySelector(
+                    '[data-action="delete"]'
+                );
+
+
+            if (editButton) {
+
+                editButton.addEventListener(
+                    "click",
+                    () => {
+                        editCasting(
+                            casting.id
+                        );
+                    }
+                );
+
+            }
+
+
+            if (deleteButton) {
+
+                deleteButton.addEventListener(
+                    "click",
+                    () => {
+                        deleteCasting(
+                            casting.id
+                        );
+                    }
+                );
+
+            }
 
 
             list.appendChild(item);
 
         }
     );
-
 }
 
 
-function getStatusLabel(status) {
+/* =====================================================
+   COUNTERS
+===================================================== */
 
-    const labels = {
+function updateCounters(castings) {
 
-        new:
-            'Новая подача',
-
-        submitted:
-            'Отправлена',
-
-        audition:
-            'Пригласили на пробы',
-
-        'self-tape':
-            'Пробы отправлены',
-
-        callback:
-            'Callback',
-
-        approved:
-            'Утверждена',
-
-        rejected:
-            'Не утвердили',
-
-        no_response:
-            'Не ответили',
-
-        cancelled:
-            'Отменён'
-
-    };
+    const activeCount =
+        castings.filter(
+            casting =>
+                ![
+                    "approved",
+                    "rejected",
+                    "cancelled"
+                ].includes(
+                    casting.status
+                )
+        ).length;
 
 
-    return (
-        labels[status] ||
-        status ||
-        'Новая подача'
-    );
+    const auditionCount =
+        castings.filter(
+            casting =>
+                [
+                    "audition",
+                    "self-tape",
+                    "callback"
+                ].includes(
+                    casting.status
+                )
+        ).length;
 
-}
+
+    const waitingCount =
+        castings.filter(
+            casting =>
+                casting.status ===
+                "no_response"
+        ).length;
 
 
-function getStatusClass(status) {
+    const actionCount =
+        castings.filter(
+            casting =>
+                [
+                    "new",
+                    "audition",
+                    "callback"
+                ].includes(
+                    casting.status
+                )
+        ).length;
 
-    if (status === 'approved') {
 
-        return 'green';
+    const activeElement =
+        document.getElementById(
+            "activeCount"
+        );
 
+
+    const auditionElement =
+        document.getElementById(
+            "auditionCount"
+        );
+
+
+    const waitingElement =
+        document.getElementById(
+            "waitingCount"
+        );
+
+
+    const actionElement =
+        document.getElementById(
+            "actionCount"
+        );
+
+
+    if (activeElement) {
+        activeElement.textContent =
+            activeCount;
     }
 
 
-    if (
-        status === 'audition' ||
-        status === 'self-tape' ||
-        status === 'callback'
-    ) {
-
-        return 'yellow';
-
+    if (auditionElement) {
+        auditionElement.textContent =
+            auditionCount;
     }
 
 
-    if (
-        status === 'rejected' ||
-        status === 'cancelled'
-    ) {
-
-        return 'red';
-
+    if (waitingElement) {
+        waitingElement.textContent =
+            waitingCount;
     }
 
 
-    return '';
-
+    if (actionElement) {
+        actionElement.textContent =
+            actionCount;
+    }
 }
 
 
@@ -2757,44 +2670,37 @@ function openNewCastingModal() {
 
     const modalTitle =
         document.getElementById(
-            'modalTitle'
+            "modalTitle"
         );
 
 
     const saveButton =
         document.getElementById(
-            'saveCastingButton'
+            "saveCastingButton"
         );
 
 
     const modal =
         document.getElementById(
-            'modal'
+            "modal"
         );
 
 
     if (modalTitle) {
-
         modalTitle.textContent =
-            'Новый кастинг';
-
+            "Новый кастинг";
     }
 
 
     if (saveButton) {
-
         saveButton.textContent =
-            'Сохранить';
-
+            "Сохранить";
     }
 
 
     if (modal) {
-
-        modal.classList.add('open');
-
+        modal.classList.add("open");
     }
-
 }
 
 
@@ -2802,16 +2708,13 @@ function closeModal() {
 
     const modal =
         document.getElementById(
-            'modal'
+            "modal"
         );
 
 
     if (modal) {
-
-        modal.classList.remove('open');
-
+        modal.classList.remove("open");
     }
-
 }
 
 
@@ -2823,25 +2726,25 @@ function resetCastingForm() {
 
     const fields = {
 
-        editingCastingId: '',
+        editingCastingId: "",
 
-        projectName: '',
+        projectName: "",
 
-        castingUrl: '',
+        castingUrl: "",
 
-        roleName: '',
+        roleName: "",
 
-        deadline: '',
+        deadline: "",
 
-        appliedAt: '',
+        appliedAt: "",
 
-        castingText: '',
+        castingText: "",
 
-        castingDirectorMessage: '',
+        castingDirectorMessage: "",
 
-        castingStatus: 'new',
+        castingStatus: "new",
 
-        castingNotes: ''
+        castingNotes: ""
 
     };
 
@@ -2851,14 +2754,14 @@ function resetCastingForm() {
             ([id, value]) => {
 
                 const element =
-                    document.getElementById(id);
+                    document.getElementById(
+                        id
+                    );
 
 
                 if (element) {
-
                     element.value =
                         value;
-
                 }
 
             }
@@ -2867,149 +2770,140 @@ function resetCastingForm() {
 
     const modalTitle =
         document.getElementById(
-            'modalTitle'
+            "modalTitle"
         );
 
 
     const saveButton =
         document.getElementById(
-            'saveCastingButton'
+            "saveCastingButton"
         );
 
 
     const aiResult =
         document.getElementById(
-            'castingAIResult'
+            "castingAIResult"
         );
 
 
     const aiStatus =
         document.getElementById(
-            'castingAIStatus'
+            "castingAIStatus"
         );
 
 
     const aiContent =
         document.getElementById(
-            'castingAIContent'
+            "castingAIContent"
         );
 
 
     if (modalTitle) {
-
         modalTitle.textContent =
-            'Новый кастинг';
-
+            "Новый кастинг";
     }
 
 
     if (saveButton) {
-
         saveButton.textContent =
-            'Сохранить';
-
+            "Сохранить";
     }
 
 
     if (aiResult) {
-
         aiResult.style.display =
-            'none';
-
+            "none";
     }
 
 
     if (aiStatus) {
-
         aiStatus.style.display =
-            'none';
+            "none";
 
         aiStatus.textContent =
-            '';
-
+            "";
     }
 
 
     if (aiContent) {
-
         aiContent.innerHTML =
-            '';
-
+            "";
     }
-
 }
 
 
-function editCasting(id) {
+/* =====================================================
+   EDIT CASTING
+===================================================== */
+
+async function editCasting(castingId) {
 
     const casting =
         allCastings.find(
             item =>
-                String(item.id) === String(id)
+                String(item.id) ===
+                String(castingId)
         );
 
 
     if (!casting) {
 
         alert(
-            'Кастинг не найден.'
+            "Кастинг не найден."
         );
 
         return;
-
     }
 
 
-    const values = {
+    const fields = {
 
         editingCastingId:
-            casting.id || '',
+            casting.id || "",
 
         projectName:
-            casting.project_name || '',
+            casting.project_name || "",
 
         castingUrl:
-            casting.casting_url || '',
+            casting.casting_url || "",
 
         roleName:
-            casting.role_name || '',
+            casting.role_name || "",
 
         deadline:
-            casting.deadline || '',
+            casting.deadline || "",
 
         appliedAt:
-            casting.applied_at || '',
+            casting.applied_at || "",
 
         castingText:
-            casting.casting_text || '',
+            casting.casting_text || "",
 
         castingDirectorMessage:
-            casting.casting_director_message || '',
+            casting.casting_director_message || "",
 
         castingStatus:
-            casting.status || 'new',
+            casting.status || "new",
 
         castingNotes:
-            casting.notes || ''
+            casting.notes || ""
 
     };
 
 
-    Object.entries(values)
+    Object.entries(fields)
         .forEach(
-            ([idName, value]) => {
+            ([id, value]) => {
 
                 const element =
                     document.getElementById(
-                        idName
+                        id
                     );
 
 
                 if (element) {
-
                     element.value =
                         value;
-
                 }
 
             }
@@ -3022,241 +2916,237 @@ function editCasting(id) {
 
     const modalTitle =
         document.getElementById(
-            'modalTitle'
+            "modalTitle"
         );
 
 
     const saveButton =
         document.getElementById(
-            'saveCastingButton'
+            "saveCastingButton"
         );
 
 
     const aiResult =
         document.getElementById(
-            'castingAIResult'
+            "castingAIResult"
         );
 
 
     const aiContent =
         document.getElementById(
-            'castingAIContent'
+            "castingAIContent"
         );
 
 
     if (modalTitle) {
-
         modalTitle.textContent =
-            'Редактировать кастинг';
-
+            "Редактировать кастинг";
     }
 
 
     if (saveButton) {
-
         saveButton.textContent =
-            'Сохранить изменения';
-
+            "Сохранить изменения";
     }
 
 
     if (
-        aiResult &&
-        aiContent &&
-        casting.ai_analysis
+        currentCastingAI &&
+        aiContent
     ) {
 
         aiContent.innerHTML =
             formatAIText(
-                casting.ai_analysis
+                currentCastingAI
             );
 
+        if (aiResult) {
+            aiResult.style.display =
+                "block";
+        }
+
+    }
+    else if (aiResult) {
+
         aiResult.style.display =
-            'block';
+            "none";
 
     }
 
 
     const modal =
         document.getElementById(
-            'modal'
+            "modal"
         );
 
 
     if (modal) {
-
-        modal.classList.add('open');
-
+        modal.classList.add("open");
     }
-
 }
 
 
+/* =====================================================
+   SAVE CASTING
+===================================================== */
+
 async function saveCasting() {
 
-    if (!supabaseClient) {
-
-        alert(
-            'Supabase не загрузился.'
-        );
-
-        return;
-
-    }
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-
-        if (!id) {
-            return;
-        }
-
-    }
+    const id =
+        document.getElementById(
+            "editingCastingId"
+        )?.value || "";
 
 
     const projectName =
         document.getElementById(
-            'projectName'
-        )?.value.trim() || '';
+            "projectName"
+        )?.value.trim() || "";
 
 
     const castingUrl =
         document.getElementById(
-            'castingUrl'
-        )?.value.trim() || '';
+            "castingUrl"
+        )?.value.trim() || "";
 
 
     const roleName =
         document.getElementById(
-            'roleName'
-        )?.value.trim() || '';
+            "roleName"
+        )?.value.trim() || "";
 
 
     const deadline =
         document.getElementById(
-            'deadline'
+            "deadline"
         )?.value || null;
 
 
     const appliedAt =
         document.getElementById(
-            'appliedAt'
+            "appliedAt"
         )?.value || null;
 
 
     const castingText =
         document.getElementById(
-            'castingText'
-        )?.value.trim() || '';
+            "castingText"
+        )?.value.trim() || "";
 
 
     const directorMessage =
         document.getElementById(
-            'castingDirectorMessage'
-        )?.value.trim() || '';
+            "castingDirectorMessage"
+        )?.value.trim() || "";
 
 
     const status =
         document.getElementById(
-            'castingStatus'
-        )?.value || 'new';
+            "castingStatus"
+        )?.value || "new";
 
 
     const notes =
         document.getElementById(
-            'castingNotes'
-        )?.value.trim() || '';
+            "castingNotes"
+        )?.value.trim() || "";
 
 
-    const editingId =
-        document.getElementById(
-            'editingCastingId'
-        )?.value || '';
+    if (!projectName) {
 
+        alert(
+            "Укажи название проекта."
+        );
 
-    const payload = {
-
-        actor_id:
-            actorId,
-
-        project_name:
-            projectName,
-
-        casting_url:
-            castingUrl || null,
-
-        role_name:
-            roleName,
-
-        deadline:
-            deadline,
-
-        applied_at:
-            appliedAt,
-
-        casting_text:
-            castingText,
-
-        casting_director_message:
-            directorMessage,
-
-        status:
-            status,
-
-        notes:
-            notes
-
-    };
-
-
-    if (currentCastingAI) {
-
-        payload.ai_analysis =
-            currentCastingAI.analysis ||
-            currentCastingAI;
-
+        return;
     }
 
 
-    const button =
+    const actor =
+        await ensureActor();
+
+
+    if (!actor) {
+        return;
+    }
+
+
+    const saveButton =
         document.getElementById(
-            'saveCastingButton'
+            "saveCastingButton"
         );
 
 
-    if (button) {
-
-        button.disabled =
+    if (saveButton) {
+        saveButton.disabled =
             true;
 
-        button.textContent =
-            'Сохранение...';
-
+        saveButton.textContent =
+            "Сохраняю...";
     }
 
 
     try {
 
+        const payload = {
+
+            actor_id:
+                actor,
+
+            project_name:
+                projectName,
+
+            casting_url:
+                castingUrl || null,
+
+            role_name:
+                roleName || null,
+
+            deadline:
+                deadline,
+
+            applied_at:
+                appliedAt,
+
+            casting_text:
+                castingText || null,
+
+            casting_director_message:
+                directorMessage || null,
+
+            status:
+                status,
+
+            notes:
+                notes || null
+
+        };
+
+
+        if (currentCastingAI) {
+
+            payload.ai_analysis =
+                currentCastingAI;
+
+        }
+
+
         let result;
 
 
-        if (editingId) {
+        if (id) {
 
             result =
                 await supabaseClient
-                    .from('castings')
+                    .from("castings")
                     .update(payload)
                     .eq(
-                        'id',
-                        editingId
+                        "id",
+                        id
                     )
                     .eq(
-                        'actor_id',
-                        actorId
+                        "actor_id",
+                        actor
                     )
                     .select()
                     .single();
@@ -3266,8 +3156,10 @@ async function saveCasting() {
 
             result =
                 await supabaseClient
-                    .from('castings')
-                    .insert(payload)
+                    .from("castings")
+                    .insert(
+                        payload
+                    )
                     .select()
                     .single();
 
@@ -3276,8 +3168,9 @@ async function saveCasting() {
 
         if (result.error) {
 
-            throw result.error;
-
+            throw new Error(
+                result.error.message
+            );
         }
 
 
@@ -3287,62 +3180,73 @@ async function saveCasting() {
         await loadCastings();
 
 
-        alert(
-            editingId
-                ? 'Кастинг обновлён.'
-                : 'Кастинг сохранён.'
-        );
-
     }
     catch (error) {
 
         console.error(
-            'Save casting error:',
+            "Save casting error:",
             error
         );
 
 
         alert(
-            'Не удалось сохранить кастинг: ' +
-            (error.message || error)
+            "Не удалось сохранить кастинг:\n" +
+            (
+                error.message ||
+                error
+            )
         );
 
     }
     finally {
 
-        if (button) {
+        if (saveButton) {
 
-            button.disabled =
+            saveButton.disabled =
                 false;
 
-            button.textContent =
-                editingId
-                    ? 'Сохранить изменения'
-                    : 'Сохранить';
+            saveButton.textContent =
+                id
+                    ? "Сохранить изменения"
+                    : "Сохранить";
 
         }
-
     }
-
 }
 
 
-async function deleteCasting(id) {
+/* =====================================================
+   DELETE CASTING
+===================================================== */
 
-    if (!supabaseClient) {
+async function deleteCasting(castingId) {
+
+    const casting =
+        allCastings.find(
+            item =>
+                String(item.id) ===
+                String(castingId)
+        );
+
+
+    if (!casting) {
 
         alert(
-            'Supabase не загрузился.'
+            "Кастинг не найден."
         );
 
         return;
-
     }
 
 
+    const projectName =
+        casting.project_name ||
+        "этот кастинг";
+
+
     const confirmed =
-        confirm(
-            'Удалить этот кастинг?'
+        window.confirm(
+            `Удалить "${projectName}"?\n\nЭто действие нельзя отменить.`
         );
 
 
@@ -3351,34 +3255,49 @@ async function deleteCasting(id) {
     }
 
 
+    const actor =
+        await ensureActor();
+
+
+    if (!actor) {
+        return;
+    }
+
+
     try {
+
+        setStatus(
+            "Удаляю кастинг..."
+        );
+
 
         const result =
             await supabaseClient
-                .from('castings')
+                .from("castings")
                 .delete()
                 .eq(
-                    'id',
-                    id
+                    "id",
+                    castingId
                 )
                 .eq(
-                    'actor_id',
-                    actorId
+                    "actor_id",
+                    actor
                 );
 
 
         if (result.error) {
 
-            throw result.error;
-
+            throw new Error(
+                result.error.message
+            );
         }
 
 
         allCastings =
             allCastings.filter(
-                casting =>
-                    String(casting.id) !==
-                    String(id)
+                item =>
+                    String(item.id) !==
+                    String(castingId)
             );
 
 
@@ -3393,27 +3312,30 @@ async function deleteCasting(id) {
 
 
         setStatus(
-            'Кастинг удалён.',
-            'success'
+            "Кастинг удалён.",
+            "success"
         );
+
 
     }
     catch (error) {
 
         console.error(
-            'Delete casting error:',
+            "Delete casting error:",
             error
         );
 
 
         setStatus(
-            'Ошибка удаления: ' +
-            (error.message || error),
-            'error'
+            "Не удалось удалить кастинг: " +
+            (
+                error.message ||
+                error
+            ),
+            "error"
         );
 
     }
-
 }
 
 
@@ -3423,117 +3345,81 @@ async function deleteCasting(id) {
 
 async function analyzeCurrentCasting() {
 
-    const castingTextElement =
-        document.getElementById(
-            'castingText'
-        );
-
-
-    const directorMessageElement =
-        document.getElementById(
-            'castingDirectorMessage'
-        );
-
-
-    const roleNameElement =
-        document.getElementById(
-            'roleName'
-        );
-
-
     const castingText =
-        castingTextElement
-            ? castingTextElement.value.trim()
-            : '';
+        document.getElementById(
+            "castingText"
+        )?.value.trim() || "";
 
 
     const directorMessage =
-        directorMessageElement
-            ? directorMessageElement.value.trim()
-            : '';
+        document.getElementById(
+            "castingDirectorMessage"
+        )?.value.trim() || "";
 
 
     const roleName =
-        roleNameElement
-            ? roleNameElement.value.trim()
-            : '';
+        document.getElementById(
+            "roleName"
+        )?.value.trim() || "";
 
 
-    if (!castingText && !directorMessage) {
+    if (
+        !castingText &&
+        !directorMessage
+    ) {
 
         alert(
-            'Добавь текст кастинга или сообщение от кастинг-директора.'
+            "Добавь текст кастинга или сообщение от кастинг-директора."
         );
 
         return;
-
     }
 
 
-    if (!actorId) {
-
-        const id =
-            await findActor();
+    const actor =
+        await ensureActor();
 
 
-        if (!id) {
-            return;
-        }
-
+    if (!actor) {
+        return;
     }
 
 
     const status =
         document.getElementById(
-            'castingAIStatus'
+            "castingAIStatus"
         );
 
 
     const resultBox =
         document.getElementById(
-            'castingAIResult'
+            "castingAIResult"
         );
 
 
     const resultContent =
         document.getElementById(
-            'castingAIContent'
-        );
-
-
-    const analyzeButton =
-        document.getElementById(
-            'analyzeCastingBtn'
+            "castingAIContent"
         );
 
 
     if (status) {
 
         status.style.display =
-            'block';
+            "block";
 
         status.className =
-            'status';
+            "status";
 
         status.textContent =
-            '🧠 AI анализирует кастинг...';
+            "🧠 AI анализирует кастинг...";
 
     }
 
 
     if (resultBox) {
-
         resultBox.style.display =
-            'none';
-
-    }
-
-
-    if (analyzeButton) {
-
-        analyzeButton.disabled =
-            true;
-
+            "none";
     }
 
 
@@ -3541,13 +3427,13 @@ async function analyzeCurrentCasting() {
 
         const portfolioResult =
             await supabaseClient
-                .from('actors')
+                .from("actors")
                 .select(
-                    'portfolio_analysis'
+                    "portfolio_analysis"
                 )
                 .eq(
-                    'id',
-                    actorId
+                    "id",
+                    actor
                 )
                 .single();
 
@@ -3555,10 +3441,9 @@ async function analyzeCurrentCasting() {
         if (portfolioResult.error) {
 
             throw new Error(
-                'Не удалось получить анализ портфолио: ' +
+                "Не удалось получить анализ портфолио: " +
                 portfolioResult.error.message
             );
-
         }
 
 
@@ -3570,31 +3455,35 @@ async function analyzeCurrentCasting() {
         if (!portfolioAnalysis) {
 
             throw new Error(
-                'Сначала необходимо создать анализ портфолио.'
+                "Сначала необходимо создать анализ портфолио."
             );
-
         }
 
 
         const materialsResult =
             await supabaseClient
-                .from('materials')
+                .from("materials")
                 .select(
-                    'id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at'
+                    "id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at"
                 )
                 .eq(
-                    'actor_id',
-                    actorId
+                    "actor_id",
+                    actor
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
                 );
 
 
         if (materialsResult.error) {
 
             throw new Error(
-                'Не удалось загрузить материалы: ' +
+                "Не удалось загрузить материалы: " +
                 materialsResult.error.message
             );
-
         }
 
 
@@ -3605,25 +3494,27 @@ async function analyzeCurrentCasting() {
         const response =
             await fetch(
                 SUPABASE_URL +
-                '/functions/v1/analyze-casting',
+                "/functions/v1/analyze-casting",
                 {
-
-                    method: 'POST',
+                    method: "POST",
 
                     headers: {
+                        "Content-Type":
+                            "application/json",
 
-                        'Content-Type':
-                            'application/json',
+                        "apikey":
+                            SUPABASE_KEY,
 
-                        'apikey':
+                        "Authorization":
+                            "Bearer " +
                             SUPABASE_KEY
-
                     },
 
                     body:
                         JSON.stringify({
 
-                            actorId,
+                            actorId:
+                                actor,
 
                             roleName,
 
@@ -3636,7 +3527,6 @@ async function analyzeCurrentCasting() {
                             materials
 
                         })
-
                 }
             );
 
@@ -3653,9 +3543,8 @@ async function analyzeCurrentCasting() {
         catch (jsonError) {
 
             throw new Error(
-                'AI вернул некорректный ответ.'
+                "AI вернул некорректный ответ."
             );
-
         }
 
 
@@ -3664,18 +3553,16 @@ async function analyzeCurrentCasting() {
             throw new Error(
                 data?.error ||
                 data?.message ||
-                'Ошибка AI анализа'
+                "Ошибка AI анализа"
             );
-
         }
 
 
         if (!data?.analysis) {
 
             throw new Error(
-                'AI не вернул анализ кастинга.'
+                "AI не вернул анализ кастинга."
             );
-
         }
 
 
@@ -3692,7 +3579,7 @@ async function analyzeCurrentCasting() {
         if (resultBox) {
 
             resultBox.style.display =
-                'block';
+                "block";
 
         }
 
@@ -3700,22 +3587,23 @@ async function analyzeCurrentCasting() {
         if (status) {
 
             status.className =
-                'status success';
+                "status success";
 
             status.textContent =
-                '✓ Анализ кастинга готов';
+                "✓ Анализ кастинга готов";
 
         }
 
 
         currentCastingAI =
-            data;
+            data.analysis;
+
 
     }
     catch (error) {
 
         console.error(
-            'Casting AI error:',
+            "Casting AI error:",
             error
         );
 
@@ -3723,7 +3611,7 @@ async function analyzeCurrentCasting() {
         if (status) {
 
             status.className =
-                'status error';
+                "status error";
 
             status.textContent =
                 error instanceof Error
@@ -3733,270 +3621,6 @@ async function analyzeCurrentCasting() {
         }
 
     }
-    finally {
-
-        if (analyzeButton) {
-
-            analyzeButton.disabled =
-                false;
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   COUNTERS
-===================================================== */
-
-function updateCounters(castings) {
-
-    const list =
-        Array.isArray(castings)
-            ? castings
-            : [];
-
-
-    const activeCount =
-        list.filter(
-            casting =>
-                ![
-                    'approved',
-                    'rejected',
-                    'cancelled'
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const auditionCount =
-        list.filter(
-            casting =>
-                [
-                    'audition',
-                    'self-tape',
-                    'callback'
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const waitingCount =
-        list.filter(
-            casting =>
-                casting.status ===
-                'no_response'
-        ).length;
-
-
-    const actionCount =
-        list.filter(
-            casting =>
-                [
-                    'new',
-                    'submitted',
-                    'callback'
-                ].includes(
-                    casting.status
-                )
-        ).length;
-
-
-    const activeElement =
-        document.getElementById(
-            'activeCount'
-        );
-
-
-    const auditionElement =
-        document.getElementById(
-            'auditionCount'
-        );
-
-
-    const waitingElement =
-        document.getElementById(
-            'waitingCount'
-        );
-
-
-    const actionElement =
-        document.getElementById(
-            'actionCount'
-        );
-
-
-    if (activeElement) {
-
-        activeElement.textContent =
-            activeCount;
-
-    }
-
-
-    if (auditionElement) {
-
-        auditionElement.textContent =
-            auditionCount;
-
-    }
-
-
-    if (waitingElement) {
-
-        waitingElement.textContent =
-            waitingCount;
-
-    }
-
-
-    if (actionElement) {
-
-        actionElement.textContent =
-            actionCount;
-
-    }
-
-}
-
-
-/* =====================================================
-   MATERIAL FILE PREVIEW
-===================================================== */
-
-function setupMaterialFileInput() {
-
-    const fileInput =
-        document.getElementById(
-            'materialFile'
-        );
-
-
-    if (!fileInput) {
-        return;
-    }
-
-
-    fileInput.addEventListener(
-        'change',
-        handleMaterialFileChange
-    );
-
-}
-
-
-function handleMaterialFileChange(event) {
-
-    const file =
-        event.target.files?.[0];
-
-
-    selectedMaterialFile =
-        file || null;
-
-
-    const preview =
-        document.getElementById(
-            'materialPreview'
-        );
-
-
-    const analyzeButton =
-        document.getElementById(
-            'analyzeMaterialBtn'
-        );
-
-
-    if (
-        currentMaterialPreviewUrl
-    ) {
-
-        URL.revokeObjectURL(
-            currentMaterialPreviewUrl
-        );
-
-        currentMaterialPreviewUrl =
-            null;
-
-    }
-
-
-    if (!file) {
-
-        if (preview) {
-
-            preview.innerHTML =
-                '';
-
-            preview.style.display =
-                'none';
-
-        }
-
-
-        if (analyzeButton) {
-
-            analyzeButton.disabled =
-                true;
-
-        }
-
-
-        return;
-
-    }
-
-
-    if (!file.type.startsWith('image/')) {
-
-        alert(
-            'Можно выбрать только изображение.'
-        );
-
-
-        event.target.value =
-            '';
-
-
-        selectedMaterialFile =
-            null;
-
-
-        return;
-
-    }
-
-
-    currentMaterialPreviewUrl =
-        URL.createObjectURL(file);
-
-
-    if (preview) {
-
-        preview.innerHTML = `
-            <img
-                src="${currentMaterialPreviewUrl}"
-                alt="Предпросмотр материала"
-            >
-        `;
-
-        preview.style.display =
-            'block';
-
-    }
-
-
-    if (analyzeButton) {
-
-        analyzeButton.disabled =
-            false;
-
-    }
-
 }
 
 
@@ -4004,11 +3628,11 @@ function handleMaterialFileChange(event) {
    MATERIALS
 ===================================================== */
 
-async function loadSavedMaterials() {
+async function loadMaterials() {
 
     const list =
         document.getElementById(
-            'savedMaterialsList'
+            "savedMaterialsList"
         );
 
 
@@ -4017,79 +3641,128 @@ async function loadSavedMaterials() {
     }
 
 
-    if (!supabaseClient) {
+    list.innerHTML =
+        `<div class="loading-text">Загрузка материалов...</div>`;
+
+
+    const actor =
+        await ensureActor();
+
+
+    if (!actor) {
 
         list.innerHTML =
-            '<div class="status error">Supabase не загрузился.</div>';
+            `<div class="material-no-analysis">
+                Не удалось определить профиль актёра.
+            </div>`;
 
         return;
-
     }
 
 
-    if (!actorId) {
+    try {
 
-        const id =
-            await findActor();
+        const result =
+            await supabaseClient
+                .from("materials")
+                .select("*")
+                .eq(
+                    "actor_id",
+                    actor
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
-        if (!id) {
-
-            list.innerHTML =
-                '<div class="empty">Профиль не найден.</div>';
-
-            return;
-
+        if (result.error) {
+            throw new Error(
+                result.error.message
+            );
         }
 
+
+        allMaterials =
+            result.data || [];
+
+
+        renderSavedMaterials(
+            allMaterials
+        );
+
     }
-
-
-    list.innerHTML =
-        '<div class="loading-text">Загрузка материалов...</div>';
-
-
-    const result =
-        await supabaseClient
-            .from('materials')
-            .select('*')
-            .eq(
-                'actor_id',
-                actorId
-            )
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (result.error) {
+    catch (error) {
 
         console.error(
-            'Materials load error:',
-            result.error
+            "Load materials error:",
+            error
         );
 
 
         list.innerHTML = `
             <div class="status error">
-                Ошибка загрузки материалов:
+                Не удалось загрузить материалы:
                 ${escapeHtml(
-                    result.error.message
+                    error.message || error
                 )}
             </div>
         `;
+    }
+}
 
 
-        return;
+/* =====================================================
+   GET MATERIAL IMAGE URL
+===================================================== */
 
+function getMaterialImageUrl(material) {
+
+    if (material.image_url) {
+        return material.image_url;
     }
 
 
-    const materials =
-        result.data || [];
+    if (
+        material.file_path &&
+        supabaseClient
+    ) {
+
+        const result =
+            supabaseClient
+                .storage
+                .from("materials")
+                .getPublicUrl(
+                    material.file_path
+                );
+
+
+        return result.data?.publicUrl ||
+            "";
+    }
+
+
+    return "";
+}
+
+
+/* =====================================================
+   RENDER MATERIALS
+===================================================== */
+
+function renderSavedMaterials(materials) {
+
+    const list =
+        document.getElementById(
+            "savedMaterialsList"
+        );
+
+
+    if (!list) {
+        return;
+    }
 
 
     if (!materials.length) {
@@ -4100,92 +3773,167 @@ async function loadSavedMaterials() {
             </div>
         `;
 
-
         return;
-
     }
 
 
-    list.innerHTML = '';
+    list.innerHTML = "";
 
 
     materials.forEach(
-        material => {
+        (material, index) => {
 
             const item =
                 document.createElement(
-                    'div'
+                    "div"
                 );
 
 
             item.className =
-                'saved-material';
+                "material-item";
+
+
+            const imageUrl =
+                getMaterialImageUrl(
+                    material
+                );
 
 
             const title =
                 material.title ||
                 material.original_name ||
-                'Материал';
+                `Материал ${index + 1}`;
 
 
-            let imageUrl =
-                material.image_url ||
-                '';
+            const analysis =
+                material.analysis;
 
 
-            if (
-                !imageUrl &&
-                material.file_path
-            ) {
-
-                const publicResult =
-                    supabaseClient
-                        .storage
-                        .from('materials')
-                        .getPublicUrl(
-                            material.file_path
-                        );
+            const panelId =
+                "material-analysis-" +
+                String(
+                    material.id ||
+                    index
+                ).replace(
+                    /[^a-zA-Z0-9_-]/g,
+                    "_"
+                );
 
 
-                imageUrl =
-                    publicResult.data
-                        ?.publicUrl ||
-                    '';
-
-            }
+            const hasAnalysis =
+                analysis !== null &&
+                analysis !== undefined &&
+                String(analysis).trim() !== "";
 
 
             item.innerHTML = `
 
-                <div class="saved-material-header">
+                <div class="material-item-header">
 
-                    <div>
-
-                        <h3>
-                            ${escapeHtml(title)}
-                        </h3>
+                    <div class="material-item-main">
 
                         ${
-                            material.material_type
-                            ? `
-                                <p>
-                                    Тип:
-                                    ${escapeHtml(
-                                        material.material_type
-                                    )}
-                                </p>
-                              `
-                            : ''
+                            imageUrl
+                                ? `
+                                    <img
+                                        class="material-thumb"
+                                        src="${escapeHtml(
+                                            imageUrl
+                                        )}"
+                                        alt="${escapeHtml(
+                                            title
+                                        )}"
+                                    >
+                                  `
+                                :
+                                  `
+                                    <div
+                                        class="material-thumb"
+                                        style="
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            font-size:30px;
+                                        "
+                                    >
+                                        📷
+                                    </div>
+                                  `
                         }
 
+
+                        <div class="material-meta">
+
+                            <h3>
+                                ${escapeHtml(
+                                    title
+                                )}
+                            </h3>
+
+
+                            ${
+                                material.material_type
+                                    ? `
+                                        <p>
+                                            Тип:
+                                            ${escapeHtml(
+                                                material.material_type
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+
+                            ${
+                                material.original_name
+                                    ? `
+                                        <p>
+                                            ${escapeHtml(
+                                                material.original_name
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+
+                            ${
+                                material.is_primary
+                                    ? `
+                                        <span class="badge green">
+                                            Основной материал
+                                        </span>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="material-actions">
+
                         ${
-                            material.is_primary
-                            ? `
-                                <span class="badge green">
-                                    Основной материал
-                                </span>
-                              `
-                            : ''
+                            hasAnalysis
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="btn light small"
+                                        data-material-toggle="${escapeHtml(
+                                            panelId
+                                        )}"
+                                    >
+                                        🧠 Посмотреть анализ
+                                    </button>
+                                  `
+                                :
+                                  `
+                                    <span class="badge">
+                                        Анализ не сохранён
+                                    </span>
+                                  `
                         }
 
                     </div>
@@ -4193,168 +3941,333 @@ async function loadSavedMaterials() {
                 </div>
 
 
-                ${
-                    imageUrl
-                    ? `
-                        <img
-                            src="${escapeHtml(imageUrl)}"
-                            alt="${escapeHtml(title)}"
-                            onerror="this.style.display='none'"
-                        >
-                      `
-                    : ''
-                }
+                <div
+                    id="${escapeHtml(panelId)}"
+                    class="material-analysis-panel"
+                >
 
+                    <h4>
+                        🧠 AI-анализ этой фотографии
+                    </h4>
 
-                ${
-                    material.analysis
-                    ? `
-                        <div
-                            class="material-analysis"
-                            style="margin-top:15px;"
-                        >
-                            ${formatAIText(
-                                material.analysis
-                            )}
-                        </div>
-                      `
-                    : `
-                        <p>
-                            Анализ пока не сохранён.
-                        </p>
-                      `
-                }
+                    ${
+                        hasAnalysis
+                            ? `
+                                <div class="material-analysis">
+                                    ${formatAIText(
+                                        analysis
+                                    )}
+                                </div>
+                              `
+                            :
+                              `
+                                <div class="material-no-analysis">
+                                    Для этого материала пока нет сохранённого анализа.
+                                </div>
+                              `
+                    }
 
+                </div>
             `;
+
+
+            const toggleButton =
+                item.querySelector(
+                    "[data-material-toggle]"
+                );
+
+
+            if (toggleButton) {
+
+                toggleButton.addEventListener(
+                    "click",
+                    () => {
+
+                        const targetId =
+                            toggleButton.dataset
+                                .materialToggle;
+
+
+                        const panel =
+                            document.getElementById(
+                                targetId
+                            );
+
+
+                        if (!panel) {
+                            return;
+                        }
+
+
+                        const isOpen =
+                            panel.classList.contains(
+                                "open"
+                            );
+
+
+                        panel.classList.toggle(
+                            "open"
+                        );
+
+
+                        toggleButton.textContent =
+                            isOpen
+                                ? "🧠 Посмотреть анализ"
+                                : "🔼 Скрыть анализ";
+
+                    }
+                );
+
+            }
 
 
             list.appendChild(item);
 
         }
     );
-
 }
 
 
 /* =====================================================
-   ANALYZE SINGLE MATERIAL
+   MATERIAL FILE SELECT
 ===================================================== */
 
-async function analyzeMaterial() {
+function initializeMaterialUpload() {
+
+    const fileInput =
+        document.getElementById(
+            "materialFile"
+        );
+
+
+    if (!fileInput) {
+        return;
+    }
+
+
+    fileInput.addEventListener(
+        "change",
+        handleMaterialFileChange
+    );
+}
+
+
+function handleMaterialFileChange(event) {
 
     const file =
-        selectedMaterialFile;
+        event.target.files?.[0] ||
+        null;
+
+
+    selectedMaterialFile =
+        file;
+
+
+    const preview =
+        document.getElementById(
+            "materialPreview"
+        );
+
+
+    const analyzeButton =
+        document.getElementById(
+            "analyzeMaterialBtn"
+        );
 
 
     if (!file) {
 
-        alert(
-            'Сначала выбери фотографию.'
-        );
+        if (preview) {
+            preview.style.display =
+                "none";
+
+            preview.innerHTML =
+                "";
+        }
+
+
+        if (analyzeButton) {
+            analyzeButton.disabled =
+                true;
+        }
+
 
         return;
+    }
+
+
+    if (
+        !file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        alert(
+            "Можно загружать только изображения."
+        );
+
+
+        selectedMaterialFile =
+            null;
+
+
+        if (analyzeButton) {
+            analyzeButton.disabled =
+                true;
+        }
+
+
+        return;
+    }
+
+
+    if (preview) {
+
+        const url =
+            URL.createObjectURL(
+                file
+            );
+
+
+        preview.innerHTML = `
+            <img
+                src="${url}"
+                alt="Предпросмотр"
+            >
+        `;
+
+
+        preview.style.display =
+            "block";
 
     }
 
 
-    if (!actorId) {
+    if (analyzeButton) {
+        analyzeButton.disabled =
+            false;
+    }
+}
 
-        const id =
-            await findActor();
+
+/* =====================================================
+   ANALYZE MATERIAL
+===================================================== */
+
+async function analyzeMaterial() {
+
+    if (!selectedMaterialFile) {
+
+        alert(
+            "Сначала выбери фотографию."
+        );
+
+        return;
+    }
 
 
-        if (!id) {
-            return;
-        }
+    const actor =
+        await ensureActor();
 
+
+    if (!actor) {
+        return;
     }
 
 
     const loading =
         document.getElementById(
-            'materialLoading'
+            "materialLoading"
         );
 
 
     const errorBox =
         document.getElementById(
-            'materialError'
+            "materialError"
         );
 
 
     const resultBox =
         document.getElementById(
-            'materialResult'
+            "materialResult"
         );
 
 
     const resultContent =
         document.getElementById(
-            'materialAnalysis'
+            "materialAnalysis"
         );
 
 
     const button =
         document.getElementById(
-            'analyzeMaterialBtn'
+            "analyzeMaterialBtn"
         );
 
 
     if (errorBox) {
 
         errorBox.style.display =
-            'none';
+            "none";
 
         errorBox.textContent =
-            '';
+            "";
 
     }
 
 
     if (resultBox) {
-
         resultBox.style.display =
-            'none';
-
+            "none";
     }
 
 
     if (loading) {
-
         loading.style.display =
-            'block';
-
+            "block";
     }
 
 
     if (button) {
-
         button.disabled =
             true;
 
+        button.textContent =
+            "Анализирую...";
     }
 
 
     try {
 
+        /*
+         * Здесь используется Edge Function.
+         * Название функции:
+         * analyze-material
+         */
+
         const base64 =
-            await fileToBase64(file);
+            await fileToBase64(
+                selectedMaterialFile
+            );
 
 
         const response =
             await fetch(
                 SUPABASE_URL +
-                '/functions/v1/analyze-material',
+                "/functions/v1/analyze-material",
                 {
-
-                    method: 'POST',
+                    method: "POST",
 
                     headers: {
 
-                        'Content-Type':
-                            'application/json',
+                        "Content-Type":
+                            "application/json",
 
-                        'apikey':
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            "Bearer " +
                             SUPABASE_KEY
 
                     },
@@ -4362,38 +4275,34 @@ async function analyzeMaterial() {
                     body:
                         JSON.stringify({
 
-                            actorId,
+                            actorId:
+                                actor,
 
                             fileName:
-                                file.name,
+                                selectedMaterialFile.name,
 
                             mimeType:
-                                file.type,
+                                selectedMaterialFile.type,
 
-                            image:
+                            imageBase64:
                                 base64
 
                         })
-
                 }
             );
 
 
-        let data;
+        let data = null;
 
 
         try {
-
             data =
                 await response.json();
-
         }
-        catch (jsonError) {
-
+        catch (error) {
             throw new Error(
-                'AI вернул некорректный ответ.'
+                "AI вернул некорректный ответ."
             );
-
         }
 
 
@@ -4402,16 +4311,23 @@ async function analyzeMaterial() {
             throw new Error(
                 data?.error ||
                 data?.message ||
-                'Ошибка анализа фотографии.'
+                "Ошибка AI анализа фотографии."
             );
-
         }
 
 
         const analysis =
             data?.analysis ||
             data?.result ||
-            data;
+            data?.content;
+
+
+        if (!analysis) {
+
+            throw new Error(
+                "AI не вернул анализ фотографии."
+            );
+        }
 
 
         if (resultContent) {
@@ -4425,20 +4341,31 @@ async function analyzeMaterial() {
 
 
         if (resultBox) {
-
             resultBox.style.display =
-                'block';
-
+                "block";
         }
 
 
-        await loadSavedMaterials();
+        /*
+         * После анализа сохраняем материал.
+         */
+
+        await saveMaterialRecord({
+            actorId: actor,
+            file: selectedMaterialFile,
+            analysis: analysis,
+            aiData: data
+        });
+
+
+        await loadMaterials();
+
 
     }
     catch (error) {
 
         console.error(
-            'Material AI error:',
+            "Material analysis error:",
             error
         );
 
@@ -4446,7 +4373,7 @@ async function analyzeMaterial() {
         if (errorBox) {
 
             errorBox.style.display =
-                'block';
+                "block";
 
             errorBox.textContent =
                 error instanceof Error
@@ -4459,10 +4386,8 @@ async function analyzeMaterial() {
     finally {
 
         if (loading) {
-
             loading.style.display =
-                'none';
-
+                "none";
         }
 
 
@@ -4471,12 +4396,17 @@ async function analyzeMaterial() {
             button.disabled =
                 !selectedMaterialFile;
 
+            button.textContent =
+                "🔍 Анализировать";
+
         }
-
     }
-
 }
 
+
+/* =====================================================
+   FILE TO BASE64
+===================================================== */
 
 function fileToBase64(file) {
 
@@ -4492,20 +4422,30 @@ function fileToBase64(file) {
 
                     const result =
                         String(
-                            reader.result || ''
+                            reader.result || ""
                         );
 
 
                     const commaIndex =
-                        result.indexOf(',');
+                        result.indexOf(",");
+
+
+                    if (
+                        commaIndex === -1
+                    ) {
+
+                        resolve(
+                            result
+                        );
+
+                        return;
+                    }
 
 
                     resolve(
-                        commaIndex >= 0
-                            ? result.slice(
-                                commaIndex + 1
-                            )
-                            : result
+                        result.slice(
+                            commaIndex + 1
+                        )
                     );
 
                 };
@@ -4516,18 +4456,216 @@ function fileToBase64(file) {
 
                     reject(
                         new Error(
-                            'Не удалось прочитать файл.'
+                            "Не удалось прочитать файл."
                         )
                     );
 
                 };
 
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(
+                file
+            );
 
         }
     );
+}
 
+
+/* =====================================================
+   SAVE MATERIAL RECORD
+===================================================== */
+
+async function saveMaterialRecord({
+    actorId,
+    file,
+    analysis,
+    aiData
+}) {
+
+    /*
+     * Сначала пытаемся загрузить файл
+     * в Storage bucket "materials".
+     */
+
+    let filePath =
+        null;
+
+    let imageUrl =
+        null;
+
+
+    try {
+
+        const safeName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+
+        const uniqueName =
+            Date.now() +
+            "_" +
+            Math.random()
+                .toString(36)
+                .slice(2) +
+            "_" +
+            safeName;
+
+
+        filePath =
+            actorId +
+            "/" +
+            uniqueName;
+
+
+        const uploadResult =
+            await supabaseClient
+                .storage
+                .from("materials")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        upsert: false,
+                        contentType:
+                            file.type
+                    }
+                );
+
+
+        if (uploadResult.error) {
+
+            console.warn(
+                "Storage upload error:",
+                uploadResult.error
+            );
+
+            filePath =
+                null;
+
+        }
+        else {
+
+            const publicResult =
+                supabaseClient
+                    .storage
+                    .from("materials")
+                    .getPublicUrl(
+                        filePath
+                    );
+
+
+            imageUrl =
+                publicResult
+                    .data
+                    ?.publicUrl ||
+                    null;
+
+        }
+
+    }
+    catch (storageError) {
+
+        console.warn(
+            "Storage unavailable:",
+            storageError
+        );
+
+    }
+
+
+    /*
+     * Сохраняем запись в таблицу materials.
+     */
+
+    const title =
+        file.name
+            .replace(
+                /\.[^/.]+$/,
+                ""
+            );
+
+
+    const payload = {
+
+        actor_id:
+            actorId,
+
+        title:
+            title || "Фотография",
+
+        material_type:
+            "photo",
+
+        original_name:
+            file.name,
+
+        file_path:
+            filePath,
+
+        image_url:
+            imageUrl,
+
+        analysis:
+            analysis,
+
+        is_primary:
+            false
+
+    };
+
+
+    /*
+     * aiData намеренно не записываем
+     * отдельным полем, потому что структура
+     * таблицы может его не содержать.
+     */
+
+    const result =
+        await supabaseClient
+            .from("materials")
+            .insert(
+                payload
+            );
+
+
+    if (result.error) {
+
+        console.error(
+            "Save material record error:",
+            result.error
+        );
+
+
+        /*
+         * Если Storage уже загрузился,
+         * а запись не сохранилась,
+         * пробуем удалить файл.
+         */
+
+        if (filePath) {
+
+            await supabaseClient
+                .storage
+                .from("materials")
+                .remove([
+                    filePath
+                ]);
+
+        }
+
+
+        throw new Error(
+            "Фото проанализировано, но не удалось сохранить его в базе: " +
+            result.error.message
+        );
+    }
+
+
+    return result.data;
 }
 
 
@@ -4537,163 +4675,145 @@ function fileToBase64(file) {
 
 async function loadSavedPortfolioAnalysis() {
 
-    await analyzeAllMaterials(false);
-
+    await analyzeAllMaterials(
+        false
+    );
 }
 
 
 async function analyzeAllMaterials(forceNew = false) {
 
-    if (!supabaseClient) {
+    const actor =
+        await ensureActor();
 
-        showPortfolioError(
-            'Supabase не загрузился.'
-        );
 
+    if (!actor) {
         return;
-
-    }
-
-
-    if (!actorId) {
-
-        const id =
-            await findActor();
-
-
-        if (!id) {
-            return;
-        }
-
     }
 
 
     const loading =
         document.getElementById(
-            'allMaterialsLoading'
+            "allMaterialsLoading"
         );
 
 
     const errorBox =
         document.getElementById(
-            'allMaterialsError'
+            "allMaterialsError"
         );
 
 
     const resultBox =
         document.getElementById(
-            'allMaterialsResult'
+            "allMaterialsResult"
         );
 
 
     const newButton =
         document.getElementById(
-            'newPortfolioAnalysisBtn'
+            "newPortfolioAnalysisBtn"
         );
+
+
+    if (loading) {
+        loading.style.display =
+            "block";
+    }
 
 
     if (errorBox) {
 
         errorBox.style.display =
-            'none';
+            "none";
 
         errorBox.textContent =
-            '';
+            "";
 
     }
 
 
     if (resultBox) {
-
         resultBox.style.display =
-            'none';
-
-    }
-
-
-    if (loading) {
-
-        loading.style.display =
-            'block';
-
-        loading.textContent =
-            forceNew
-                ? 'Создаю новый анализ всей коллекции материалов...'
-                : 'Загружаю сохранённый анализ...';
-
+            "none";
     }
 
 
     if (newButton) {
-
         newButton.disabled =
             true;
-
     }
 
 
     try {
 
-        if (!forceNew) {
+        /*
+         * Сначала проверяем сохранённый анализ.
+         */
 
-            const actorResult =
-                await supabaseClient
-                    .from('actors')
-                    .select(
-                        'portfolio_analysis'
-                    )
-                    .eq(
-                        'id',
-                        actorId
-                    )
-                    .single();
-
-
-            if (actorResult.error) {
-
-                throw new Error(
-                    actorResult.error.message
-                );
-
-            }
+        const actorResult =
+            await supabaseClient
+                .from("actors")
+                .select(
+                    "portfolio_analysis"
+                )
+                .eq(
+                    "id",
+                    actor
+                )
+                .single();
 
 
-            const savedAnalysis =
-                actorResult.data
-                    ?.portfolio_analysis;
-
-
-            if (savedAnalysis) {
-
-                displayPortfolioAnalysis(
-                    savedAnalysis
-                );
-
-
-                return;
-
-            }
-
+        if (actorResult.error) {
 
             throw new Error(
-                'Сохранённого анализа портфолио пока нет.'
+                actorResult.error.message
             );
-
         }
 
 
+        const savedAnalysis =
+            actorResult
+                .data
+                ?.portfolio_analysis;
+
+
+        if (
+            !forceNew &&
+            savedAnalysis
+        ) {
+
+            if (resultBox) {
+
+                resultBox.innerHTML =
+                    formatAIText(
+                        savedAnalysis
+                    );
+
+                resultBox.style.display =
+                    "block";
+
+            }
+
+
+            return;
+        }
+
+
+        /*
+         * Загружаем все материалы.
+         */
+
         const materialsResult =
             await supabaseClient
-                .from('materials')
-                .select(
-                    'id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at'
-                )
+                .from("materials")
+                .select("*")
                 .eq(
-                    'actor_id',
-                    actorId
+                    "actor_id",
+                    actor
                 )
                 .order(
-                    'created_at',
+                    "created_at",
                     {
                         ascending: false
                     }
@@ -4703,10 +4823,8 @@ async function analyzeAllMaterials(forceNew = false) {
         if (materialsResult.error) {
 
             throw new Error(
-                'Не удалось загрузить материалы: ' +
                 materialsResult.error.message
             );
-
         }
 
 
@@ -4717,26 +4835,32 @@ async function analyzeAllMaterials(forceNew = false) {
         if (!materials.length) {
 
             throw new Error(
-                'Сначала добавь хотя бы один материал.'
+                "Нет материалов для анализа."
             );
-
         }
 
+
+        /*
+         * Отправляем портфолио в Edge Function.
+         */
 
         const response =
             await fetch(
                 SUPABASE_URL +
-                '/functions/v1/analyze-materials',
+                "/functions/v1/analyze-portfolio",
                 {
-
-                    method: 'POST',
+                    method: "POST",
 
                     headers: {
 
-                        'Content-Type':
-                            'application/json',
+                        "Content-Type":
+                            "application/json",
 
-                        'apikey':
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            "Bearer " +
                             SUPABASE_KEY
 
                     },
@@ -4744,29 +4868,27 @@ async function analyzeAllMaterials(forceNew = false) {
                     body:
                         JSON.stringify({
 
-                            actorId,
+                            actorId:
+                                actor,
 
                             materials
 
                         })
-
                 }
             );
 
 
-        let data;
+        let data = null;
 
 
         try {
-
             data =
                 await response.json();
-
         }
-        catch (jsonError) {
+        catch (error) {
 
             throw new Error(
-                'AI вернул некорректный ответ.'
+                "AI вернул некорректный ответ."
             );
 
         }
@@ -4777,7 +4899,7 @@ async function analyzeAllMaterials(forceNew = false) {
             throw new Error(
                 data?.error ||
                 data?.message ||
-                'Ошибка анализа портфолио.'
+                "Ошибка анализа портфолио."
             );
 
         }
@@ -4785,145 +4907,93 @@ async function analyzeAllMaterials(forceNew = false) {
 
         const analysis =
             data?.analysis ||
-            data?.result ||
-            data;
+            data?.result;
 
 
         if (!analysis) {
 
             throw new Error(
-                'AI не вернул анализ портфолио.'
+                "AI не вернул анализ портфолио."
             );
 
         }
 
 
+        /*
+         * Сохраняем анализ в actors.
+         */
+
         const updateResult =
             await supabaseClient
-                .from('actors')
+                .from("actors")
                 .update({
                     portfolio_analysis:
                         analysis
                 })
                 .eq(
-                    'id',
-                    actorId
+                    "id",
+                    actor
                 );
 
 
         if (updateResult.error) {
 
             throw new Error(
-                'Анализ создан, но не удалось его сохранить: ' +
+                "Анализ получен, но не удалось сохранить его: " +
                 updateResult.error.message
             );
 
         }
 
 
-        displayPortfolioAnalysis(
-            analysis
-        );
+        if (resultBox) {
+
+            resultBox.innerHTML =
+                formatAIText(
+                    analysis
+                );
+
+            resultBox.style.display =
+                "block";
+
+        }
+
 
     }
     catch (error) {
 
         console.error(
-            'Portfolio analysis error:',
+            "Portfolio analysis error:",
             error
         );
 
 
-        showPortfolioError(
-            error instanceof Error
-                ? error.message
-                : String(error)
-        );
+        if (errorBox) {
+
+            errorBox.style.display =
+                "block";
+
+            errorBox.textContent =
+                error instanceof Error
+                    ? error.message
+                    : String(error);
+
+        }
 
     }
     finally {
 
         if (loading) {
-
             loading.style.display =
-                'none';
-
+                "none";
         }
 
 
         if (newButton) {
-
             newButton.disabled =
                 false;
-
         }
-
     }
-
-}
-
-
-function displayPortfolioAnalysis(
-    analysis
-) {
-
-    const resultBox =
-        document.getElementById(
-            'allMaterialsResult'
-        );
-
-
-    if (!resultBox) {
-        return;
-    }
-
-
-    resultBox.innerHTML =
-        formatAIText(
-            analysis
-        );
-
-
-    resultBox.style.display =
-        'block';
-
-}
-
-
-function showPortfolioError(
-    message
-) {
-
-    const loading =
-        document.getElementById(
-            'allMaterialsLoading'
-        );
-
-
-    const errorBox =
-        document.getElementById(
-            'allMaterialsError'
-        );
-
-
-    if (loading) {
-
-        loading.style.display =
-            'none';
-
-    }
-
-
-    if (errorBox) {
-
-        errorBox.style.display =
-            'block';
-
-        errorBox.textContent =
-            message;
-
-    }
-
 }
 
 
@@ -4931,17 +5001,17 @@ function showPortfolioError(
    AGENT CHAT
 ===================================================== */
 
-async function sendMessage() {
+function sendMessage() {
 
     const input =
         document.getElementById(
-            'chatInput'
+            "chatInput"
         );
 
 
     const chat =
         document.getElementById(
-            'chat'
+            "chat"
         );
 
 
@@ -4950,29 +5020,27 @@ async function sendMessage() {
     }
 
 
-    const message =
+    const text =
         input.value.trim();
 
 
-    if (!message) {
+    if (!text) {
         return;
     }
 
 
     const userMessage =
         document.createElement(
-            'div'
+            "div"
         );
 
 
     userMessage.className =
-        'chat-message user';
+        "chat-message user";
 
 
-    userMessage.innerHTML =
-        `<strong>Ты:</strong><br>${escapeHtml(
-            message
-        )}`;
+    userMessage.textContent =
+        text;
 
 
     chat.appendChild(
@@ -4981,195 +5049,48 @@ async function sendMessage() {
 
 
     input.value =
-        '';
+        "";
 
 
-    const loadingMessage =
+    const agentMessage =
         document.createElement(
-            'div'
+            "div"
         );
 
 
-    loadingMessage.className =
-        'chat-message agent';
+    agentMessage.className =
+        "chat-message";
 
 
-    loadingMessage.innerHTML =
-        '🧠 Думаю...';
+    agentMessage.innerHTML = `
+        <b>Агент:</b>
+        <div style="margin-top:6px">
+            Я сохраню этот вопрос в контексте.
+            Реальный AI-ответ можно подключить
+            через отдельную Edge Function.
+        </div>
+    `;
 
 
     chat.appendChild(
-        loadingMessage
+        agentMessage
     );
 
 
     chat.scrollTop =
         chat.scrollHeight;
-
-
-    try {
-
-        if (!actorId) {
-
-            const id =
-                await findActor();
-
-
-            if (!id) {
-
-                throw new Error(
-                    'Профиль не найден.'
-                );
-
-            }
-
-        }
-
-
-        const response =
-            await fetch(
-                SUPABASE_URL +
-                '/functions/v1/agent-chat',
-                {
-
-                    method: 'POST',
-
-                    headers: {
-
-                        'Content-Type':
-                            'application/json',
-
-                        'apikey':
-                            SUPABASE_KEY
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            actorId,
-
-                            message,
-
-                            castings:
-                                allCastings
-
-                        })
-
-                }
-            );
-
-
-        let data;
-
-
-        try {
-
-            data =
-                await response.json();
-
-        }
-        catch (jsonError) {
-
-            throw new Error(
-                'AI вернул некорректный ответ.'
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                'Ошибка AI-агента.'
-            );
-
-        }
-
-
-        const answer =
-            data?.answer ||
-            data?.message ||
-            data?.response ||
-            data?.analysis ||
-            'AI не вернул ответ.';
-
-
-        loadingMessage.innerHTML =
-            `<strong>Агент:</strong><br>${formatAIText(
-                answer
-            )}`;
-
-    }
-    catch (error) {
-
-        console.error(
-            'Agent error:',
-            error
-        );
-
-
-        loadingMessage.innerHTML =
-            `<strong>Агент:</strong><br>${escapeHtml(
-                error instanceof Error
-                    ? error.message
-                    : String(error)
-            )}`;
-
-    }
-
 }
 
 
 /* =====================================================
-   ENTER KEY FOR CHAT
+   MODAL EVENTS
 ===================================================== */
 
-function setupChatInput() {
-
-    const input =
-        document.getElementById(
-            'chatInput'
-        );
-
-
-    if (!input) {
-        return;
-    }
-
-
-    input.addEventListener(
-        'keydown',
-        event => {
-
-            if (
-                event.key === 'Enter' &&
-                !event.shiftKey
-            ) {
-
-                event.preventDefault();
-
-                sendMessage();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   MODAL OUTSIDE CLICK
-===================================================== */
-
-function setupModal() {
+function initializeModalEvents() {
 
     const modal =
         document.getElementById(
-            'modal'
+            "modal"
         );
 
 
@@ -5179,11 +5100,12 @@ function setupModal() {
 
 
     modal.addEventListener(
-        'click',
+        "click",
         event => {
 
             if (
-                event.target === modal
+                event.target ===
+                modal
             ) {
 
                 closeModal();
@@ -5193,27 +5115,23 @@ function setupModal() {
         }
     );
 
-}
 
+    document.addEventListener(
+        "keydown",
+        event => {
 
-/* =====================================================
-   ESC CLOSE MODAL
-===================================================== */
+            if (
+                event.key ===
+                "Escape"
+            ) {
 
-document.addEventListener(
-    'keydown',
-    event => {
+                closeModal();
 
-        if (
-            event.key === 'Escape'
-        ) {
-
-            closeModal();
+            }
 
         }
-
-    }
-);
+    );
+}
 
 
 /* =====================================================
@@ -5222,56 +5140,37 @@ document.addEventListener(
 
 async function initializeApp() {
 
+    initializeMaterialUpload();
+
+    initializeModalEvents();
+
+
     if (!supabaseClient) {
 
         setStatus(
-            'Не удалось загрузить Supabase. Проверь подключение к CDN.',
-            'error'
+            "Ошибка: библиотека Supabase не загрузилась.",
+            "error"
         );
 
         return;
-
     }
 
 
-    setupMaterialFileInput();
+    /*
+     * На старте пытаемся найти актёра.
+     */
 
-    setupChatInput();
-
-    setupModal();
+    await findActor();
 
 
-    try {
+    /*
+     * Загружаем кастинги.
+     */
 
-        await findActor();
-
-        if (actorId) {
-
-            await loadCastings();
-
-        }
-
+    if (actorId) {
+        await loadCastings();
+        await loadMaterials();
     }
-    catch (error) {
-
-        console.error(
-            'Initialization error:',
-            error
-        );
-
-
-        setStatus(
-            'Ошибка запуска приложения: ' +
-            (
-                error instanceof Error
-                    ? error.message
-                    : String(error)
-            ),
-            'error'
-        );
-
-    }
-
 }
 
 
@@ -5279,25 +5178,16 @@ async function initializeApp() {
    START
 ===================================================== */
 
-if (
-    document.readyState ===
-    'loading'
-) {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    document.addEventListener(
-        'DOMContentLoaded',
-        initializeApp
-    );
+        initializeApp();
 
-}
-else {
-
-    initializeApp();
-
-}
-
+    }
+);
 </script>
 
 </body>
-
 </html>
+
