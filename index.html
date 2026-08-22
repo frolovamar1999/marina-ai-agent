@@ -1085,31 +1085,25 @@ textarea {
 
 </section>
 
-
+      
 <!-- =========================
      CASTINGS
 ========================= -->
 
-<section
-    id="castings"
-    class="page"
->
+<section id="castings" class="page">
 
     <div class="header">
 
         <div>
-
-            <h1>
-                🎬 Кастинги
-            </h1>
+            <h1>🎬 Кастинги</h1>
 
             <p>
                 Твоя профессиональная память
             </p>
-
         </div>
 
         <button
+            type="button"
             class="btn"
             onclick="openNewCastingModal()"
         >
@@ -1231,9 +1225,7 @@ textarea {
 
         <div>
 
-            <h1>
-                📸 Материалы
-            </h1>
+            <h1>📸 Материалы</h1>
 
             <p>
                 Профессиональный анализ актерских материалов
@@ -1300,7 +1292,7 @@ textarea {
     <div
         id="materialLoading"
         class="card"
-        style="display:none"
+        style="display:none;"
     >
 
         <div class="material-loading">
@@ -1328,14 +1320,14 @@ textarea {
     <div
         id="materialError"
         class="status error"
-        style="display:none"
+        style="display:none;"
     ></div>
 
 
     <div
         id="materialResult"
         class="card material-result"
-        style="display:none"
+        style="display:none;"
     >
 
         <div class="section-title">
@@ -1372,7 +1364,7 @@ textarea {
                 </h2>
 
                 <p>
-                    Сохраненный анализ используется повторно.
+                    Сохранённый анализ используется повторно.
                     Новый анализ запускается только вручную.
                 </p>
 
@@ -1443,13 +1435,9 @@ textarea {
         ></div>
 
     </div>
-      
-async function loadSavedPortfolioAnalysis() {
-    await analyzeAllMaterials(false);
-}
-      
 
-    <!-- СОХРАНЕННЫЕ МАТЕРИАЛЫ -->
+
+    <!-- СОХРАНЁННЫЕ МАТЕРИАЛЫ -->
 
     <div
         id="savedMaterials"
@@ -1473,10 +1461,7 @@ async function loadSavedPortfolioAnalysis() {
      CAREER
 ========================= -->
 
-<section
-    id="career"
-    class="page"
->
+<section id="career" class="page">
 
     <div class="header">
 
@@ -1498,54 +1483,23 @@ async function loadSavedPortfolioAnalysis() {
     <div class="cards">
 
         <div class="card metric">
-
-            <strong>
-                4
-            </strong>
-
-            <span>
-                экранных проекта
-            </span>
-
+            <strong>4</strong>
+            <span>экранных проекта</span>
         </div>
 
-
         <div class="card metric">
-
-            <strong>
-                2
-            </strong>
-
-            <span>
-                главные роли
-            </span>
-
+            <strong>2</strong>
+            <span>главные роли</span>
         </div>
 
-
         <div class="card metric">
-
-            <strong>
-                2026
-            </strong>
-
-            <span>
-                новые главные роли
-            </span>
-
+            <strong>2026</strong>
+            <span>новые главные роли</span>
         </div>
 
-
         <div class="card metric">
-
-            <strong>
-                AI
-            </strong>
-
-            <span>
-                анализ карьеры
-            </span>
-
+            <strong>AI</strong>
+            <span>анализ карьеры</span>
         </div>
 
     </div>
@@ -1565,7 +1519,6 @@ async function loadSavedPortfolioAnalysis() {
         </p>
 
         <ul>
-
             <li>какие кастинги появились;</li>
             <li>куда ты подавалась;</li>
             <li>где были пробы;</li>
@@ -1573,7 +1526,6 @@ async function loadSavedPortfolioAnalysis() {
             <li>какие роли приводят к пробам;</li>
             <li>какие материалы работают;</li>
             <li>что делать на следующей неделе.</li>
-
         </ul>
 
     </div>
@@ -1585,10 +1537,7 @@ async function loadSavedPortfolioAnalysis() {
      AGENT
 ========================= -->
 
-<section
-    id="agent"
-    class="page"
->
+<section id="agent" class="page">
 
     <div class="header">
 
@@ -1913,14 +1862,172 @@ async function loadSavedPortfolioAnalysis() {
 </div>
 
 
+        <!-- КНОПКА AI -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                margin-top:10px;
+                margin-bottom:15px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                type="button"
+                class="btn light"
+                onclick="analyzeCurrentCasting()"
+                id="analyzeCastingBtn"
+            >
+                🧠 Проанализировать кастинг
+            </button>
+
+        </div>
+
+
+        <!-- СООБЩЕНИЕ КАСТИНГ-ДИРЕКТОРА -->
+
+        <label>
+
+            Сообщение от кастинг-директора
+
+            <textarea
+                id="castingDirectorMessage"
+                rows="6"
+                placeholder="Вставь сюда письмо, сообщение или текст заявки от кастинг-директора..."
+            ></textarea>
+
+        </label>
+
+
+        <div
+            id="castingAIStatus"
+            class="status"
+            style="
+                display:none;
+                margin-top:10px;
+            "
+        ></div>
+
+
+        <!-- AI-АНАЛИЗ -->
+
+        <div
+            id="castingAIResult"
+            class="card"
+            style="
+                display:none;
+                margin-top:15px;
+            "
+        >
+
+            <h3>
+                🧠 AI-анализ кастинга
+            </h3>
+
+            <div id="castingAIContent"></div>
+
+        </div>
+
+
+        <!-- СТАТУС -->
+
+        <label>
+
+            Статус
+
+            <select id="castingStatus">
+
+                <option value="new">
+                    Новая подача
+                </option>
+
+                <option value="submitted">
+                    Отправлена
+                </option>
+
+                <option value="audition">
+                    Пригласили на пробы
+                </option>
+
+                <option value="self-tape">
+                    Пробы отправлены
+                </option>
+
+                <option value="callback">
+                    Callback
+                </option>
+
+                <option value="approved">
+                    Утверждена
+                </option>
+
+                <option value="rejected">
+                    Не утвердили
+                </option>
+
+                <option value="no_response">
+                    Не ответили
+                </option>
+
+                <option value="cancelled">
+                    Отменён
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <!-- ЗАМЕТКИ -->
+
+        <label>
+
+            Заметки
+
+            <textarea
+                id="castingNotes"
+                rows="4"
+                placeholder="Что важно помнить об этом кастинге..."
+            ></textarea>
+
+        </label>
+
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="btn light"
+                onclick="closeModal()"
+            >
+                Отмена
+            </button>
+
+
+            <button
+                type="button"
+                id="saveCastingButton"
+                class="btn"
+                onclick="saveCasting()"
+            >
+                Сохранить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
 
 
 
-
-
-
+<script>
 
 /* =====================================================
    SUPABASE
@@ -1943,16 +2050,17 @@ const supabaseClient =
 let actorId = null;
 
 
-
-
 /* =====================================================
    CASTINGS STATE
 ===================================================== */
 
 let allCastings = [];
-let currentCastingFilter = 'all';
 
-let currentCastingAI = null;
+let currentCastingFilter =
+    'all';
+
+let currentCastingAI =
+    null;
 
 
 /* =====================================================
@@ -1964,7 +2072,9 @@ async function findActor() {
     const result =
         await supabaseClient
             .from('actors')
-            .select('id, full_name, portfolio_analysis')
+            .select(
+                'id, full_name, portfolio_analysis'
+            )
             .eq(
                 'full_name',
                 'Фролова Марина Сергеевна'
@@ -2016,6 +2126,17 @@ async function findActor() {
 
 
 /* =====================================================
+   LOAD SAVED PORTFOLIO ANALYSIS
+===================================================== */
+
+async function loadSavedPortfolioAnalysis() {
+
+    await analyzeAllMaterials(false);
+
+}
+
+
+/* =====================================================
    ANALYZE CURRENT CASTING
 ===================================================== */
 
@@ -2026,10 +2147,12 @@ async function analyzeCurrentCasting() {
             'castingText'
         );
 
+
     const directorMessageElement =
         document.getElementById(
             'castingDirectorMessage'
         );
+
 
     const roleNameElement =
         document.getElementById(
@@ -2055,7 +2178,10 @@ async function analyzeCurrentCasting() {
             : '';
 
 
-    if (!castingText && !directorMessage) {
+    if (
+        !castingText &&
+        !directorMessage
+    ) {
 
         alert(
             'Добавь текст кастинга или сообщение от кастинг-директора.'
@@ -2086,14 +2212,22 @@ async function analyzeCurrentCasting() {
             'castingAIStatus'
         );
 
+
     const resultBox =
         document.getElementById(
             'castingAIResult'
         );
 
+
     const resultContent =
         document.getElementById(
             'castingAIContent'
+        );
+
+
+    const analyzeButton =
+        document.getElementById(
+            'analyzeCastingBtn'
         );
 
 
@@ -2115,6 +2249,14 @@ async function analyzeCurrentCasting() {
 
         resultBox.style.display =
             'none';
+
+    }
+
+
+    if (analyzeButton) {
+
+        analyzeButton.disabled =
+            true;
 
     }
 
@@ -2149,8 +2291,7 @@ async function analyzeCurrentCasting() {
 
 
         const portfolioAnalysis =
-            portfolioResult
-                .data
+            portfolioResult.data
                 ?.portfolio_analysis;
 
 
@@ -2167,16 +2308,26 @@ async function analyzeCurrentCasting() {
            MATERIALS
         ================================================= */
 
-      const materialsResult =
-    await supabaseClient
-        .from('materials')
-        .select(
-            'id, title, material_type, image_url, file_path, original_name, analysis, is_primary, created_at'
-        )
-        .eq(
-            'actor_id',
-            actorId
-        );
+        const materialsResult =
+            await supabaseClient
+                .from('materials')
+                .select(
+                    `
+                    id,
+                    title,
+                    material_type,
+                    image_url,
+                    file_path,
+                    original_name,
+                    analysis,
+                    is_primary,
+                    created_at
+                    `
+                )
+                .eq(
+                    'actor_id',
+                    actorId
+                );
 
 
         if (materialsResult.error) {
@@ -2199,8 +2350,7 @@ async function analyzeCurrentCasting() {
 
         const response =
             await fetch(
-                SUPABASE_URL +
-                '/functions/v1/analyze-casting',
+                `${SUPABASE_URL}/functions/v1/analyze-casting`,
                 {
                     method: 'POST',
 
@@ -2210,7 +2360,10 @@ async function analyzeCurrentCasting() {
                             'application/json',
 
                         'apikey':
-                            SUPABASE_KEY
+                            SUPABASE_KEY,
+
+                        'Authorization':
+                            `Bearer ${SUPABASE_KEY}`
 
                     },
 
@@ -2235,7 +2388,8 @@ async function analyzeCurrentCasting() {
             );
 
 
-        let data = null;
+        let data =
+            null;
 
 
         try {
@@ -2285,11 +2439,13 @@ async function analyzeCurrentCasting() {
                         data.analysis
                     )
                     : escapeHtml(
-                        JSON.stringify(
-                            data.analysis,
-                            null,
-                            2
-                        )
+                        typeof data.analysis === 'string'
+                            ? data.analysis
+                            : JSON.stringify(
+                                data.analysis,
+                                null,
+                                2
+                            )
                     );
 
         }
@@ -2318,22 +2474,34 @@ async function analyzeCurrentCasting() {
            KEEP AI RESULT IN MEMORY
         ================================================= */
 
-        currentCastingAI =
-            data;
+        currentCastingAI = {
 
+            analysis:
+                data.analysis || null,
 
-        /*
-         * Если AI вернул дополнительные поля,
-         * они будут доступны через:
-         *
-         * currentCastingAI.analysis
-         * currentCastingAI.character
-         * currentCastingAI.recommendedMaterials
-         * currentCastingAI.applicationLetter
-         *
-         * в зависимости от структуры Edge Function.
-         */
+            character:
+                data.character || null,
 
+            fit:
+                data.fit || null,
+
+            recommendedMaterials:
+                data.recommendedMaterials ||
+                data.recommended_materials ||
+                null,
+
+            email:
+                data.email ||
+                data.applicationLetter ||
+                data.application_letter ||
+                null,
+
+            analyzedAt:
+                data.analyzedAt ||
+                data.analyzed_at ||
+                new Date().toISOString()
+
+        };
 
     }
     catch (error) {
@@ -2353,6 +2521,16 @@ async function analyzeCurrentCasting() {
                 error instanceof Error
                     ? error.message
                     : String(error);
+
+        }
+
+    }
+    finally {
+
+        if (analyzeButton) {
+
+            analyzeButton.disabled =
+                false;
 
         }
 
@@ -2448,29 +2626,37 @@ function resetCastingForm() {
         null;
 
 
-
-
     const fields = {
 
-        editingCastingId: '',
+        editingCastingId:
+            '',
 
-        projectName: '',
+        projectName:
+            '',
 
-        castingUrl: '',
+        castingUrl:
+            '',
 
-        roleName: '',
+        roleName:
+            '',
 
-        deadline: '',
+        deadline:
+            '',
 
-        appliedAt: '',
+        appliedAt:
+            '',
 
-        castingText: '',
+        castingText:
+            '',
 
-        castingDirectorMessage: '',
+        castingDirectorMessage:
+            '',
 
-        castingStatus: 'new',
+        castingStatus:
+            'new',
 
-        castingNotes: ''
+        castingNotes:
+            ''
 
     };
 
@@ -2520,6 +2706,12 @@ function resetCastingForm() {
         );
 
 
+    const aiContent =
+        document.getElementById(
+            'castingAIContent'
+        );
+
+
     if (modalTitle) {
 
         modalTitle.textContent =
@@ -2550,6 +2742,14 @@ function resetCastingForm() {
             'none';
 
         aiStatus.textContent =
+            '';
+
+    }
+
+
+    if (aiContent) {
+
+        aiContent.innerHTML =
             '';
 
     }
@@ -2660,14 +2860,9 @@ function getFilteredCastings() {
 
 
     return allCastings.filter(
-        casting => {
-
-            return (
-                casting.status ===
-                currentCastingFilter
-            );
-
-        }
+        casting =>
+            casting.status ===
+            currentCastingFilter
     );
 
 }
@@ -2697,8 +2892,11 @@ function renderCastings(castings) {
             'castingList'
         );
 
+
     if (!list) {
+
         return;
+
     }
 
 
@@ -2727,12 +2925,14 @@ function renderCastings(castings) {
 
         `;
 
+
         return;
 
     }
 
 
-    list.innerHTML = '';
+    list.innerHTML =
+        '';
 
 
     castings.forEach(
@@ -2775,22 +2975,24 @@ function renderCastings(castings) {
 
                         ${
                             casting.deadline
-                            ? `
-                                · дедлайн
-                                ${escapeHtml(
-                                    casting.deadline
-                                )}
-                              `
-                            : ''
+                                ? `
+                                    · дедлайн
+                                    ${escapeHtml(
+                                        casting.deadline
+                                    )}
+                                  `
+                                : ''
                         }
 
                     </p>
 
 
-                    <span class="
-                        badge
-                        ${statusClass}
-                    ">
+                    <span
+                        class="
+                            badge
+                            ${statusClass}
+                        "
+                    >
 
                         ${escapeHtml(
                             getStatusLabel(
@@ -2803,61 +3005,61 @@ function renderCastings(castings) {
 
                     ${
                         casting.applied_at
-                        ? `
-                            <p>
-                                📅 Подана:
-                                ${escapeHtml(
-                                    casting.applied_at
-                                )}
-                            </p>
-                          `
-                        : ''
+                            ? `
+                                <p>
+                                    📅 Подана:
+                                    ${escapeHtml(
+                                        casting.applied_at
+                                    )}
+                                </p>
+                              `
+                            : ''
                     }
 
 
                     ${
                         casting.notes
-                        ? `
-                            <p>
-                                📝
-                                ${escapeHtml(
-                                    casting.notes
-                                )}
-                            </p>
-                          `
-                        : ''
+                            ? `
+                                <p>
+                                    📝
+                                    ${escapeHtml(
+                                        casting.notes
+                                    )}
+                                </p>
+                              `
+                            : ''
                     }
 
 
                     ${
                         casting.casting_url
-                        ? `
-                            <p class="castings-link">
+                            ? `
+                                <p class="castings-link">
 
-                                <a
-                                    href="${escapeHtml(
-                                        casting.casting_url
-                                    )}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Открыть кастинг →
-                                </a>
+                                    <a
+                                        href="${escapeHtml(
+                                            casting.casting_url
+                                        )}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Открыть кастинг →
+                                    </a>
 
-                            </p>
-                          `
-                        : ''
+                                </p>
+                              `
+                            : ''
                     }
 
 
                     ${
                         casting.ai_analysis
-                        ? `
-                            <p>
-                                🧠 AI-анализ сохранён
-                            </p>
-                          `
-                        : ''
+                            ? `
+                                <p>
+                                    🧠 AI-анализ сохранён
+                                </p>
+                              `
+                            : ''
                     }
 
                 </div>
@@ -2868,7 +3070,9 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn light small"
-                        onclick="editCasting(${JSON.stringify(casting.id)})"
+                        onclick="editCasting(${JSON.stringify(
+                            casting.id
+                        )})"
                     >
                         ✏️ Изменить
                     </button>
@@ -2877,7 +3081,9 @@ function renderCastings(castings) {
                     <button
                         type="button"
                         class="btn danger small"
-                        onclick="deleteCasting(${JSON.stringify(casting.id)})"
+                        onclick="deleteCasting(${JSON.stringify(
+                            casting.id
+                        )})"
                     >
                         🗑️ Удалить
                     </button>
@@ -2895,6 +3101,7 @@ function renderCastings(castings) {
     );
 
 }
+
 
 /* =====================================================
    GET STATUS LABEL
@@ -2933,6 +3140,7 @@ function getStatusLabel(status) {
 
     };
 
+
     return (
         labels[status] ||
         status ||
@@ -2948,11 +3156,15 @@ function getStatusLabel(status) {
 
 function getStatusClass(status) {
 
-    if (status === 'approved') {
+    if (
+        status ===
+        'approved'
+    ) {
 
         return 'green';
 
     }
+
 
     if (
         status === 'audition' ||
@@ -2964,6 +3176,7 @@ function getStatusClass(status) {
 
     }
 
+
     if (
         status === 'rejected' ||
         status === 'cancelled'
@@ -2973,9 +3186,12 @@ function getStatusClass(status) {
 
     }
 
+
     return '';
 
 }
+
+
 
 
 /* =====================================================
